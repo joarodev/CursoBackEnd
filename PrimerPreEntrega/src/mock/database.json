@@ -1,0 +1,112 @@
+[
+    {
+        "id": 1, 
+        "title": "Iphone 5",
+        "description": "8GB",
+        "price": 250,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I5",
+        "stock": 13,
+        "category": "phone"
+    },
+    {
+        "id": 2, 
+        "title": "Iphone 6",
+        "description": "16GB",
+        "price": 300,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I6",
+        "stock": 58,
+        "category": "phone"
+    },
+    {
+        "id": 3, 
+        "title": "Iphone 6s",
+        "description": "32GB",
+        "price": 320,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I6S",
+        "stock": 37,
+        "category": "phone"
+    },
+    {
+        "id": 4, 
+        "title": "Iphone 6s plus",
+        "description": "64GB",
+        "price": 340,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I6SP",
+        "stock": 66,
+        "category": "phone"
+    },
+    {
+        "id": 5, 
+        "title": "Iphone 7",
+        "description": "64GB",
+        "price": 360,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I7",
+        "stock": 25,
+        "category": "phone"
+    },
+    {
+        "id": 6, 
+        "title": "Iphone 7 plus",
+        "description": "128GB",
+        "price": 370,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I7P",
+        "stock": 83,
+        "category": "phone"
+    },
+    {
+        "id": 7, 
+        "title": "Iphone 8",
+        "description": "64GB",
+        "price": 375,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I8",
+        "stock": 57,
+        "category": "phone"
+    },
+    {
+        "id": 8, 
+        "title": "Iphone 8 plus",
+        "description": "128GB",
+        "price": 390,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "I8P",
+        "stock": 46,
+        "category": "phone"
+    },
+    {
+        "id": 9, 
+        "title": "Iphone X",
+        "description": "128GB",
+        "price": 420,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "IX",
+        "stock": 28,
+        "category": "phone"
+    },
+    {
+        "id": 10, 
+        "title": "Iphone XR",
+        "description": "240GB",
+        "price": 450,
+        "thumbnail": "Sin Imagen",
+        "status": true,
+        "code": "IXR",
+        "stock": 32,
+        "category": "phone"
+    }
+]

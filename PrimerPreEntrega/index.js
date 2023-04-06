@@ -6,7 +6,11 @@ app.use(express.json());
 app.use(express.text());
 
 //obtener
-app.get("", (req, res) => {
+app.get("/products", (req, res) => {
+
+});
+
+app.get("/products/:pid", (req, res) => {
 
 });
 //Crear
