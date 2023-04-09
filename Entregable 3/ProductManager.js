@@ -19,11 +19,11 @@ class ProductManager {
         }
     }
 
-    appendProduct = async () => {
+    appendProduct = () => {
         try {
             const productJSON = JSON.stringify(this.products, null, 2)
             console.log('Escribiendo en el archivo', this.path);
-            await fs.writeFile(this.path, productJSON, 'utf-8')
+            fs.writeFile(this.path, productJSON, 'utf-8')
         } catch (error) {
             console.log(error)
         }
