@@ -16,18 +16,5 @@
         "quantity": 1
       }
     ]
-  },
-  {
-    "id": 3,
-    "products": [
-      {
-        "id": 1,
-        "quantity": 1
-      },
-      {
-        "id": 2,
-        "quantity": 2
-      }
-    ]
   }
 ]
