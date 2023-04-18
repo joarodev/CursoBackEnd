@@ -1,122 +1,96 @@
 const fs = require('fs')
 
 class CartManager {
-    constructor(doc) {
-        this.doc = doc;
+    constructor(path) {
+        this.carts = []
+        this.cartCount = 0
+        this.path = path
     }
 
-    exists(doc) {
+    // 
+    readCarts = async ()=>{
         try {
-            if (!fs.existsSync(doc)) {
-                throw new Error("El documento no existe");
-            } else {
-                return true;
+            if (fs.existsSync(this.path)) {
+                const fileContent = await fs.promises.readFile(this.path, 'utf-8')
+                const data = JSON.parse(fileContent)
+                this.carts= data.cartsList
+                this.cartCount = data.index
             }
         } catch (error) {
-            console.log(`Error al leer el documento ${error.message}`);
+            console.log(error)
         }
+        return this.carts
     }
 
-    readFile = async (doc) => {
+
+    writeFile = async ()=>{
+        const data= { index : this.cartCount, cartsList : this.carts }
         try {
-            const data = await fs.promises.readFile(doc);
-            return JSON.parse(data);
+            await fs.promises.writeFile(this.path, JSON.stringify(data),'utf-8')
         } catch (error) {
-            console.log(`Error reading the file: ${error.message}`)
+            console.log(error)
         }
     }
 
-    writeFile = async (data) => {
-        try {
-            await fs.promises.writeFile(
-                this.doc, JSON.stringify(data, null, 2)
-                )
-            }catch(err) {
-            console.log(err);
-            }
+    createCart= async ()=>{
+        await this.readCarts()
+        this.cartCount+=1
+        const newCart= {
+            id: this.cartCount,
+            products : []
         }
+        this.carts.push(newCart)
+        this.writeFile()
+        return {
+            status: 'ok',
+            data: this.cartCount}
+    }
 
-    createCart = async () => {
-        try {
-            if (!this.exists(this.doc)) {
-                let cartsArray = []
-                const cart = {
-                    id: this.#idGen(),
-                    products: [],
-                };
-                cartsArray.push(cart)
-                await this.writeFile(cartsArray)
-                console.log(`Se generó el id: ${cart.id}`)
-                return cart.id
-            } else {
-                if (this.readFile(this.doc)) {
-                const cartsArray = await this.readFile(this.doc)
-                if (cartsArray.length === 0 || !cartsArray) {
-                    const cart = {
-                        id: this.#idGen(),
-                        products: [],
-                    };
-                    cartsArray.push(cart);
+    addToCart= async (cartId, productId)=>{
+        await this.readCarts()
+        const cartIndex=this.carts.findIndex(cart=>cart.id==cartId)
+        if (cartIndex !== -1) {
+                // Tengo un carrito. Agrego el producto.
+                const cart= this.carts[cartIndex].products
+                const prodIndex = cart.findIndex(prod=> prod.id==productId)
+                if (prodIndex !== -1) {
+                    // ya tengo el producto. Aumento en 1 la cantidad
+                    cart[prodIndex]= { ...cart[prodIndex], quantity: cart[prodIndex].quantity+1 }
                 } else {
-                    const cart = {
-                        id: this.#idGen(cartsArray),
-                        products: [],
-                    };
-                    cartsArray.push(cart);
+                    // No tengo el producto. Lo agrego.
+                    cart.push({id: productId, quantity: 1})
                 }
-                await this.writeFile(cartsArray);
-                console.log(`Se generó el id: ${cart.id}`);
-                return carts;
+                await this.writeFile()
+                return {status: 'ok', data: 'Producto agregado al carrito.'}
+            } else {
+                // No encontre un carrito.
+                return {status: 'error', data: 'error. No existe carrito con id #'+cartId }
             }
-        }
-        } catch (error) {
-        console.log(`Error ${error.message}`);
-        }
     }
 
-    getCartById = async (id) => {
-        try {
-            if(this.exists(this.doc)){
-                let carts = await this.readFile(this.doc)
-                const cart = carts.find(item => item.id === id)
-                return cart ? cart : console.log('El producto no existe')
+    async getcartById(id) {
+        // Retorna el carto buscado o undefined.
+        const carts = await this.readCarts()
+        const searchedCode = carts.find(cart => cart.id ==id)
+        if (searchedCode) {
+            return {status:'ok', data: searchedCode.products}
         }
-        return console.log('la db no existe')
-        } catch (error) {
-            console.log(error);
-        }
+        return {status: 'error', data:  "No existe carrito con id "+id}
     }
 
-    addToCart = async (cid, pid) => {
-        try {
-            if(this.exists(this.doc)) {
-                const carts = await this.readFile(this.doc)
-                const cart = carts.find(item => item.id === cid)
-                console.log(cart);
-            if(cart) {
-                const addProduct = cart.products.find(item => item.id === pid)
-                if(addProduct) {
-                    addProduct.quantity++
-                }else{
-                    cart.products.push({id: pid, quantity: 1 })
-                }
-                await this.writeFile(carts)
-                return cart
-            }
-            throw new Error(`No se a podido añadir al carrito ${cid}`)
+    async deletecartById(id){
+        const carts = await this.readcarts()
+        // obtengo el index del elemento.
+        const prodIndex=carts.findIndex(cart=>cart.id==id)
+        if (prodIndex !== -1) {
+            carts.splice(prodIndex,1)
+            this.writeFile()     
+            return {status:'ok', data:'carrito id '+id+' eliminado exitosamente.'}
         }
-        } catch (error) {
-            console.log(error);
-        }
+        return {status: 'error', data:  "No existe carrito con id "+id}
     }
-
-    #idGen(productsArray = []) {
-        const id =
-        productsArray.length === 0
-            ? 1
-            : productsArray[productsArray.length - 1].id + 1;
-        return id;
-    }
+        
 }
+
 
 module.exports = CartManager

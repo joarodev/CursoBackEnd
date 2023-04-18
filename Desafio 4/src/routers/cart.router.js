@@ -1,6 +1,7 @@
 const {Router} = require ('express')
 const CartManager = require('../manager/cartManager')
 const ProductManager = require('../manager/productsManager')
+const DOC = require('../carts.json')
 
 const router = Router();
 const productManager = new ProductManager('./products.json')
@@ -14,14 +15,18 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const carts = await cartManager.readFile()
+  const carts = await cartManager.readCarts()
+  console.log(DOC)
   res.status(200).send({ status:'success', payload: carts })
 });
 
 router.get("/:cid", async (req, res) => {
   const {cid}  = req.params
-  const cart = await cartManager.getCartById(parseInt(cid))
-  !cart ? res.status(404).send(notFound) : res.status(200).send({status:'success', cart})
+  const cart = await cartManager.getcartById(cid)
+  if(!cart){
+    res.status(404).send(notFound)
+   } else{
+    res.status(200).send({status:'success', payload: cart})}
 });
 
 router.post("/:cid/product/:pid", async (req, res) => {
