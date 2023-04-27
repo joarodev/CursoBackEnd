@@ -1,12 +1,43 @@
 const express = require('express')
 const routers = require('./routers/index.router')
-const routerHandlebars = require("./routers/home.handlebars")
-const routerRealTime = require(`./routers/realTime.router`)
+const routerHandlebars = require("./routers/views.handlebars")
 const handlebars = require("express-handlebars")
 //const cookieParser = require('cookie-parser')
+const { Server } = require("socket.io")
+
 
 const app = express()
 const PORT = 8080
+
+//socket__________________________________________
+
+//PUERTO
+const httpServer = app.listen(PORT, () => {
+    console.log(`Escuchando en el puerto ${httpServer.address().port}`)
+});
+
+const socketServer = new Server(httpServer)
+
+let messages = []
+socketServer.on("connection", socket =>{
+    console.log("Cliente conectado")
+
+    socket.on("message", data =>{
+        console.log(data)
+        messages.push(data)
+        socketServer.emit("messageLogs", messages)
+    })
+
+    socket.on("authenticated", data =>{
+        socket.broadcast.emit("newUserConnected", data)
+    });
+    
+
+})
+
+
+//socket__________________________________________
+
 
 //hbs_____________________________________________
 app.engine("handlebars", handlebars.engine())
@@ -26,7 +57,7 @@ app.use("/static",express.static(__dirname+'/public'))
 //hbs routes
 
 app.use("/", routerHandlebars)
-app.use("/realtimeproducts", routerRealTime)
+/* app.use("/realtimeproducts") */
 
 
 app.use("/api", routers)
@@ -37,12 +68,9 @@ app.post('/api/products', (req, res)=>{
         message: 'se cargó correctamente'
     })
 })
-//puerto
-const server = app.listen(PORT, () => {
-    console.log(`Escuchando en el puerto ${server.address().port}`)
-});
 
-server.on('error', (error) => {
+
+httpServer.on('error', (error) => {
     console.log('Error', error)
 });
 
