@@ -1,6 +1,5 @@
 const chatbox  = document.getElementById('chatbox')
 const log = document.getElementById('mensajes')
-console.log("Socket")
 const socket = io()
 
 socket.emit("message", "Hola me estoy comunicando")
@@ -30,7 +29,6 @@ chatbox.addEventListener('keyup', evt => {
 })
 
 socket.on('messageLogs', data => {
-    // console.log(data)}
 
     let log = document.getElementById('messageLogs')
     let mensajes = ''

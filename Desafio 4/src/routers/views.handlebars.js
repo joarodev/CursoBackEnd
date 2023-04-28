@@ -5,12 +5,26 @@ const productsList = new ProductManager('./src/products.json')
 
 const router = Router()
 
-router.get("/", (req, res)=>{
-    let testName={
-        name: "JOAA"
+// DESAFIO 4 ----------------------------------------------------
+router.get("/", async (req, res)=>{
+
+    const products = await productsList.getProducts()
+    
+
+    let pageData={
+        title:  'Lista de Productos',
+        products,
     }
-    res.render(`index`, testName)
+
+    res.render('index', pageData)
 })
+
+router.get("/realtimeproducts", (req, res)=>{
+    res.render("realtimeprod")
+})
+
+// DESAFIO 4 ----------------------------------------------------
+
 
 router.get("/chat", (req, res)=>{
     res.render("chat", {})

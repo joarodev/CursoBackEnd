@@ -4,36 +4,21 @@ const routerHandlebars = require("./routers/views.handlebars")
 const handlebars = require("express-handlebars")
 //const cookieParser = require('cookie-parser')
 const { Server } = require("socket.io")
+const { socketProduct } = require('./utils/socketProduct')
 
 
 const app = express()
 const PORT = 8080
 
-//socket__________________________________________
 
 //PUERTO
 const httpServer = app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${httpServer.address().port}`)
 });
 
-const socketServer = new Server(httpServer)
-
-let messages = []
-socketServer.on("connection", socket =>{
-    console.log("Cliente conectado")
-
-    socket.on("message", data =>{
-        console.log(data)
-        messages.push(data)
-        socketServer.emit("messageLogs", messages)
-    })
-
-    socket.on("authenticated", data =>{
-        socket.broadcast.emit("newUserConnected", data)
-    });
-    
-
-})
+//socket__________________________________________
+const io = new Server(httpServer)
+socketProduct(io)
 
 
 //socket__________________________________________

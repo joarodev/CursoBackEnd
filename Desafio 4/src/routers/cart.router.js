@@ -16,7 +16,6 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   const carts = await cartManager.readCarts()
-  console.log(DOC)
   res.status(200).send({ status:'success', payload: carts })
 });
 

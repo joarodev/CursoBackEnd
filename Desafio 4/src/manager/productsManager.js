@@ -1,7 +1,9 @@
 const fs = require('fs')
 
+const path = "./src/mockDB/products.json"
+
 class ProductManager {
-    constructor(path) {
+    constructor() {
         this.path = path
         this.products = []
         this.productCount = 0
@@ -15,15 +17,26 @@ class ProductManager {
             console.log(err);
             }
         }
-    getProducts = async(limit) => {
-        try {
-            const productsList = await fs.promises.readFile(this.path, 'utf-8')
-            const products = JSON.parse(productsList)
-            return products.slice(0, limit)
-        }catch(error) {
-            return []
+        async readFile() {
+            try {
+                const data = await fs.promises.readFile(this.path, 'utf-8')
+                
+                return JSON.parse(data)            
+            } catch (error) {
+                return []
             }
-    }
+            
+        }
+    
+        getProducts = async() =>{
+            try {
+                return await this.readFile()
+            } catch (error) {
+                return 'No se hay productos'
+            }
+        }
+    
+    
     addProduct = async (product) => {
         try {
             console.log("producto agregado:", product);
