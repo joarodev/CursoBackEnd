@@ -7,37 +7,31 @@ const router = Router()
 
 // DESAFIO 4 ----------------------------------------------------
 router.get("/", async (req, res)=>{
-
     const products = await productsList.getProducts()
-    
-
     let pageData={
         title:  'Lista de Productos',
         products,
     }
-
     res.render('index', pageData)
 })
-
 router.get("/realtimeproducts", (req, res)=>{
     res.render("realtimeprod")
 })
-
 // DESAFIO 4 ----------------------------------------------------
 
-
+// CHAT----------------------------------------------------------
 router.get("/chat", (req, res)=>{
     res.render("chat", {})
 })
+// CHAT----------------------------------------------------------
 
+// REGISTRO------------------------------------------------------
 router.get("/register", (req, res) =>{
     res.render("registerForm", {
         style: "index.css"
     })
 })
-
 router.post("/register", (req, res) => {
-
     const name = req.body.name
     const email = req.body.email
     const password = req.body.password
@@ -48,5 +42,5 @@ router.post("/register", (req, res) => {
         mensaje: "registro con exito"
     })
 })
-
+// REGISTRO------------------------------------------------------
 module.exports = router
