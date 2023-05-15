@@ -1,6 +1,6 @@
 const {Router} = require ('express')
-const CartManager = require('../manager/cartManager')
-const ProductManager = require('../manager/productsManager')
+const CartManager = require('../manager/archivo/cartManager')
+const ProductManager = require('../manager/archivo/productsManager')
 const DOC = require('../carts.json')
 
 const router = Router();

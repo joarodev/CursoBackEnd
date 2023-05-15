@@ -6,12 +6,15 @@ const productSchema = new Schema({
 
     title: String,
     description: String,
-    price: Number,
     thumbnail: String,
-    code: String,
+    price: Number,
     stock: Number,
     category: String,
-
+    code: {
+        type: String,
+        unique: true,
+        required: true,
+    }
 })
 
 const productModel = model(collection, productSchema)

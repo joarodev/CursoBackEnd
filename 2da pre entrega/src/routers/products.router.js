@@ -1,46 +1,52 @@
 const {Router} = require('express')
 const  {uploader} = require('../utils/multer')
-const ProductManager = require('../manager/productsManager')
-const { productModel } = require('../models/product.models')
+const productManager = require('../manager/mongo/product.mongo')
+const { productModel } = require('../manager/mongo/models/product.models')
 
 const routerProd = Router()
-const productsList = new ProductManager('./src/mockDB/products.json')
-const notFound = { status: 'error', error: "Producto no encontrado" }
 
 
 //mongoose---------------------------------------------------------------
-routerProd.get("/", async (req, res) => {
+routerProd.get('/', async (req,res)=>{
     try {
-        let products = await productModel.find()
-        console.log(products)
-        res.send({
-            status: "success",
+        const products = await productManager.getProduct()
+        res.status(200).send({
+            status: 'success',
             payload: products
         })
+        
     } catch (error) {
-        return []
+        console.log(error)
     }
 })
-
-routerProd.post("/", async (req, res) => {
+routerProd.get('/:pid', async (req,res)=>{
     try {
-        const product = req.body
-
-        const newProduct = {
-            title: product.title,
-            description: product.description,
-            price: product.price,
-            thumbnail: product.thumbnail,
-            code: product.code,
-            stock: product.stock,
-            category: product.category,
-        }
-        let result = await productModel.create(newProduct)
-        res.status(200).send({result})
+        const {pid} = req.params
+        let product = await productManager.getProductById(pid)
+        res.status(200).send({
+            status: 'success',
+            payload: product
+        })
     } catch (error) {
-        return {status: 'error', error}
+        console.log(error)
     }
 })
+routerProd.post('/', async (req,res)=>{
+    try {
+        const newProduct = req.body
+
+        let result = await productManager.addProduct(newProduct)
+
+
+        res.status(200).send({
+            status: 'success',
+            payload: result
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 
 routerProd.put("/:pid", async (req, res) => {
 
@@ -61,7 +67,7 @@ routerProd.put("/:pid", async (req, res) => {
             category: modification.category
         }
 
-        let result = await productModel.updateOne({_id: pid}, prodToRemplace)
+        let result = await productManager.updateProduct(pid, prodToRemplace)
 
         res.send({
             status: "success",
@@ -74,7 +80,7 @@ routerProd.delete("/:pid", async (req, res) => {
     try {
         let { pid } = req.params;
         
-        let result = await productModel.deleteOne({_id: pid})
+        let result = await productManager.deleteProduct(pid)
         res.send({
             status: "success",
             payload: result
@@ -85,82 +91,5 @@ routerProd.delete("/:pid", async (req, res) => {
 })
 
 //mongoose---------------------------------------------------------------
-
-
-/* routerProd.get("/", async (req, res) => {
-    try {
-        const limit = req.query.limit
-        const products = await productsList.getProducts()
-        res.status(200).send({ status:'success', payload: products })
-    } catch (error) {
-        return []
-    }
-}) */
-
-
-routerProd.get("/:pid", async (req, res) => {
-    try {
-        const { pid } = req.params
-        const product = await productsList.getProductById(parseInt(pid))
-        !product ?
-        res.status(404).send( notFound )
-        :
-        res.status(200).send({ status:'success', payload: product })
-    } catch (error) {
-        return notFound
-    }
-})
-/* routerProd.post("/", async (req, res) => {
-    try {
-        const product = req.body
-        const addedProduct = await productsList.addProduct(product)
-        !addedProduct
-        ? res.status(400).send({ error: "No se pudo añadir el producto" })
-        : res.status(201).send({status:'success', payload: product})
-    } catch (error) {
-        return {status: 'error', error}
-    }
-}) */
-/* routerProd.put("/:pid", async (req, res) => {
-    try {
-        const { pid } = req.params
-        const modification = req.body
-        const modifiedProduct = await productsList.updateProduct(
-        parseInt(pid),
-        modification
-        )
-        !modifiedProduct
-        ? res.status(400).send({ error: `No se pudo modificar el producto` })
-        : res.status(200).send({ status:'success', payload: modifiedProduct })
-    } catch (error) {
-        return {notFound}
-    }
-}) */
-
-/* routerProd.post('/formulario', uploader.single('thumbnail'), async (req, res) => {
-    try {
-        const product = req.body
-        const imagePath = req.file.path
-        const imageName = req.file.filename
-        const addedProduct = await productsList.addProduct(product, imagePath, imageName)
-        !addedProduct
-        ? res.status(400).send({ error: "Could not add product" })
-        : res.status(201).send({status:'success', payload: addedProduct})
-    } catch (error) {
-        return {status: 'error', error}
-    }
-}) */
-
-/* routerProd.delete("/:pid", async (req, res) => {
-    try {
-        const { pid } = req.params;
-        const removedProduct = await productsList.deleteById(parseInt(pid))
-        !removedProduct
-        ? res.status(404).send(notFound)
-        : res.status(200).send({ status:'success', message:'product removed' })
-    } catch (error) {
-        return {status: 'error', error}
-    }
-}) */
 
 module.exports = routerProd
