@@ -9,10 +9,17 @@ const routerProd = Router()
 //mongoose---------------------------------------------------------------
 routerProd.get('/', async (req,res)=>{
     try {
-        const products = await productManager.getProduct()
-        res.status(200).send({
+
+        const {page=1} = req.query
+        const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
+        const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
+        res.render("products",{
             status: 'success',
-            payload: products
+            products: docs,
+            hasPrevPage,
+            hasNextPage,
+            prevPage,
+            nextPage
         })
         
     } catch (error) {

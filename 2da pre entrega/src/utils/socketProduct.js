@@ -1,6 +1,5 @@
 const ProductManager = require("../manager/archivo/productsManager")
 
-
 const productManager = new ProductManager()
 
 products = []
