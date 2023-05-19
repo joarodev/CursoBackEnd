@@ -11,7 +11,6 @@ class CartManager {
     }
 
     async getCarts() {
-
         try {
             return await cartModel.find({})
         } catch (error) {
@@ -57,13 +56,48 @@ class CartManager {
             cart.products[productIndex].quantity+= quantity
         }
 
-        // save the updated cart
+        // save the updated carts
         await cart.save()
 
         return {status: "succes", cart}
 
     }
 
+    async deleteProductCart(cid, pid) {
+        const cart= await cartModel.findById(cid)
+        if (!cart){
+            return {status: "error", message: "Carrito no encontrado"}
+        }
+        const productIndex = cart.products.findIndex(prod =>prod.product._id.toString()===pid)
+        console.log(productIndex)
+        if (productIndex===-1){
+            return {status: "error", message: "No hay productos para eliminar"}
+        } else {
+            cart.products.deleteOne({_id: pid})
+            // the product already exists in the cart
+            console.log("actualizo")
+            cart.products[productIndex].quantity-= quantity
+        }
+
+        // save the updated carts
+        await cart.save()
+
+        return {status: "succes", cart}
+    }
+
+    async deleteManyProducts(cid) {
+        try {
+            const cart = await cartModel.findByIdAndUpdate(cid, { products: [] });
+            await cart.save()
+            return {status: "succes", cart}
+            /* const productIndex = cart.products
+            console.log(productIndex)
+            cart.products.deleteMany({productIndex}) */
+        } catch (error) {
+            return {status: error, message: "Carrito no encontrado"}
+        }
+
+    }
 
 }
 

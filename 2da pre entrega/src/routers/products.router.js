@@ -12,6 +12,36 @@ routerProd.get('/', async (req,res)=>{
 
         const {page=1} = req.query
         const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
+        const {docs, hasPrevPage, hasNextPage, prevPage, nextPage, totalPages,} = products
+        let prevLink = `/api/products?page=${prevPage}`
+        let nextLink = `/api/products?page=${nextPage}`
+        
+        if (!hasPrevPage) prevLink = null
+        if (!hasNextPage) nextLink = null
+        
+        res.status(200).send({
+            status: 'success',
+            payload: docs,
+            totalPages, 
+            prevPage,
+            nextPage,
+            page,
+            hasPrevPage,
+            hasNextPage,
+            prevLink,
+            nextLink,
+        })
+        
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+routerProd.get('/views', async (req,res)=>{
+    try {
+
+        const {page=1} = req.query
+        const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
         const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
         res.render("products",{
             status: 'success',
@@ -26,6 +56,7 @@ routerProd.get('/', async (req,res)=>{
         console.log(error)
     }
 })
+
 routerProd.get('/:pid', async (req,res)=>{
     try {
         const {pid} = req.params

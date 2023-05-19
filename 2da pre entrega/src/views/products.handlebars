@@ -6,16 +6,17 @@
             <strong>Price: </strong>{{this.price}} -
             <strong>Stock: </strong>{{this.stock}} - 
             <strong>Categoria: </strong>{{this.category}} -
+            <a href="/api/cart"><button>Agregar al carrito</button></a>
         </li>
     {{/each}}
 
     <div>
         {{#if hasPrevPage}}
-            <a href="/api/products?page={{prevPage}}"><button>Pag Anterior</button></a> 
+            <a href="/api/products/views?page={{prevPage}}"><button>Pag Anterior</button></a> 
         {{/if}}
 
         {{#if hasNextPage}}
-            <a href="/api/products?page={{nextPage}}"><button>Pag Siguiente</button></a>
+            <a href="/api/products/views?page={{nextPage}}"><button>Pag Siguiente</button></a>
         {{/if}}
     </div>
 </div>

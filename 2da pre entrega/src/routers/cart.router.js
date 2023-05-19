@@ -29,11 +29,9 @@ router.get('/:cid', async (req, res)=>{
 
 
 router.post('/:uid', async (req, res)=>{
-    // Given a user Id (uid - must be an email) return his cart (if exist)
-    // or create a new one
     try {
         let {uid} = req.params
-        // verify uid is a mail
+        // verificar si el uid es un email
         if (!uid.includes("@") ) {
             return res.status(400).send({status: "error", message:"El uid de cliente debe ser un mail"})
         } 
@@ -47,7 +45,7 @@ router.post('/:uid', async (req, res)=>{
     }
 })
 
-router.post('/:cid/product/:pid', async (req, res)=>{
+router.put('/:cid/products/:pid', async (req, res)=>{
     const {cid, pid} = req.params
     const quantity = req.body.quantity | 1 
     try {
@@ -62,5 +60,29 @@ router.post('/:cid/product/:pid', async (req, res)=>{
     }
 })
 
+router.delete('/:cid/products/:pid', async (req, res)=>{
+    try {
+        const {cid, pid} = req.params
+        let result = await productManager.deleteProductCart(cid, pid)
+        res.send({
+            status: "success",
+            payload: result
+        })
+    } catch (error) {
+        return {status: 'error', error}
+    }
+})
+router.delete('/:cid', async (req, res)=>{
+    try {
+        const {cid} = req.params
+        let result = await productManager.deleteManyProducts(cid)
+        res.send({
+            status: "success",
+            payload: result
+        })
+    } catch (error) {
+        return {status: 'error', error}
+    }
+})
 
 module.exports = router
