@@ -18,20 +18,20 @@ class CartManager {
         }
     }
 
-    async createCart(userId) {
+    async createCart(uid) {
         try {
-            // first verify if there is a cart for the user
-            console.log(userId)
-            let cart = await cartModel.findOne({clientId: userId})
+            console.log(uid)
+            let cart = await cartModel.findOne({clientId: uid})
             console.log(cart)
             if (cart){
-                // I already have a cart
                 return cart
             }
             cart= {
-                clientId: userId,
-                products: []
+                clientId: uid,
+                products: [],
+                quantity: 0,
             }
+            res.send(cart)
             return await cartModel.create(cart)
         } catch (error) {
             return new Error(error)
@@ -39,64 +39,59 @@ class CartManager {
     }
 
     async addProduct(cid, pid, quantity) {
-        const cart= await cartModel.findById(cid)
-        if (!cart){
-            return {status: "error", message: "Carrito no encontrado"}
+
+        try {
+            
+            const respUpdate = await cartModel.findOneAndUpdate(
+            {_id: cid, "products.product": pid},
+            {$inc: {"products.$.quantity": quantity}},
+            {new: true}
+            )
+
+            if (respUpdate){
+                res.send("Producto añadido")
+            } else {
+                await cartModel.findByIdAndUpdate(
+                    {_id: cid},
+                    {$push: {products: {product: pid, quantity}}},
+                    {new: true, upsert: true}
+                )
+                res.send("producto añadido")
+            }
+
+
+
+        } catch (error) {
+            
         }
-        const productIndex = cart.products.findIndex(prod =>prod.product._id.toString()===pid)
-        console.log(productIndex)
-        if (productIndex===-1){
-            // the product isn´t in the cart. Add it
-            console.log('agrego')
-            cart.products.push({product: pid, quantity})
-
-        } else {
-            // the product already exists in the cart
-            console.log("actualizo")
-            cart.products[productIndex].quantity+= quantity
-        }
-
-        // save the updated carts
-        await cart.save()
-
-        return {status: "succes", cart}
-
     }
 
     async deleteProductCart(cid, pid) {
-        const cart= await cartModel.findById(cid)
-        if (!cart){
-            return {status: "error", message: "Carrito no encontrado"}
+        try {
+            const cart = await cartModel.findOneAndUpdate(
+                {_id: cid},
+                {$pull: {products: {product: pid}}},
+                {new: true}
+                );
+            await cart.save()
+            return {status: "succes", cart}
+        } catch (error) {
+            return {status: error, message: "No se elimino el producto del carrito"}
         }
-        const productIndex = cart.products.findIndex(prod =>prod.product._id.toString()===pid)
-        console.log(productIndex)
-        if (productIndex===-1){
-            return {status: "error", message: "No hay productos para eliminar"}
-        } else {
-            cart.products.deleteOne({_id: pid})
-            // the product already exists in the cart
-            console.log("actualizo")
-            cart.products[productIndex].quantity-= quantity
-        }
-
-        // save the updated carts
-        await cart.save()
-
-        return {status: "succes", cart}
     }
 
     async deleteManyProducts(cid) {
         try {
-            const cart = await cartModel.findByIdAndUpdate(cid, { products: [] });
+            const cart = await cartModel.findOneAndUpdate(
+                {_id: cid},
+                {$set: {products: []}},
+                {new: true}
+                );
             await cart.save()
             return {status: "succes", cart}
-            /* const productIndex = cart.products
-            console.log(productIndex)
-            cart.products.deleteMany({productIndex}) */
         } catch (error) {
-            return {status: error, message: "Carrito no encontrado"}
+            return {status: error, message: "Se a eliminado el carrito"}
         }
-
     }
 
 }

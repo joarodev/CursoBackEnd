@@ -1,0 +1,22 @@
+<div><h1>Carrito</h1></div>
+<div>
+    {{#each cart}}
+        <li>
+            <strong>Producto: </strong>{{this.product.product.title}} - 
+            <strong>Descripción: </strong>{{this.product.product.description}} -
+            <strong>Price: </strong>{{this.product.product.price}} -
+            <strong>Cantidad: </strong>{{this.quantity}} - 
+            <strong>Categoria: </strong>{{this.product.product.category}} -
+        </li>
+    {{/each}}
+
+    <div>
+        {{#if hasPrevPage}}
+            <a href="/api/carts/views?page={{prevPage}}"><button>Pag Anterior</button></a> 
+        {{/if}}
+
+        {{#if hasNextPage}}
+            <a href="/api/carts/views?page={{nextPage}}"><button>Pag Siguiente</button></a>
+        {{/if}}
+    </div>
+</div>

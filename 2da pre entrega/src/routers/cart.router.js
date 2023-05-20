@@ -1,5 +1,6 @@
 const {Router} = require('express')
 const cartManager = require('../manager/mongo/cart.mongo')
+const { cartModel } = require('../manager/mongo/models/cart.model')
 /* const systemVars = require('../config/index.js') */
 
 const router = Router()
@@ -14,19 +15,19 @@ router.get('/', async (req, res)=>{
 })
 
 router.get('/:cid', async (req, res)=>{
-    let {cid} = req.params
     try {
-        let cart = await cartManager.getCartById(cid)
-        console.log(cart)
-        if (!cart){
-            return res.status(400).send({status:'error',mensaje:"Carrito no encontrado"})
-        }
-        res.status(200).send({status:'success', payload: cart})
+        const {page=1} = req.query
+        const cart = await cartModel.paginate({}, {limit: 5, page: page, lean: true})
+        const { docs } = cart
+        res.render("cart", {
+            status: 'success',
+            cart: docs,
+        })
+        
     } catch (error) {
         console.log(error)
     }
 })
-
 
 router.post('/:uid', async (req, res)=>{
     try {
@@ -45,22 +46,21 @@ router.post('/:uid', async (req, res)=>{
     }
 })
 
-router.put('/:cid/products/:pid', async (req, res)=>{
+router.put('/:cid/product/:pid', async (req, res)=>{
+    try {
     const {cid, pid} = req.params
     const quantity = req.body.quantity | 1 
-    try {
-        const response = await cartManager.addProduct(cid, pid, quantity) 
-        if (response.status==="error"){
-            return res.status(400).send(response)
-        }else{
-            return res.status(200).send(response)
-        }       
+        const response = await cartManager.addProduct(cid, pid, quantity)
+        res.send({
+            status: "success",
+            payload: response
+        })
     } catch (error) {
         console.log(error)
     }
 })
 
-router.delete('/:cid/products/:pid', async (req, res)=>{
+router.delete('/:cid/product/:pid', async (req, res)=>{
     try {
         const {cid, pid} = req.params
         let result = await productManager.deleteProductCart(cid, pid)
