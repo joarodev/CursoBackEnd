@@ -15,6 +15,10 @@ const { socketProduct } = require('./utils/socketProduct')
 //Mongo
 const configServer = require('./config/configServer')
 
+//cookie parser
+const cookieParser = require('cookie-parser')
+
+
 //File session
 const FileStore = require("session-file-store")
 const session = require('express-session')
@@ -40,6 +44,7 @@ const httpServer = app.listen(PORT, () => {
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use("/static",express.static(__dirname+'/public'))
+app.use(cookieParser("palabraSecreta"))
 
 // File storage ------------------------------------------------------------------
 /* ARCHIVO */

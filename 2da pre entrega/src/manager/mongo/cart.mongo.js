@@ -39,7 +39,6 @@ class CartManager {
     }
 
     async addProduct(cid, pid, quantity) {
-
         try {
             
             const respUpdate = await cartModel.findOneAndUpdate(
@@ -58,9 +57,6 @@ class CartManager {
                 )
                 res.send("producto añadido")
             }
-
-
-
         } catch (error) {
             
         }
