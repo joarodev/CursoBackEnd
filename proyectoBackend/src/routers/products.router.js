@@ -1,7 +1,10 @@
 const {Router} = require('express')
 const  {uploader} = require('../utils/multer')
+
 const productManager = require('../manager/mongo/product.mongo')
 const { productModel } = require('../manager/mongo/models/product.models')
+
+const passport = require('passport')
 
 const routerProd = Router()
 
@@ -129,4 +132,4 @@ routerProd.delete("/:pid", async (req, res) => {
 
 //mongoose---------------------------------------------------------------
 
-module.exports = routerProd
+module.exports = {routerProd}

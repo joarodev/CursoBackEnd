@@ -22,15 +22,19 @@ const cookieParser = require('cookie-parser')
 //File session
 const FileStore = require("session-file-store")
 const session = require('express-session')
-/* const session = require('express-session') */
+const fileStore = FileStore(session)
+
 
 //File Storage
-const fileStore = FileStore(session)
-const { create } = require("connect-mongo")
+//const { create } = require("connect-mongo")
 
 //Passport
-const { initPassport } = require('./config/passport.config')
+/* const { initPassport, initPassportGitHub } = require('./config/passport.config')
 const passport = require('passport')
+*/
+
+//Passport JWT
+const { initPassportJWT } = require('./passport-jwt/passport.config')
 
 //PUERTO------------------------------------------------------------------
 const app = express()
@@ -46,9 +50,17 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/static",express.static(__dirname+'/public'))
 app.use(cookieParser("palabraSecreta"))
 
+//session I
+/* app.use(session({
+    secret: "secretCoder",
+    resave: true,
+    saveUninitialized: true
+}))
+ */
+
 // File storage ------------------------------------------------------------------
 /* ARCHIVO */
-/* app.use(session({
+app.use(session({
     store: new fileStore({
         ttl: 100000*60,
         path: "./session",
@@ -57,15 +69,15 @@ app.use(cookieParser("palabraSecreta"))
     secret: "secretCoder",
     resave: true,
     saveUninitialized: true,
-})) */
+}))
 
 /* MONGO ATLAS */
 /* app.use(session({
     store: create({
-        mongoUrl: "",
+        mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
         mongoOptions: {
             useNewUrlParser: true,
-            useUnifiedTopology
+            //useUnifiedTopology
         },
         ttl: 100000*60
     }),
@@ -74,12 +86,19 @@ app.use(cookieParser("palabraSecreta"))
     saveUninitialized: false,
 })) */
 
+
 //Passport------------------------------------------------------------------
-initPassport()
+/* initPassport()
 passport.use(passport.initialize())
-passport.use(passport.session())
+passport.use(passport.session()) */
 //Passport------------------------------------------------------------------
-// File storage ------------------------------------------------------------------
+
+//PassportGithub
+//initPassportGitHub()
+
+//Passport JWT----------------------------------------------------------------
+//app.use(initPassport())
+
 
 //Socket__________________________________________
 const io = new Server(httpServer)

@@ -2,6 +2,7 @@ const passport = require("passport")
 const passportLocal = require("passport-local")
 const { createHash, isValidPassword } = require("../utils/bcryptHash")
 const { userModel } = require("../manager/mongo/models/user.model")
+const GithubStrategy = require ("passport-github2")
 
 const LocalStrategy = passportLocal.Strategy
 
@@ -59,9 +60,44 @@ const initPassport = () => {
             return done(error)
         }
     }))
+}
 
+
+//passport GITHUB
+const initPassportGitHub = () => {
+    passport.use("github", new GithubStrategy({
+        clientId: "",//CLIENTE ID DE GITHUB
+        clientSecret: "",//Cliente secret de Github
+        callbackURL: "",//URL de github
+    }, async (accessToken, refreshToke, profile, done)=>{
+        try {
+            let user = await userModel.findOne({email: profile._json.email})
+            if(!user){
+                let newUser = {
+                    firts_name: profile.username,
+                    last_name: profile.username,
+                    email: profile._json.email,
+                    password: "",
+                }
+                let result = await userModel.create(newUser)
+                return done(null, result)
+            }
+            return done(null, false)
+        } catch (error) {
+            
+        }
+    }))
+    passport.serializeUser((user, done) => {
+        done(null, user.id)
+    })
+
+    passport.deserializeUser(async(id, done) => {
+        let user = await userModel.findOne({_id: id})
+        done(null, user)
+    })
 }
 
 module.exports = {
-    initPassport
+    /* initPassport,
+    initPassportGitHub */
 }

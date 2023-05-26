@@ -3,9 +3,9 @@ const cartManager = require('../manager/mongo/cart.mongo')
 const { cartModel } = require('../manager/mongo/models/cart.model')
 /* const systemVars = require('../config/index.js') */
 
-const router = Router()
+const routerCart = Router()
 
-router.get('/', async (req, res)=>{
+routerCart.get('/', async (req, res)=>{
     try {
         let carts = await cartManager.getCarts()
         res.status(200).send(carts)
@@ -14,7 +14,7 @@ router.get('/', async (req, res)=>{
     }
 })
 
-router.get('/:cid', async (req, res)=>{
+routerCart.get('/:cid', async (req, res)=>{
     try {
         const {page=1} = req.query
         const cart = await cartModel.paginate({}, {limit: 5, page: page, lean: true})
@@ -29,7 +29,7 @@ router.get('/:cid', async (req, res)=>{
     }
 })
 
-router.post('/:uid', async (req, res)=>{
+routerCart.post('/:uid', async (req, res)=>{
     try {
         let {uid} = req.params
         // verificar si el uid es un email
@@ -46,7 +46,7 @@ router.post('/:uid', async (req, res)=>{
     }
 })
 
-router.put('/:cid/product/:pid', async (req, res)=>{
+routerCart.put('/:cid/product/:pid', async (req, res)=>{
     try {
     const {cid, pid} = req.params
     const quantity = req.body.quantity | 1 
@@ -60,7 +60,7 @@ router.put('/:cid/product/:pid', async (req, res)=>{
     }
 })
 
-router.delete('/:cid/product/:pid', async (req, res)=>{
+routerCart.delete('/:cid/product/:pid', async (req, res)=>{
     try {
         const {cid, pid} = req.params
         let result = await productManager.deleteProductCart(cid, pid)
@@ -72,7 +72,7 @@ router.delete('/:cid/product/:pid', async (req, res)=>{
         return {status: 'error', error}
     }
 })
-router.delete('/:cid', async (req, res)=>{
+routerCart.delete('/:cid', async (req, res)=>{
     try {
         const {cid} = req.params
         let result = await productManager.deleteManyProducts(cid)
@@ -85,4 +85,4 @@ router.delete('/:cid', async (req, res)=>{
     }
 })
 
-module.exports = router
+module.exports = {routerCart}

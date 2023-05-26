@@ -44,4 +44,4 @@ routerUser.post("/usuarios", async (req, res) =>{
     }
 })
 
-module.exports = routerUser
+module.exports = {routerUser}
