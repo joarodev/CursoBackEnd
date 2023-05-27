@@ -15,7 +15,7 @@ const cookieExtractor = req =>{
 }
 
 //Init de passport
-const initPassport = () => {
+const initPassportJWT = () => {
     passport.use("jwt", new JWTStrategy({}), async ()=>{
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor])
         secretOrKey: objetConfig.jwt_secret
@@ -58,7 +58,7 @@ const passportCall = strategy => {
 }
 
 module.exports = {
-    initPassport,
+    initPassportJWT,
     authorization,
     passportCall
 }

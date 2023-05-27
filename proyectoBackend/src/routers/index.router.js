@@ -1,4 +1,5 @@
 const {Router}  = require ('express')
+const { routerViews } = require('./views.handlebars')
 const {routerProd} = require ('./products.router')
 const {routerCart} = require ('./cart.router')
 const {routerUser} = require("./user.router")
@@ -9,6 +10,7 @@ const { uploader } = require('../utils/multer')
 
 const router = Router()
 
+router.use("/", routerViews)
 router.use("/products", routerProd)
 router.use("/carts", routerCart)
 router.use("/users", routerUser)

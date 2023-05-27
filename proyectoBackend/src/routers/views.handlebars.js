@@ -3,10 +3,10 @@ const { Router } = require("express")
 const ProductManager = require('../manager/archivo/productsManager')
 const productsList = new ProductManager('./src/products.json')
 
-const router = Router()
+const routerViews = Router()
 
 // LOGIN ------------------------------------------------------
-router.get("/login", (req, res) =>{
+routerViews.get("/login", (req, res) =>{
     res.render("login", {
         style: "index.css"
     })
@@ -14,21 +14,18 @@ router.get("/login", (req, res) =>{
 // LOGIN ------------------------------------------------------
 
 // REGISTRO ------------------------------------------------------
-router.get("/register", (req, res) =>{
+routerViews.get("/register", (req, res) =>{
     res.render("registerForm", {
         style: "index.css"
     })
 })
-router.post("/register", (req, res) => {
-    const name = req.body.name
-    const email = req.body.email
-    const password = req.body.password
-    res.send({
-        name,
-        email,
-        password,
-        mensaje: "registro con exito"
+// REGISTRO ------------------------------------------------------
+
+//Productos
+routerViews.get("/products", (req, res) =>{
+    res.render("products", {
+        style: "index.css"
     })
 })
-// REGISTRO ------------------------------------------------------
-module.exports = router
+
+module.exports = {routerViews}

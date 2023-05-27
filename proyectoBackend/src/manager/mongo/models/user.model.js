@@ -4,6 +4,7 @@ const mongoosePaginate = require("mongoose-paginate-v2")
 const collection = 'usuarios'
 
 const userSchema = new Schema({
+    username: String,
     first_name: {
         type: String,
         index: true
@@ -16,7 +17,11 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
-    gender: String
+    password: String,
+    role: {
+        type: String,
+        enum: "user"
+    }
 })
 
 userSchema.plugin(mongoosePaginate)

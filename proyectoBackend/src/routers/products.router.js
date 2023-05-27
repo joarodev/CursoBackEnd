@@ -40,7 +40,7 @@ routerProd.get('/', async (req,res)=>{
     }
 })
 
-routerProd.get('/views', async (req,res)=>{
+routerProd.get('/products', async (req,res)=>{
     try {
         const {page=1} = req.query
         const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})

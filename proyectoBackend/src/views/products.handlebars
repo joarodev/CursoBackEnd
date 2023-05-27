@@ -1,22 +1,27 @@
 <div>
-    {{#each products}}
-        <li>
-            <strong>Nombre: </strong>{{this.title}} - 
-            <strong>Descripción: </strong>{{this.description}} -
-            <strong>Price: </strong>{{this.price}} -
-            <strong>Stock: </strong>{{this.stock}} - 
-            <strong>Categoria: </strong>{{this.category}} -
-            <a href="/api/cart"><button>Agregar al carrito</button></a>
-        </li>
-    {{/each}}
+    <div class="d-flex justify-content-center">
+        <h1>Bienvenido {{username}}</h1>
+    </div>
+    <div class="d-flex justify-content-center">
+        {{#each products}}
+            <li>
+                <strong>Nombre: </strong>{{this.title}} - 
+                <strong>Descripción: </strong>{{this.description}} -
+                <strong>Price: </strong>{{this.price}} -
+                <strong>Stock: </strong>{{this.stock}} - 
+                <strong>Categoria: </strong>{{this.category}} -
+                <a href="/api/cart"><button>Agregar al carrito</button></a>
+            </li>
+        {{/each}}
+    </div>
 
     <div>
         {{#if hasPrevPage}}
-            <a href="/api/products/views?page={{prevPage}}"><button>Pag Anterior</button></a> 
+            <a href="/api/products/?page={{prevPage}}"><button>Pag Anterior</button></a> 
         {{/if}}
 
         {{#if hasNextPage}}
-            <a href="/api/products/views?page={{nextPage}}"><button>Pag Siguiente</button></a>
+            <a href="/api/products/?page={{nextPage}}"><button>Pag Siguiente</button></a>
         {{/if}}
     </div>
 </div>

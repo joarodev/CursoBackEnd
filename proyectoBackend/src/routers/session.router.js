@@ -10,6 +10,7 @@ const { generateToken } = require("../config/jwt")
 //passport JWT
 const { passportCall } = require("../passport-jwt/passport.config")
 const { authorization } = require("../passport-jwt/passport.config")
+const { userModel } = require("../manager/mongo/models/user.model")
 
 
 const routerSession = Router()
@@ -49,7 +50,7 @@ routerSession.get("/privada", auth,(req, res) => {
     res.send(" Todo lo que está acá lo puede ver un admin logueado ")
 })
 
-routerSession.get("/session", (req, res)=>{
+/* routerSession.get("/session", (req, res)=>{
     if (req.session.counter) {
         req.session.counter ++
         res.send(`Se ha visitado el sitio ${req.session.counter} veces`)
@@ -57,7 +58,7 @@ routerSession.get("/session", (req, res)=>{
         req.session.counter = 1
         res.send("Bienvenido")
     }
-})
+}) */
 
 routerSession.post("/session", (req, res) => {
     const {username, password} = req.body
@@ -66,22 +67,57 @@ routerSession.post("/session", (req, res) => {
     }
     if (req.session.counter) {
         req.session.counter ++
-        res.send(`${username} visitaste el sitio: ${req.session.counter} veces`)
     }
+    
     req.session.user = username
     req.session.admin = true
     req.session.counter = 1 
     console.log(req.session)
-    res.send(`Logeado correctamente, bienvenido ${username}`)
+    
+    res.render("products", {
+        username
+    })
+    res.redirect("/api/products")
 })
 
-routerSession.get("/logout", (req, res) =>{
+routerSession.get("/session/logout", (req, res) =>{
     req.session.destroy(error =>{
         if(error){
             return res.send({status: "error", error: error})
         }
         res.send("logout OK")
     })
+})
+
+/* REGISTER */
+
+routerSession.post("/session/register", async (req, res) =>{
+    try {
+        const {username, first_name, last_name, email, password} = req.body
+    
+        //validar si vienen distintos de vacios && caracteres especiales
+    
+        //validar si existe el mail
+        const existUser = await userModel.findOne({email})
+        if(existUser) return res.send({status: "error", message: "El correo ya está en uso"})
+    
+        const newUser = {
+            username,
+            first_name,
+            last_name,
+            email,
+            password
+        }
+    
+        let resultUser = await userModel.create(newUser)
+        res.status(200).send({status: "success", message: "Usuario creado correctamente", resultUser})
+        /* res.redirect("/") */
+    } catch (error) {
+    console.log(error)
+    }
+   
+    
+
 })
 
 //LOGIN
@@ -103,20 +139,20 @@ routerSession.get("/logout", (req, res) =>{
     console.log("falló la estrategia")
     res.send({ status: "Error", error: "fallo"})
 }) */
-
+/* 
 //register
-/* router.post("/register", passport.authenticate("register", {failureRedirect: "/failregister",
+routerSession.post("/register", passport.authenticate("register", {failureRedirect: "/failregister",
 //successRedirect: "/Rutasiestátodobien"
 }), async (req, res) => {
     res.send({ status: "succes", message: "User registered"})
-}) */
+})
 
 // register fail
-/* router.get("/failregister", async (req, res) => {
+routerSession.get("/failregister", async (req, res) => {
     console.log("falló la estrategia")
     res.send({ status: "Error", error})
-}) */
-
+})
+ */
 /* router.post("/login", async(req, res)=>{
     const {email, password} = req.body
     //validar email password

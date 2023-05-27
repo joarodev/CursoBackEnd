@@ -5,7 +5,6 @@ const express = require('express')
 const RoutersIndex = require('./routers/index.router')
 
 //Handlebars
-const routerHandlebars = require("./routers/views.handlebars")
 const handlebars = require("express-handlebars")
 
 //Socket.io
@@ -24,17 +23,19 @@ const FileStore = require("session-file-store")
 const session = require('express-session')
 const fileStore = FileStore(session)
 
+//Mongo storage
+const { create } = require("connect-mongo")
 
 //File Storage
 //const { create } = require("connect-mongo")
 
 //Passport
-/* const { initPassport, initPassportGitHub } = require('./config/passport.config')
+const { initPassport, initPassportGitHub } = require('./config/passport.config')
 const passport = require('passport')
-*/
+
 
 //Passport JWT
-const { initPassportJWT } = require('./passport-jwt/passport.config')
+//const { initPassportJWT } = require('./passport-jwt/passport.config')
 
 //PUERTO------------------------------------------------------------------
 const app = express()
@@ -47,7 +48,9 @@ const httpServer = app.listen(PORT, () => {
 //CONFIGS:
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use("/static",express.static(__dirname+'/public'))
+//Static files
+const path = require('path')
+app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser("palabraSecreta"))
 
 //session I
@@ -59,8 +62,8 @@ app.use(cookieParser("palabraSecreta"))
  */
 
 // File storage ------------------------------------------------------------------
-/* ARCHIVO */
-app.use(session({
+/* ARCHIVO FILESTORAGE */
+/* app.use(session({
     store: new fileStore({
         ttl: 100000*60,
         path: "./session",
@@ -69,6 +72,27 @@ app.use(session({
     secret: "secretCoder",
     resave: true,
     saveUninitialized: true,
+})) */
+
+//Passport------------------------------------------------------------------
+initPassport()
+passport.use(passport.initialize())
+passport.use(passport.session())
+//Passport------------------------------------------------------------------
+
+//
+app.use(session({
+    store: create({
+        mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
+        mongoOptions: {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        },
+        ttl: 10,
+    }),
+    secret: "secretCoder",
+    resave: false,
+    saveUninitialized: false,
 }))
 
 /* MONGO ATLAS */
@@ -86,12 +110,6 @@ app.use(session({
     saveUninitialized: false,
 })) */
 
-
-//Passport------------------------------------------------------------------
-/* initPassport()
-passport.use(passport.initialize())
-passport.use(passport.session()) */
-//Passport------------------------------------------------------------------
 
 //PassportGithub
 //initPassportGitHub()
@@ -116,8 +134,7 @@ app.set('view engine', 'handlebars')
 //HANDLEBARS_____________________________________________
 
 //ROUTES------------------------------------------------------------------
-app.use("/", routerHandlebars)
-app.use("/api", RoutersIndex)
+app.use("/", RoutersIndex)
 //ROUTES------------------------------------------------------------------
 
 //ERROR:

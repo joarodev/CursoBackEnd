@@ -2,7 +2,7 @@ console.log("Este es el index")
 
 const form = document.getElementById("cookieForm")
 
-form.addEventListener("submit", (e) => {
+/* form.addEventListener("submit", (e) => {
     e.preventDefault()
 
     const data = new FormData(form)
@@ -23,7 +23,7 @@ form.addEventListener("submit", (e) => {
     .then(respuesta => console.log(respuesta))
     console.log(respuesta)
     localStorage.setItem("token")
-})
+}) */
 
 const getCookie = () => {
     console.log(document.cookie)

@@ -98,6 +98,6 @@ const initPassportGitHub = () => {
 }
 
 module.exports = {
-    /* initPassport,
-    initPassportGitHub */
+    initPassport,
+    initPassportGitHub
 }
