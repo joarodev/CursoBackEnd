@@ -10,7 +10,7 @@ const routerProd = Router()
 
 
 //mongoose---------------------------------------------------------------
-routerProd.get('/', async (req,res)=>{
+/* routerProd.get('/', async (req,res)=>{
     try {
 
         const {page=1} = req.query
@@ -38,15 +38,18 @@ routerProd.get('/', async (req,res)=>{
     } catch (error) {
         console.log(error)
     }
-})
+}) */
 
 routerProd.get('/products', async (req,res)=>{
     try {
         const {page=1} = req.query
         const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
         const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
+        const { username, role } = req.session.user
         res.render("products",{
             status: 'success',
+            username,
+            role,
             products: docs,
             hasPrevPage,
             hasNextPage,

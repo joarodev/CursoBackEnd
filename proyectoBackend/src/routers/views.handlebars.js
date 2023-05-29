@@ -6,7 +6,7 @@ const productsList = new ProductManager('./src/products.json')
 const routerViews = Router()
 
 // LOGIN ------------------------------------------------------
-routerViews.get("/login", (req, res) =>{
+routerViews.get("/", (req, res) =>{
     res.render("login", {
         style: "index.css"
     })
@@ -24,6 +24,13 @@ routerViews.get("/register", (req, res) =>{
 //Productos
 routerViews.get("/products", (req, res) =>{
     res.render("products", {
+        style: "index.css"
+    })
+})
+
+//error
+routerViews.get("/err", (req, res) =>{
+    res.render("error", {
         style: "index.css"
     })
 })

@@ -1,6 +1,7 @@
 <div>
-    <div class="d-flex justify-content-center">
-        <h1>Bienvenido {{username}}</h1>
+    <div class=" mb-3 d-flex flex-column justify-content-center">
+        <h1 class="mb-3">Bienvenido {{username}}</h1>
+        <p>Rol: {{role}}</p>
     </div>
     <div class="d-flex justify-content-center">
         {{#each products}}
@@ -17,11 +18,11 @@
 
     <div>
         {{#if hasPrevPage}}
-            <a href="/api/products/?page={{prevPage}}"><button>Pag Anterior</button></a> 
+            <a href="/products/products/?page={{prevPage}}"><button>Pag Anterior</button></a> 
         {{/if}}
 
         {{#if hasNextPage}}
-            <a href="/api/products/?page={{nextPage}}"><button>Pag Siguiente</button></a>
+            <a href="/products/products/?page={{nextPage}}"><button>Pag Siguiente</button></a>
         {{/if}}
     </div>
 </div>

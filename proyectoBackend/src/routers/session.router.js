@@ -50,53 +50,54 @@ routerSession.get("/privada", auth,(req, res) => {
     res.send(" Todo lo que está acá lo puede ver un admin logueado ")
 })
 
-/* routerSession.get("/session", (req, res)=>{
-    if (req.session.counter) {
-        req.session.counter ++
-        res.send(`Se ha visitado el sitio ${req.session.counter} veces`)
-    } else {
-        req.session.counter = 1
-        res.send("Bienvenido")
-    }
-}) */
+//lOGIN
+routerSession.post("/session", async (req, res) => {
+    try {
+        const {email, password} = req.body
+        //validar que no esten vacios
+        if(email === "" || password === "") return res.redirect("/err")
 
-routerSession.post("/session", (req, res) => {
-    const {username, password} = req.body
-    if(username !== "joa" || password !== "123123"){
-        res.send(`El username ${username} no es un admin, intentalo de nuevo`)
+    //funcion para validar el password
+    const userDB = await userModel.findOne({email, password})
+
+    if(!userDB) return res.redirect("/err")
+
+    req.session.user = {
+        username: userDB.username,
+        first_name: userDB.first_name,
+        last_name: userDB.last_name,
+        email: userDB.email,
+        role: "admin"
     }
-    if (req.session.counter) {
-        req.session.counter ++
-    }
-    
-    req.session.user = username
-    req.session.admin = true
-    req.session.counter = 1 
-    console.log(req.session)
-    
+
+    const session = req.session.user
     res.render("products", {
-        username
+        session
     })
-    res.redirect("/api/products")
+    res.redirect("/products/products")
+    } catch (error) {
+        console.log(error)
+        res.redirect("/err")
+    }
 })
 
+//LOGOUT
 routerSession.get("/session/logout", (req, res) =>{
     req.session.destroy(error =>{
         if(error){
             return res.send({status: "error", error: error})
         }
-        res.send("logout OK")
+        res.redirect("/")
     })
 })
 
 /* REGISTER */
-
 routerSession.post("/session/register", async (req, res) =>{
     try {
         const {username, first_name, last_name, email, password} = req.body
     
-        //validar si vienen distintos de vacios && caracteres especiales
-    
+        //validar si vienen distintos de vacios 
+        if(username === "" || first_name === "" || last_name === "" || email === "" || password === "") return res.redirect("/err")
         //validar si existe el mail
         const existUser = await userModel.findOne({email})
         if(existUser) return res.send({status: "error", message: "El correo ya está en uso"})
@@ -110,14 +111,11 @@ routerSession.post("/session/register", async (req, res) =>{
         }
     
         let resultUser = await userModel.create(newUser)
-        res.status(200).send({status: "success", message: "Usuario creado correctamente", resultUser})
-        /* res.redirect("/") */
+        res.redirect("/")
     } catch (error) {
     console.log(error)
+    res.redirect("/err")
     }
-   
-    
-
 })
 
 //LOGIN

@@ -14,9 +14,11 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true
-    },
+        lowercase: true, 
+        unique: true, 
+        required: [true, "can't be blank"],
+        match: [/\S+@\S+\.\S+/, 'is invalid'], 
+        index: true},
     password: String,
     role: {
         type: String,
