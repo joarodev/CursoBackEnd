@@ -1,4 +1,34 @@
 
+/* fonts */
+
+/* Titillium 400 */
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
+/* 'Titillium Web', sans-serif; */
+
+
+
+/* Etiquetas */
+h1{
+  font-family: 'Titillium Web', sans-serif;
+}
+
+h2{
+  font-family: 'Titillium Web', sans-serif;
+}
+
+h3{
+  font-family: 'Titillium Web', sans-serif;
+}
+
+
+/* Cards */
+.cardProducts{
+  padding: 20px;
+  margin: 20px;
+}
+
+
+/* Buttons */
 .button-84 {
   align-items: center;
   background-color: initial;
@@ -48,4 +78,13 @@
   .button-84 {
     height: 48px;
   }
+}
+
+/* SHADOWS */
+
+.shadowOne{
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.shadowOne:hover{
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }

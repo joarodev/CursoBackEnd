@@ -5,11 +5,18 @@ const {routerCart} = require ('./cart.router')
 const {routerUser} = require("./user.router")
 const { routerSession } = require("./session.router")
 const { uploader } = require('../utils/multer')
+const {routAvanzado} = require("../routers/routAvanzado")
 
+//Router avanzado
+const {UserRouter} = require("./user.router")
 
 
 const router = Router()
 
+//Router avanzado
+router.use("/usersRouter", UserRouter.getRouter())
+
+router.use("/routAvanzado", routAvanzado)
 router.use("/", routerViews)
 router.use("/products", routerProd)
 router.use("/carts", routerCart)
