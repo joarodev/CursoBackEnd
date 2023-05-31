@@ -21,71 +21,6 @@ const routerSession = Router()
 routerSession.get("/privada", auth,(req, res) => {
     res.send(" Todo lo que está acá lo puede ver un admin logueado ")
 })
-/* 
-//lOGIN
-routerSession.post("/session", async (req, res) => {
-    try {
-        const {email, password} = req.body
-        //validar que no esten vacios
-        if(email === "" || password === "") return res.redirect("/err")
-
-    //funcion para validar el password
-    const userDB = await userModel.findOne({email, password})
-
-    if(!userDB) return res.redirect("/err")
-
-    //Validar password
-    if(!isValidPassword(password, userDB)) return res.status(403).send({
-        status: "error",
-        message: "El usuario o la contraseña no es la correcta"
-    })
-
-    req.session.user = {
-        username: userDB.username,
-        first_name: userDB.first_name,
-        last_name: userDB.last_name,
-        email: userDB.email,
-        role: "admin"
-    }
-
-    const session = req.session.user
-    res.render("products", {
-        session
-    })
-    res.redirect("/products/products")
-    } catch (error) {
-        console.log(error)
-        res.redirect("/err")
-    }
-})
-
-/* REGISTER */
-/* routerSession.post("/session/register", async (req, res) =>{
-    try {
-        const {username, first_name, last_name, email, password} = req.body
-    
-        //validar si vienen distintos de vacios 
-        if(username === "" || first_name === "" || last_name === "" || email === "" || password === "") return res.redirect("/err")
-        //validar si existe el mail
-        const existUser = await userModel.findOne({email})
-        if(existUser) return res.send({status: "error", message: "El correo ya está en uso"})
-    
-        const newUser = {
-            username,
-            first_name,
-            last_name,
-            email,
-            password: createHash(password)
-        }
-    
-        let resultUser = await userModel.create(newUser)
-        console.log(resultUser)
-        res.redirect("/")
-    } catch (error) {
-    console.log(error)
-    res.redirect("/err")
-    }
-}) */
 
 //RESTAURAR CONTRASEÑA
 routerSession.post('/restaurarpass', async (req, res) => {
@@ -109,17 +44,19 @@ routerSession.post('/restaurarpass', async (req, res) => {
 
 
 //LOGIN CON PASSPORT
-routerSession.post("/login", passport.authenticate("login", {failureRedirect: "/failregister",
-//successRedirect: "/Rutasiestátodobien"
+routerSession.post("/login", passport.authenticate("login", {failureRedirect: "/session/faillogin",
+successRedirect: "/products/products"
 }), async (req, res) => {
     if(!req.user) return res.status(401).send({status: "error", message: "invalid credential"})
+    /* if(req.user.username === "adminCoder@coder.com") return role = "admin"
+    let role = "user" */
     req.session.user = {
+        username: req.user.username,
         first_name: req.user.first_name,
         last_name: req.user.last_name,
-        email: req.user.email
-
+        email: req.user.email,
     }
-    res.send({ status: "succes", message: "User registered"})
+    res.send({})
 }) 
 
 //FAIL LOGIN PASSPORT
@@ -129,16 +66,17 @@ routerSession.get("/faillogin", async (req, res) => {
 }) 
 
 //REGISTER CON PASSPORT
-routerSession.post("/register", passport.authenticate("register", {failureRedirect: "/failregister",
-//successRedirect: "/Rutasiestátodobien"
+routerSession.post("/register", passport.authenticate("register", {failureRedirect: "/session/failregister",
+successRedirect: "/"
 }), async (req, res) => {
-    res.send({ status: "succes", message: "User registered"})
+    console.log("Usuario registrado")
+    res.send({})
 })
 
 //FAIL REGISTER CON PASSPORT
 routerSession.get("/failregister", async (req, res) => {
     console.log("falló la estrategia")
-    res.send({ status: "Error", error})
+    res.redirect("/")
 })
 
 //LOGOUT

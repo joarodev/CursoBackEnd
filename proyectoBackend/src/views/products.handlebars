@@ -1,7 +1,12 @@
 <div>
-    <div class=" mb-3 d-flex flex-column justify-content-center">
-        <h1 class="mb-3">Bienvenido {{username}}</h1>
-        <p>Rol: {{role}}</p>
+    <div class=" mb-3 d-flex justify-content-center">
+        <h1 class="mb-3">Bienvenido {{user.first_name}} a la pagína oficial de Iphone</h1>
+        {{#if user}}
+            <div class="mb-3 d-flex justify-content-center">
+                <p class="m-3" > Rol: {{user.role}}</p>
+                <p class="m-3"> email: {{user.email}}</p>
+            </div>
+        {{/if}}
     </div>
     <div class="d-flex justify-content-center">
         {{#each products}}

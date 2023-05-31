@@ -45,11 +45,11 @@ routerProd.get('/products', async (req,res)=>{
         const {page=1} = req.query
         const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
         const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
-        const { username, role } = req.session.user
+        console.log(req.session.user)
+        console.log(req.user)
         res.render("products",{
             status: 'success',
-            username,
-            role,
+            user: req.session.user,
             products: docs,
             hasPrevPage,
             hasNextPage,

@@ -15,15 +15,21 @@ const initPassport = () => {
         passReqToCallback: true,
         usernameField: "email"
 
-    }, async (req, username, password) => {
-        const {firts_name, last_name} = req.body
+    }, async (req, username, password, done) => {
         try {
+            const {first_name, last_name} = req.body
             let userDB = await userModel.findOne({ email: username})
             if(userDB) return done(null, false)
+            /* if(username === "adminCoder@coder.com"){
+                return role = "admin"
+            }
+            role = "user" */
             let newUser = {
-                firts_name,
+                username,
+                first_name,
                 last_name,
                 email: username,
+                //role,
                 password: createHash(password)
             }
 
@@ -37,10 +43,20 @@ const initPassport = () => {
 
     }))
 
+    //Guardar id de usuario en la session
     passport.serializeUser((user, done)=>{
-        done(null, user._id)
+        try {
+            if(user.email === "adminCoder@coder.com"){
+                return user.role = "admin"
+            }
+            user.role = "user"
+            done(null, user._id, user.role)
+        } catch (error) {
+            if(error) return done(error)
+        }
     })
 
+    //Pregunta si existe el usuario
     passport.deserializeUser(async(id, done) => {
         let user = await userModel.findOne({_id: id})
         done(null, user)
