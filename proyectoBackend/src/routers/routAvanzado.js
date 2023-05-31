@@ -15,14 +15,11 @@ routAvanzado.get("/params/:nombre([a-z%C3%A1]+)", (req, res) =>{
 })
 
 //Rutas que no están definidas
-routAvanzado.get("*", async(req, res) => {
+routAvanzado.get("*", (req, res) => {
     res.status(404).send("404 Not found")
 })
 
-//formato params
-routAvanzado.param("nombre del parametro", async)
-
-
+//nombres
 const nombres = ["Juan", "Joaquin"]
 routAvanzado.param("nombre", (req, res, next, nombre) =>{
     if(!nombres.includes(nombre)){
@@ -33,5 +30,7 @@ routAvanzado.param("nombre", (req, res, next, nombre) =>{
     }
     next()
 })
+
+
 
 module.export = {routAvanzado}

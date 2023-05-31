@@ -27,7 +27,6 @@ class RouterClass{
     applyCallbacks(callback){
         return callback.map(callback => async(...params) => {
             try {
-                
                 await callback.apply(this, params)
             } catch (error) {
                 console.log(error)

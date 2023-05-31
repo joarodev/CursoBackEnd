@@ -3,6 +3,8 @@ const passportLocal = require("passport-local")
 const { createHash, isValidPassword } = require("../utils/bcryptHash")
 const { userModel } = require("../manager/mongo/models/user.model")
 const GithubStrategy = require ("passport-github2")
+require("dotenv").config()
+
 
 const LocalStrategy = passportLocal.Strategy
 
@@ -15,11 +17,9 @@ const initPassport = () => {
 
     }, async (req, username, password) => {
         const {firts_name, last_name} = req.body
-
         try {
             let userDB = await userModel.findOne({ email: username})
             if(userDB) return done(null, false)
-            
             let newUser = {
                 firts_name,
                 last_name,
@@ -28,17 +28,17 @@ const initPassport = () => {
             }
 
             let result = await userModel.create(newUser)
-
+            console.log(result)
             return done(null, result)
 
         } catch (error) {
-            return done("Error al obtener el usuario" + error)
+            console.log(error)
         }
 
     }))
 
-    passport.serializeUser((user, done) => {
-        done(null, user.id)
+    passport.serializeUser((user, done)=>{
+        done(null, user._id)
     })
 
     passport.deserializeUser(async(id, done) => {
@@ -66,14 +66,15 @@ const initPassport = () => {
 //passport GITHUB
 const initPassportGitHub = () => {
     passport.use("github", new GithubStrategy({
-        clientId: "",//CLIENTE ID DE GITHUB
-        clientSecret: "",//Cliente secret de Github
-        callbackURL: "",//URL de github
+        clientID: process.env.GITHUB_CLIENT_ID,//CLIENTE ID DE GITHUB
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,//Cliente secret de Github
+        callbackURL: process.env.GITHUB_CALLBACK_URL,//URL de github
     }, async (accessToken, refreshToke, profile, done)=>{
         try {
-            let user = await userModel.findOne({email: profile._json.email})
-            if(!user){
+            let userCreate = await userModel.findOne({email: profile._json.email})
+            if(!userCreate){
                 let newUser = {
+                    username: profile.username,
                     firts_name: profile.username,
                     last_name: profile.username,
                     email: profile._json.email,
@@ -84,10 +85,19 @@ const initPassportGitHub = () => {
             }
             return done(null, false)
         } catch (error) {
-            
+            console.log(error)
         }
     }))
     passport.serializeUser((user, done) => {
+        try {
+            if(user.email === "adminCoder@coder.com"){
+                return user.role = "admin"
+            }
+            user.role = "user"
+            done(null, user)
+        } catch (error) {
+            if(error) return done(error)
+        }
         done(null, user.id)
     })
 
