@@ -7,6 +7,8 @@ let url = "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/prod
 
 module.exports = { 
 
+    privateKey: "comision",
+
     jwt_secret_key: "palabaJwtSecreto",
     connectDB: async () => {
         try {

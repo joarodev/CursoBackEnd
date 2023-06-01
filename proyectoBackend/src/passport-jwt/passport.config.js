@@ -12,6 +12,7 @@ const cookieExtractor = req =>{
     if(req && req.cookies){
         token = req.cookies["coderCookieToken"]  //Extraemos la cookie y las guardamos en token
     }
+    return token
 }
 
 //Init de passport
@@ -46,7 +47,7 @@ const authorization = role => {
 }
 
 //Validar si viene corrupto o no viene el token
-const passportCall = strategy => {
+const passportAuth = strategy => {
     return async (req, res, next) => {
         passport.authenticate(strategy, function(err, user, info){
             if(err) return next(err)
@@ -60,5 +61,5 @@ const passportCall = strategy => {
 module.exports = {
     initPassportJWT,
     authorization,
-    passportCall
+    passportAuth
 }

@@ -9,6 +9,7 @@ const { generateToken } = require("../config/jwt")
 
 //passport JWT
 const { passportCall } = require("../passport-jwt/passport.config")
+//rutas que necesitan protección
 const { authorization } = require("../passport-jwt/passport.config")
 const { userModel } = require("../manager/mongo/models/user.model")
 
@@ -44,8 +45,8 @@ routerSession.post('/restaurarpass', async (req, res) => {
 
 
 //LOGIN CON PASSPORT
-routerSession.post("/login", passport.authenticate("login", {failureRedirect: "/session/faillogin",
-successRedirect: "/products/products"
+routerSession.post("/", passport.authenticate("login", {failureRedirect: "/session/faillogin",
+//successRedirect: "/products/products"
 }), async (req, res) => {
     if(!req.user) return res.status(401).send({status: "error", message: "invalid credential"})
     /* if(req.user.username === "adminCoder@coder.com") return role = "admin"
@@ -56,8 +57,14 @@ successRedirect: "/products/products"
         last_name: req.user.last_name,
         email: req.user.email,
     }
-    res.send({})
-}) 
+    if(req.session.user.username === "adminCoder@coder.com") {
+        req.session.user.role = "admin"
+    } else {
+        req.session.user.role = "user"
+    }
+    console.log(req.session.user)
+    res.redirect("/products/products")
+})
 
 //FAIL LOGIN PASSPORT
 routerSession.get("/faillogin", async (req, res) => {
@@ -76,7 +83,7 @@ successRedirect: "/"
 //FAIL REGISTER CON PASSPORT
 routerSession.get("/failregister", async (req, res) => {
     console.log("falló la estrategia")
-    res.redirect("/")
+    res.redirect("/err")
 })
 
 //LOGOUT
@@ -85,6 +92,7 @@ routerSession.get("/session/logout", (req, res) =>{
         if(error){
             return res.send({status: "error", error: error})
         }
+        console.log("user logout")
         res.redirect("/")
     })
 })
@@ -93,13 +101,23 @@ routerSession.get("/session/logout", (req, res) =>{
 //LOGIN POR GITHUB
 routerSession.get("/github", passport.authenticate("github", {scope: ["user: email"]}), ()=>{})
 //"/github" nos redirecciona los resultados a -> "/githubcallback"
-routerSession.get("/githubcallback", passport.authenticate("github", {failureRedirect: "/"}), async (req, res)=>{
+routerSession.get("/githubcallback", passport.authenticate("github", {
+    failureRedirect: "/err",
+    //successRedirect: "/products/products"
+}), async (req, res)=>{
+    console.log(req.user)
     req.session.user = req.user
-    res.redirect("/products")
+    if(req.session.user.username === "adminCoder@coder.com") {
+        req.session.user.role = "admin"
+    } else {
+        req.session.user.role = "user"
+    }
+    res.redirect("/products/products")
 })
 
 
-
+//passport jwt
+routerSession.get("/current",(req, res) =>{}) //completar
 
 //passport JWT
 /* routerSession.get("/current", passportCall("jwt"), authorization("user"), (req, res) =>{

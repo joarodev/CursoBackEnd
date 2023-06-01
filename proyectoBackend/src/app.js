@@ -76,7 +76,7 @@ app.use(cookieParser("palabraSecreta"))
 
 //Passport------------------------------------------------------------------
 initPassport()
-//initPassportGitHub()
+initPassportGitHub()
 passport.use(passport.initialize())
 passport.use(passport.session())
 //Passport------------------------------------------------------------------

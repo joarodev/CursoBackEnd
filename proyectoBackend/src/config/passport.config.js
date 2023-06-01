@@ -20,16 +20,11 @@ const initPassport = () => {
             const {first_name, last_name} = req.body
             let userDB = await userModel.findOne({ email: username})
             if(userDB) return done(null, false)
-            /* if(username === "adminCoder@coder.com"){
-                return role = "admin"
-            }
-            role = "user" */
             let newUser = {
                 username,
                 first_name,
                 last_name,
                 email: username,
-                //role,
                 password: createHash(password)
             }
 
@@ -45,15 +40,7 @@ const initPassport = () => {
 
     //Guardar id de usuario en la session
     passport.serializeUser((user, done)=>{
-        try {
-            if(user.email === "adminCoder@coder.com"){
-                return user.role = "admin"
-            }
-            user.role = "user"
-            done(null, user._id, user.role)
-        } catch (error) {
-            if(error) return done(error)
-        }
+            done(null, user._id)
     })
 
     //Pregunta si existe el usuario
@@ -82,39 +69,32 @@ const initPassport = () => {
 //passport GITHUB
 const initPassportGitHub = () => {
     passport.use("github", new GithubStrategy({
-        clientID: process.env.GITHUB_CLIENT_ID,//CLIENTE ID DE GITHUB
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,//Cliente secret de Github
-        callbackURL: process.env.GITHUB_CALLBACK_URL,//URL de github
+        clientID: "Iv1.1d002cb57ec835ff",//CLIENTE ID DE GITHUB
+        clientSecret: "2c98e525b0dd168f8b927c90042276bde9bb9bb5",//Cliente secret de Github
+        callbackURL: "http://localhost:8080/session/githubcallback",//URL de github
     }, async (accessToken, refreshToke, profile, done)=>{
+        console.log("Profile", profile)
         try {
-            let userCreate = await userModel.findOne({email: profile._json.email})
-            if(!userCreate){
+            let user = await userModel.findOne({email: profile._json.email})
+            if(user) return done(null, user)
+            if(!user){
                 let newUser = {
                     username: profile.username,
-                    firts_name: profile.username,
-                    last_name: profile.username,
+                    first_name: profile.displayName,
                     email: profile._json.email,
                     password: "",
                 }
                 let result = await userModel.create(newUser)
                 return done(null, result)
             }
-            return done(null, false)
+            return done(null, user)
         } catch (error) {
             console.log(error)
+            return done(null, false)
         }
     }))
     passport.serializeUser((user, done) => {
-        try {
-            if(user.email === "adminCoder@coder.com"){
-                return user.role = "admin"
-            }
-            user.role = "user"
-            done(null, user)
-        } catch (error) {
-            if(error) return done(error)
-        }
-        done(null, user.id)
+        done(null, user._id)
     })
 
     passport.deserializeUser(async(id, done) => {

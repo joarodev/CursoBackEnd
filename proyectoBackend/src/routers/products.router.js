@@ -10,46 +10,18 @@ const routerProd = Router()
 
 
 //mongoose---------------------------------------------------------------
-/* routerProd.get('/', async (req,res)=>{
-    try {
-
-        const {page=1} = req.query
-        const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
-        const {docs, hasPrevPage, hasNextPage, prevPage, nextPage, totalPages,} = products
-        let prevLink = `/api/products?page=${prevPage}`
-        let nextLink = `/api/products?page=${nextPage}`
-        
-        if (!hasPrevPage) prevLink = null
-        if (!hasNextPage) nextLink = null
-        
-        res.status(200).send({
-            status: 'success',
-            payload: docs,
-            totalPages, 
-            prevPage,
-            nextPage,
-            page,
-            hasPrevPage,
-            hasNextPage,
-            prevLink,
-            nextLink,
-        })
-        
-    } catch (error) {
-        console.log(error)
-    }
-}) */
-
 routerProd.get('/products', async (req,res)=>{
     try {
         const {page=1} = req.query
         const products = await productModel.paginate({}, {limit: 3, page: page, lean: true})
         const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
         console.log(req.session.user)
-        console.log(req.user)
+        const {first_name, role, email} = req.session.user
         res.render("products",{
             status: 'success',
-            user: req.session.user,
+            userName: first_name,
+            userEmail: email,
+            userRole: role,
             products: docs,
             hasPrevPage,
             hasNextPage,
