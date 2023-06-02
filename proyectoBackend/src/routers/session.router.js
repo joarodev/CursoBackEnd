@@ -8,7 +8,7 @@ const { createHash, isValidPassword } = require("../utils/bcryptHash")
 const { generateToken } = require("../config/jwt")
 
 //passport JWT
-const { passportCall } = require("../passport-jwt/passport.config")
+const { passportCall, passportAuth } = require("../passport-jwt/passport.config")
 //rutas que necesitan protección
 const { authorization } = require("../passport-jwt/passport.config")
 const { userModel } = require("../manager/mongo/models/user.model")
@@ -116,8 +116,11 @@ routerSession.get("/githubcallback", passport.authenticate("github", {
 })
 
 
-//passport jwt
-routerSession.get("/current",(req, res) =>{}) //completar
+//passport jwt - CURRENT
+routerSession.get("/current", passportAuth("current"), 
+(req, res) =>{
+    res.send({user: req.user})
+}) 
 
 //passport JWT
 /* routerSession.get("/current", passportCall("jwt"), authorization("user"), (req, res) =>{

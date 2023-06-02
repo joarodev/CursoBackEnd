@@ -19,11 +19,10 @@ const userSchema = new Schema({
         required: [true, "can't be blank"],
         match: [/\S+@\S+\.\S+/, 'is invalid'], 
         index: true},
-    password: String,
-    role: {
-        type: String,
-        enum: "user"
-    }
+    age: { type: Number, required: true },
+    password: { type: String, required: true },
+    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'carritos' },
+    role: { type: String, default: 'user' },
 })
 
 userSchema.plugin(mongoosePaginate)

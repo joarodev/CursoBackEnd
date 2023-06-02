@@ -1,6 +1,9 @@
 const passport = require("passport")
 const jwt = require("passport-jwt")
 const objetConfig = require("../config/configServer")
+const {privateKey} = require("../config/configServer")
+const { userModel } = require("../manager/mongo/models/user.model")
+
 
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
@@ -16,10 +19,11 @@ const cookieExtractor = req =>{
 }
 
 //Init de passport
-const initPassportJWT = () => {
-    passport.use("jwt", new JWTStrategy({}), async ()=>{
-        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor])
-        secretOrKey: objetConfig.jwt_secret
+/* const initPassportJWT = () => {
+    passport.use("jwt", new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: privateKey
+        
     }), async (jwt_payload, done)=>{
         try {
 
@@ -31,7 +35,29 @@ const initPassportJWT = () => {
             return done(error)
         }
     }
-}
+)} */
+
+//CURRENT
+const initPassportJWT = () => {
+    passport.use("current", new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: privateKey
+        
+    }), async (jwt_payload, done)=>{
+        try {
+
+            //validar usuarios
+            const user = await userModel.findById(jwt_payload.sub)
+            if(!user){
+                return done(done,false,{message: "usuario no encontrado"})
+            }
+            
+            return done(null, user) // información desencriptada
+        } catch (error) {
+            return done(error)
+        }
+    }
+)}
 
 //validar los roles de los usuarios
 const authorization = role => {
