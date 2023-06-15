@@ -9,6 +9,11 @@ const passport = require('passport')
 const routerProd = Router()
 
 
+//arquitectura
+routerProd.get('/', async (req,res)=>{
+    
+})
+
 //mongoose---------------------------------------------------------------
 routerProd.get('/products', async (req,res)=>{
     try {

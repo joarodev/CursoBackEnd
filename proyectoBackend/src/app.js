@@ -9,6 +9,8 @@ const handlebars = require("express-handlebars")
 
 //Socket.io
 const { Server } = require("socket.io")
+
+
 const { socketProduct } = require('./utils/socketProduct')
 
 //Mongo
@@ -35,13 +37,27 @@ const passport = require('passport')
 
 
 //Passport JWT
-//const { initPassportJWT } = require('./passport-jwt/passport.config')
+const { initPassportJWT } = require('./passport-jwt/passport.config')
+
+//DONENV
+const dotenv = require('dotenv')
+//commander
+const {commander} = require("./utils/commander")
+const {mode} = commander.opts()
+
+//Configuración dotenv                                                                                                                                                                                                                                                  
+dotenv.config({
+    path: mode === 'development' ? './.env.development': './.env.production' 
+})
+
+//cors peticiones de otro dominio
+const cors = require("cors")
 
 //PUERTO------------------------------------------------------------------
 const app = express()
 const PORT = 8080
 const httpServer = app.listen(PORT, () => {
-    console.log(`Escuchando en el puerto ${httpServer.address().port}`)
+    console.log(`Escuchando en el puerto ${PORT}`)
 });
 //PUERTO------------------------------------------------------------------
 
@@ -51,7 +67,7 @@ app.use(express.urlencoded({ extended: true }))
 //Static files
 const path = require('path')
 app.use(express.static(path.join(__dirname,'public')))
-app.use(cookieParser("palabraSecreta"))
+app.use(cookieParser("secretCoder"))
 
 //session I
 /* app.use(session({
@@ -77,8 +93,9 @@ app.use(cookieParser("palabraSecreta"))
 //Passport------------------------------------------------------------------
 initPassport()
 initPassportGitHub()
-passport.use(passport.initialize())
-passport.use(passport.session())
+initPassportJWT()
+app.use(passport.initialize())
+app.use(passport.session())
 //Passport------------------------------------------------------------------
 
 //
@@ -89,35 +106,12 @@ app.use(session({
             useNewUrlParser: true,
             useUnifiedTopology: true
         },
-        ttl: 10,
+        ttl: 100000*60,
     }),
     secret: "secretCoder",
     resave: false,
     saveUninitialized: false,
 }))
-
-/* MONGO ATLAS */
-/* app.use(session({
-    store: create({
-        mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
-        mongoOptions: {
-            useNewUrlParser: true,
-            //useUnifiedTopology
-        },
-        ttl: 100000*60
-    }),
-    secret: "secretCoder",
-    resave: false,
-    saveUninitialized: false,
-})) */
-
-
-//PassportGithub
-//initPassportGitHub()
-
-//Passport JWT----------------------------------------------------------------
-//app.use(initPassport())
-
 
 //Socket__________________________________________
 const io = new Server(httpServer)

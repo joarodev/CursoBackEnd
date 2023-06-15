@@ -1,5 +1,6 @@
 const {Router} = require("express")
 const jwt = require("jw")
+
 class RouterClass{
     constructor(){
         this.router = Router()

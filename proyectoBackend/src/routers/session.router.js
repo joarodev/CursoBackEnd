@@ -12,6 +12,7 @@ const { passportCall, passportAuth } = require("../passport-jwt/passport.config"
 //rutas que necesitan protección
 const { authorization } = require("../passport-jwt/passport.config")
 const { userModel } = require("../manager/mongo/models/user.model")
+const session = require("express-session")
 
 
 const routerSession = Router()
@@ -45,7 +46,7 @@ routerSession.post('/restaurarpass', async (req, res) => {
 
 
 //LOGIN CON PASSPORT
-routerSession.post("/", passport.authenticate("login", {failureRedirect: "/session/faillogin",
+routerSession.post("/", passport.authenticate("login", {session: false ,failureRedirect: "/session/faillogin",
 //successRedirect: "/products/products"
 }), async (req, res) => {
     if(!req.user) return res.status(401).send({status: "error", message: "invalid credential"})
@@ -56,6 +57,7 @@ routerSession.post("/", passport.authenticate("login", {failureRedirect: "/sessi
         first_name: req.user.first_name,
         last_name: req.user.last_name,
         email: req.user.email,
+        age: req.user.age
     }
     if(req.session.user.username === "adminCoder@coder.com") {
         req.session.user.role = "admin"
@@ -73,7 +75,7 @@ routerSession.get("/faillogin", async (req, res) => {
 }) 
 
 //REGISTER CON PASSPORT
-routerSession.post("/register", passport.authenticate("register", {failureRedirect: "/session/failregister",
+routerSession.post("/register", passport.authenticate("register", { session: false , failureRedirect: "/session/failregister",
 successRedirect: "/"
 }), async (req, res) => {
     console.log("Usuario registrado")

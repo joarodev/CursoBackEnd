@@ -2,18 +2,36 @@ const { Router } = require("express")
 const { userModel } = require("../manager/mongo/models/user.model")
 const UserManager = require("../manager/mongo/user.mongo")
 
+//Arquitectura por capas
+//router
+
 
 const routerUser = Router()
 
-routerUser.get("/", async (req, res)=>{
-    try {
+routerUser.get("/",(req, res) =>{
+    getUser
+})
+routerUser.post("/",(req, res) =>{
+    
+})
+routerUser.put("/",(req, res) =>{
+    
+})
+routerUser.delete("/",(req, res) =>{
+    
+})
+
+
+
+/* routerUser.get("/", async (req, res)=>{
+    try { 
         /* let users = await userModel.find({})
 
         res.send({
             status: "succes",
             payload: users,
 
-        }) */
+        }) 
 
         //moongose paginate
         let users = await userModel.paginate({}, {limit: 50, page:1})
@@ -42,6 +60,6 @@ routerUser.post("/usuarios", async (req, res) =>{
     } catch (error) {
         console.log(error)
     }
-})
+}) */
 
 module.exports = {routerUser}

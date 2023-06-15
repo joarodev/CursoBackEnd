@@ -27,10 +27,26 @@ class SessionController {
         })
     }
 
+    failLogin = (req, res) =>{
+
+    }
 
     register = (req, res) => {
         res.send("register  ")
     }
+
+    failRegister = (req, res) => {
+
+    }
+
+    resetpass = (req, res) =>{
+
+    }
+
+    logout = (req, res) =>{
+        
+    }
+
 
 }
 

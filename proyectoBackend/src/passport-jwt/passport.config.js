@@ -43,21 +43,32 @@ const initPassportJWT = () => {
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey: privateKey
         
-    }), async (jwt_payload, done)=>{
+    }, async (jwt_payload, done)=>{
         try {
-
             //validar usuarios
-            const user = await userModel.findById(jwt_payload.sub)
+            const user = await userModel.findById(jwt_payload._doc._id)
             if(!user){
-                return done(done,false,{message: "usuario no encontrado"})
+                return done(null, false, {message: "usuario no encontrado"})
             }
             
             return done(null, user) // información desencriptada
         } catch (error) {
             return done(error)
         }
-    }
-)}
+    }))
+
+    //Guardar id de usuario en la session
+    passport.serializeUser((user, done)=>{
+        done(null, user._id)
+    })
+
+    //Pregunta si existe el usuario
+    passport.deserializeUser(async(id, done) => {
+        let user = await userModel.findOne({_id: id})
+        done(null, user)
+    })
+
+}
 
 //validar los roles de los usuarios
 const authorization = role => {

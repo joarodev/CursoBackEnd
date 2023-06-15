@@ -17,7 +17,7 @@ const initPassport = () => {
 
     }, async (req, username, password, done) => {
         try {
-            const {first_name, last_name} = req.body
+            const {first_name, last_name, age} = req.body
             let userDB = await userModel.findOne({ email: username})
             if(userDB) return done(null, false)
             let newUser = {
@@ -25,6 +25,7 @@ const initPassport = () => {
                 first_name,
                 last_name,
                 email: username,
+                age,
                 password: createHash(password)
             }
 
