@@ -48,4 +48,4 @@ class ProductDaoMongo{
     }
 } */
 
-module.exports = new ProductDaoMongo
+module.exports = ProductDaoMongo

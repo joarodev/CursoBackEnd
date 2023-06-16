@@ -21,7 +21,7 @@ const cookieParser = require('cookie-parser')
 
 
 //File session
-const FileStore = require("session-file-store")
+ const FileStore = require("session-file-store")
 const session = require('express-session')
 const fileStore = FileStore(session)
 
@@ -32,12 +32,12 @@ const { create } = require("connect-mongo")
 //const { create } = require("connect-mongo")
 
 //Passport
-const { initPassport, initPassportGitHub } = require('./config/passport.config')
+//const { initPassport, initPassportGitHub } = require('./config/passport.config')
 const passport = require('passport')
 
 
 //Passport JWT
-const { initPassportJWT } = require('./passport-jwt/passport.config')
+const { initPassportJWT, initPassportGitHub } = require('./passport-jwt/passport.config')
 
 //DONENV
 const dotenv = require('dotenv')
@@ -91,15 +91,14 @@ app.use(cookieParser("secretCoder"))
 })) */
 
 //Passport------------------------------------------------------------------
-initPassport()
+//initPassport()
 initPassportGitHub()
 initPassportJWT()
 app.use(passport.initialize())
-app.use(passport.session())
 //Passport------------------------------------------------------------------
 
 //
-app.use(session({
+/* app.use(session({
     store: create({
         mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
         mongoOptions: {
@@ -111,7 +110,7 @@ app.use(session({
     secret: "secretCoder",
     resave: false,
     saveUninitialized: false,
-}))
+})) */
 
 //Socket__________________________________________
 const io = new Server(httpServer)

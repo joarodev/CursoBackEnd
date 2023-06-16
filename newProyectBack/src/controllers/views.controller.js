@@ -24,4 +24,4 @@ class ViewsController {
     }
 }
 
-module.exports = {ViewsController}
+module.exports = new ViewsController()

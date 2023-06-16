@@ -10,6 +10,8 @@ switch (config.persistence) {
         const ProductDaoMongo = require("../dao/product.mongo")
         const UserDaoMongo = require("../dao/user.mongo")
 
+        UserDao = UserDaoMongo
+        ProductDao = ProductDaoMongo
         
         break;
         

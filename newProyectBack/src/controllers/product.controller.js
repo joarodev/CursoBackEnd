@@ -1,5 +1,5 @@
 const productService = require("../service/index")
-const {ProductModel} = require("../dao/models/product.models")
+const {ProductModel} = require("../dao/mongo/models/product.models")
 
 class ProductController {
     getProduct = async (req,res)=>{
@@ -98,4 +98,4 @@ class ProductController {
 }
 }
 
-module.exports = {ProductController}
+module.exports = new ProductController() 

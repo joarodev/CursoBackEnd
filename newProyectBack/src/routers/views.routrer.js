@@ -7,6 +7,5 @@ routerViews.get("/login", loginView)
 routerViews.get("register", registerView)
 routerViews.get("/products", productView)
 routerViews.get("/error", errorView)
-routerViews.get("", )
 
 module.exports = routerViews

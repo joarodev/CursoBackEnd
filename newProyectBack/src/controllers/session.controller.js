@@ -30,9 +30,12 @@ class SessionController {
         res.cookie("coderCookieToken", token, {
             maxAge: 60*60*10000,
             httpOnly: true
+        }).send({
+            status: "success",
+            token
         })
-        console.log(req.session.user)
-        res.redirect("/products/products")
+        console.log(token)
+        res.redirect("/api/product/")
     }
 
     loginGitHub = async (req, res)=>{
@@ -43,6 +46,10 @@ class SessionController {
         } else {
             req.session.user.role = "user"
         }
+
+        const token = generateToken(req.session.user)
+
+        console.log(token)
         res.redirect("/products/products")
     }
 
@@ -88,4 +95,4 @@ class SessionController {
     }
 }
 
-module.exports = {SessionController}
+module.exports = new SessionController()

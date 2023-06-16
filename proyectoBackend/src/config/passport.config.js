@@ -67,7 +67,7 @@ const initPassport = () => {
 }
 
 
-//passport GITHUB
+/* //passport GITHUB
 const initPassportGitHub = () => {
     passport.use("github", new GithubStrategy({
         clientID: "Iv1.1d002cb57ec835ff",//CLIENTE ID DE GITHUB
@@ -102,9 +102,9 @@ const initPassportGitHub = () => {
         let user = await userModel.findOne({_id: id})
         done(null, user)
     })
-}
+} */
 
 module.exports = {
     initPassport,
-    initPassportGitHub
+    //initPassportGitHub
 }

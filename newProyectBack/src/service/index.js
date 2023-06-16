@@ -1,9 +1,9 @@
 //Arquitectura por capas
 //Capa de servicios
 
-const UserManagerDao = require("../manager/mongo/user.mongo");
-const ProductDaoMongo = require("../manager/mongo/product.mongo");
-//traer una instancia de los daos
+//Instancia de Mongo
+const UserManagerDao = require("../dao/mongo/user.mongo");
+const ProductDaoMongo = require("../dao/mongo/product.mongo");
 
 const userService = new UserManagerDao()
 const productService = new ProductDaoMongo()
