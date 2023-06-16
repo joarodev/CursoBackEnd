@@ -6,7 +6,7 @@ const Schema = mongoose.Schema
 const collection = 'usuarios'
 
 const userSchema = new Schema({
-    username: String,
+    username: {type: String},
     first_name: {
         type: String,
         index: true

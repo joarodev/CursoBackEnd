@@ -5,7 +5,7 @@ const { Router } = require("express")
 //passport
 const passport = require("passport")
 const { createHash, isValidPassword } = require("../utils/bcryptHash")
-const { generateToken } = require("../config/jwt")
+
 
 //passport JWT
 const { passportCall, passportAuth } = require("../passport-jwt/passport.config")
@@ -13,6 +13,7 @@ const { passportCall, passportAuth } = require("../passport-jwt/passport.config"
 const { authorization } = require("../passport-jwt/passport.config")
 const { userModel } = require("../manager/mongo/models/user.model")
 const session = require("express-session")
+const { generateToken } = require("../utils/generateTokenJWT")
 
 
 const routerSession = Router()
@@ -20,9 +21,9 @@ const routerSession = Router()
 //SESSION II
 
 /* ACTIVIDAD COUNTER LOGIN ADMIN */
-routerSession.get("/privada", auth,(req, res) => {
+/* routerSession.get("/privada", auth,(req, res) => {
     res.send(" Todo lo que está acá lo puede ver un admin logueado ")
-})
+}) */
 
 //RESTAURAR CONTRASEÑA
 routerSession.post('/restaurarpass', async (req, res) => {
@@ -46,7 +47,7 @@ routerSession.post('/restaurarpass', async (req, res) => {
 
 
 //LOGIN CON PASSPORT
-routerSession.post("/", passport.authenticate("login", {session: false ,failureRedirect: "/session/faillogin",
+routerSession.post("/", passport.authenticate("login", {failureRedirect: "/session/faillogin",
 //successRedirect: "/products/products"
 }), async (req, res) => {
     if(!req.user) return res.status(401).send({status: "error", message: "invalid credential"})
@@ -75,7 +76,7 @@ routerSession.get("/faillogin", async (req, res) => {
 }) 
 
 //REGISTER CON PASSPORT
-routerSession.post("/register", passport.authenticate("register", { session: false , failureRedirect: "/session/failregister",
+routerSession.post("/register", passport.authenticate("register", { failureRedirect: "/session/failregister",
 successRedirect: "/"
 }), async (req, res) => {
     console.log("Usuario registrado")
@@ -101,10 +102,12 @@ routerSession.get("/session/logout", (req, res) =>{
 
 
 //LOGIN POR GITHUB
-routerSession.get("/github", passport.authenticate("github", {scope: ["user: email"]}), ()=>{})
+routerSession.get("/github", passport.authenticate("github", {scope: ["user: email"], session: false})
+);
 //"/github" nos redirecciona los resultados a -> "/githubcallback"
 routerSession.get("/githubcallback", passport.authenticate("github", {
     failureRedirect: "/err",
+    session: false
     //successRedirect: "/products/products"
 }), async (req, res)=>{
     console.log(req.user)

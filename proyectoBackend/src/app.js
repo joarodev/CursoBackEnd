@@ -29,7 +29,7 @@ const fileStore = FileStore(session)
 const { create } = require("connect-mongo")
 
 //File Storage
-//const { create } = require("connect-mongo")
+const { create } = require("connect-mongo")
 
 //Passport
 //const { initPassport, initPassportGitHub } = require('./config/passport.config')
@@ -98,7 +98,7 @@ app.use(passport.initialize())
 //Passport------------------------------------------------------------------
 
 //
-/* app.use(session({
+app.use(session({
     store: create({
         mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
         mongoOptions: {
@@ -110,7 +110,7 @@ app.use(passport.initialize())
     secret: "secretCoder",
     resave: false,
     saveUninitialized: false,
-})) */
+}))
 
 //Socket__________________________________________
 const io = new Server(httpServer)

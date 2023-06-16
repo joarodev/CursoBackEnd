@@ -67,7 +67,6 @@ const initPassportJWT = () => {
 
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey: privateKey,
-
         passReqToCallback: true,
         usernameField: "email"
 
@@ -92,20 +91,7 @@ const initPassportJWT = () => {
         } catch (error) {
             console.log(error)
         }
-
     }))
-
-    //Guardar id de usuario en la session
-    passport.serializeUser((user, done)=>{
-            done(null, user._id)
-    })
-
-    //Pregunta si existe el usuario
-    passport.deserializeUser(async(id, done) => {
-        let user = await userModel.findOne({_id: id})
-        done(null, user)
-    })
-
 
     passport.use("current", new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
@@ -125,12 +111,10 @@ const initPassportJWT = () => {
         }
     }))
 
-    //Guardar id de usuario en la session
-    passport.serializeUser((user, done)=>{
+    passport.serializeUser((user, done) => {
         done(null, user._id)
     })
 
-    //Pregunta si existe el usuario
     passport.deserializeUser(async(id, done) => {
         let user = await userModel.findOne({_id: id})
         done(null, user)

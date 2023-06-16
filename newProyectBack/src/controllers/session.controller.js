@@ -1,7 +1,5 @@
 const { generateToken } = require("../utils/generateTokenJwt")
 
-
-
 class SessionController {
 
     login = async (req, res) => {
@@ -9,8 +7,6 @@ class SessionController {
         //generate token
         if(req.user.username === "adminCoder@coder.com") return role = "admin"
         let role = "user"
-        
-
 
         req.session.user = {
             username: req.user.username,
