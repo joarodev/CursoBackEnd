@@ -1,22 +1,22 @@
-const { Router } = require("express")
-const { uploader } = require("../utils/multer")
+const { Router } = require('express')
+const { uploader } = require('../utils/multer')
 
-const productManager = require("../manager/mongo/product.mongo")
-const { productModel } = require("../manager/mongo/models/product.models")
+const productManager = require('../manager/mongo/product.mongo')
+const { productModel } = require('../manager/mongo/models/product.models')
 
-const passport = require("passport")
-const { passportAuth } = require("../passport-jwt/passport.config")
+const passport = require('passport')
+const { passportAuth } = require('../passport-jwt/passport.config')
 
 const routerProd = Router()
 
 //arquitectura
-routerProd.get("/", async (req, res) => {})
+routerProd.get('/', async (req, res) => {})
 
 //mongoose---------------------------------------------------------------
 // @fix: HAY QUE PONER SIEMPRE EL LLAMADO AL JWT PARA QUE EL USUARIO APAREZCA EN LA REQUEST
 routerProd.get(
-    "/products",
-    passportAuth("jwt", { session: false }),
+    '/products',
+    passportAuth('jwt', { session: false }),
     async (req, res) => {
         try {
             const { page = 1 } = req.query
@@ -29,8 +29,8 @@ routerProd.get(
             // console.log(req.session.user)
             // @fix: EL USUARIO YA NO VIENE EN LA SESSION
             const { first_name, role, email } = req.user
-            res.render("products", {
-                status: "success",
+            res.render('products', {
+                status: 'success',
                 userName: first_name,
                 userEmail: email,
                 userRole: role,
@@ -46,26 +46,26 @@ routerProd.get(
     }
 )
 
-routerProd.get("/:pid", async (req, res) => {
+routerProd.get('/:pid', async (req, res) => {
     try {
         const { pid } = req.params
         let product = await productManager.getProductById(pid)
         res.status(200).send({
-            status: "success",
+            status: 'success',
             payload: product,
         })
     } catch (error) {
         console.log(error)
     }
 })
-routerProd.post("/", async (req, res) => {
+routerProd.post('/', async (req, res) => {
     try {
         const newProduct = req.body
 
         let result = await productManager.addProduct(newProduct)
 
         res.status(200).send({
-            status: "success",
+            status: 'success',
             payload: result,
         })
     } catch (error) {
@@ -73,7 +73,7 @@ routerProd.post("/", async (req, res) => {
     }
 })
 
-routerProd.put("/:pid", async (req, res) => {
+routerProd.put('/:pid', async (req, res) => {
     const { pid } = req.params
     const modification = req.body
 
@@ -87,8 +87,8 @@ routerProd.put("/:pid", async (req, res) => {
         !modification.category
     ) {
         return res.status(400).send({
-            status: "error",
-            mensaje: "No se han ingresado todos los datos",
+            status: 'error',
+            mensaje: 'No se han ingresado todos los datos',
         })
     }
 
@@ -105,22 +105,22 @@ routerProd.put("/:pid", async (req, res) => {
     let result = await productManager.updateProduct(pid, prodToRemplace)
 
     res.send({
-        status: "success",
+        status: 'success',
         payload: result,
     })
 })
 
-routerProd.delete("/:pid", async (req, res) => {
+routerProd.delete('/:pid', async (req, res) => {
     try {
         let { pid } = req.params
 
         let result = await productManager.deleteProduct(pid)
         res.send({
-            status: "success",
+            status: 'success',
             payload: result,
         })
     } catch (error) {
-        return { status: "error", error }
+        return { status: 'error', error }
     }
 })
 

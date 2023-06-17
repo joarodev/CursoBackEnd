@@ -1,7 +1,7 @@
-const { Schema, model } = require("mongoose")
-const mongoosePaginate = require("mongoose-paginate-v2")
+const { Schema, model } = require('mongoose')
+const mongoosePaginate = require('mongoose-paginate-v2')
 
-const collection = "products"
+const collection = 'products'
 
 const productSchema = new Schema({
     title: {

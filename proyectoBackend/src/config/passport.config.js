@@ -1,20 +1,20 @@
-const passport = require("passport")
-const passportLocal = require("passport-local")
-const { createHash, isValidPassword } = require("../utils/bcryptHash")
-const { UserModel } = require("../manager/mongo/models/user.model")
-const GithubStrategy = require("passport-github2")
-require("dotenv").config()
+const passport = require('passport')
+const passportLocal = require('passport-local')
+const { createHash, isValidPassword } = require('../utils/bcryptHash')
+const { UserModel } = require('../manager/mongo/models/user.model')
+const GithubStrategy = require('passport-github2')
+require('dotenv').config()
 
 const LocalStrategy = passportLocal.Strategy
 
 const initPassport = () => {
     //Configuramos el registro
     passport.use(
-        "register",
+        'register',
         new LocalStrategy(
             {
                 passReqToCallback: true,
-                usernameField: "email",
+                usernameField: 'email',
             },
             async (req, username, password, done) => {
                 try {
@@ -56,10 +56,10 @@ const initPassport = () => {
     })
 
     passport.use(
-        "login",
+        'login',
         new LocalStrategy(
             {
-                usernameField: "email",
+                usernameField: 'email',
             },
             async (username, password, done) => {
                 // @fix: EL OBJETO DEBE SER PLANO

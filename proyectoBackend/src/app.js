@@ -1,57 +1,57 @@
 //EXPRESS INIT
-const express = require("express")
+const express = require('express')
 
 //Routers
-const RoutersIndex = require("./routers/index.router")
+const RoutersIndex = require('./routers/index.router')
 
 //Handlebars
-const handlebars = require("express-handlebars")
+const handlebars = require('express-handlebars')
 
 //Socket.io
-const { Server } = require("socket.io")
+const { Server } = require('socket.io')
 
-const { socketProduct } = require("./utils/socketProduct")
+const { socketProduct } = require('./utils/socketProduct')
 
 //Mongo
-const configServer = require("./config/configServer")
+const configServer = require('./config/configServer')
 
 //cookie parser
-const cookieParser = require("cookie-parser")
+const cookieParser = require('cookie-parser')
 
 //File session
-const FileStore = require("session-file-store")
-const session = require("express-session")
+const FileStore = require('session-file-store')
+const session = require('express-session')
 const fileStore = FileStore(session)
 
 //Mongo storage
-const { create } = require("connect-mongo")
+const { create } = require('connect-mongo')
 
 //File Storage
 // const { create } = require("connect-mongo")
 
 //Passport
-const { initPassport } = require("./config/passport.config")
-const passport = require("passport")
+const { initPassport } = require('./config/passport.config')
+const passport = require('passport')
 
 //Passport JWT
 const {
     initPassportJWT,
     initPassportGitHub,
-} = require("./passport-jwt/passport.config")
+} = require('./passport-jwt/passport.config')
 
 //DONENV
-const dotenv = require("dotenv")
+const dotenv = require('dotenv')
 //commander
-const { commander } = require("./utils/commander")
+const { commander } = require('./utils/commander')
 const { mode } = commander.opts()
 
 //Configuración dotenv
 dotenv.config({
-    path: mode === "development" ? "./.env.development" : "./.env.production",
+    path: mode === 'development' ? './.env.development' : './.env.production',
 })
 
 //cors peticiones de otro dominio
-const cors = require("cors")
+const cors = require('cors')
 
 //PUERTO------------------------------------------------------------------
 const app = express()
@@ -65,9 +65,9 @@ const httpServer = app.listen(PORT, () => {
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 //Static files
-const path = require("path")
-app.use(express.static(path.join(__dirname, "public")))
-app.use(cookieParser("secretCoder"))
+const path = require('path')
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(cookieParser('secretCoder'))
 
 //session I
 /* app.use(session({
@@ -127,16 +127,16 @@ configServer.connectDB()
 //MongoDB__________________________________________
 
 //HANDLEBARS_____________________________________________
-app.engine("handlebars", handlebars.engine())
-app.set("views", __dirname + "/views")
-app.set("view engine", "handlebars")
+app.engine('handlebars', handlebars.engine())
+app.set('views', __dirname + '/views')
+app.set('view engine', 'handlebars')
 //HANDLEBARS_____________________________________________
 
 //ROUTES------------------------------------------------------------------
-app.use("/", RoutersIndex)
+app.use('/', RoutersIndex)
 //ROUTES------------------------------------------------------------------
 
 //ERROR:
-httpServer.on("error", (error) => {
-    console.log("Error", error)
+httpServer.on('error', (error) => {
+    console.log('Error', error)
 })
