@@ -1,8 +1,8 @@
 //EXPRESS INIT
-const express = require('express')
+const express = require("express")
 
 //Routers
-const RoutersIndex = require('./routers/index.router')
+const RoutersIndex = require("./routers/index.router")
 
 //Handlebars
 const handlebars = require("express-handlebars")
@@ -10,44 +10,44 @@ const handlebars = require("express-handlebars")
 //Socket.io
 const { Server } = require("socket.io")
 
-
-const { socketProduct } = require('./utils/socketProduct')
+const { socketProduct } = require("./utils/socketProduct")
 
 //Mongo
-const configServer = require('./config/configServer')
+const configServer = require("./config/configServer")
 
 //cookie parser
-const cookieParser = require('cookie-parser')
-
+const cookieParser = require("cookie-parser")
 
 //File session
- const FileStore = require("session-file-store")
-const session = require('express-session')
+const FileStore = require("session-file-store")
+const session = require("express-session")
 const fileStore = FileStore(session)
 
 //Mongo storage
 const { create } = require("connect-mongo")
 
 //File Storage
-const { create } = require("connect-mongo")
+// const { create } = require("connect-mongo")
 
 //Passport
-//const { initPassport, initPassportGitHub } = require('./config/passport.config')
-const passport = require('passport')
-
+const { initPassport } = require("./config/passport.config")
+const passport = require("passport")
 
 //Passport JWT
-const { initPassportJWT, initPassportGitHub } = require('./passport-jwt/passport.config')
+const {
+    initPassportJWT,
+    initPassportGitHub,
+} = require("./passport-jwt/passport.config")
 
 //DONENV
-const dotenv = require('dotenv')
+const dotenv = require("dotenv")
 //commander
-const {commander} = require("./utils/commander")
-const {mode} = commander.opts()
+const { commander } = require("./utils/commander")
+const { mode } = commander.opts()
 
-//Configuración dotenv                                                                                                                                                                                                                                                  
+//Configuración dotenv
 dotenv.config({
-    path: mode === 'development' ? './.env.development': './.env.production' 
+    path: mode === "development" ? "./.env.development" : "./.env.production",
 })
 
 //cors peticiones de otro dominio
@@ -58,15 +58,15 @@ const app = express()
 const PORT = 8080
 const httpServer = app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`)
-});
+})
 //PUERTO------------------------------------------------------------------
 
 //CONFIGS:
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 //Static files
-const path = require('path')
-app.use(express.static(path.join(__dirname,'public')))
+const path = require("path")
+app.use(express.static(path.join(__dirname, "public")))
 app.use(cookieParser("secretCoder"))
 
 //session I
@@ -91,26 +91,31 @@ app.use(cookieParser("secretCoder"))
 })) */
 
 //Passport------------------------------------------------------------------
-//initPassport()
+// @fix: HACE FALTA USAR LAS ESTRATEGIAS DE LOGIN LOCAL PARA QUE FUNCIONE
+initPassport()
 initPassportGitHub()
 initPassportJWT()
 app.use(passport.initialize())
 //Passport------------------------------------------------------------------
 
 //
-app.use(session({
-    store: create({
-        mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
-        mongoOptions: {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        },
-        ttl: 100000*60,
-    }),
-    secret: "secretCoder",
-    resave: false,
-    saveUninitialized: false,
-}))
+// @fix NO USAMOS SESIONES SI SE USA JWT COMO ESTRATEGIA
+// app.use(
+//     session({
+//         store: create({
+//             mongoUrl:
+//                 "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
+//             mongoOptions: {
+//                 useNewUrlParser: true,
+//                 useUnifiedTopology: true,
+//             },
+//             ttl: 100000 * 60,
+//         }),
+//         secret: "secretCoder",
+//         resave: false,
+//         saveUninitialized: false,
+//     })
+// )
 
 //Socket__________________________________________
 const io = new Server(httpServer)
@@ -123,8 +128,8 @@ configServer.connectDB()
 
 //HANDLEBARS_____________________________________________
 app.engine("handlebars", handlebars.engine())
-app.set("views", __dirname+ '/views')
-app.set('view engine', 'handlebars')
+app.set("views", __dirname + "/views")
+app.set("view engine", "handlebars")
 //HANDLEBARS_____________________________________________
 
 //ROUTES------------------------------------------------------------------
@@ -132,15 +137,6 @@ app.use("/", RoutersIndex)
 //ROUTES------------------------------------------------------------------
 
 //ERROR:
-httpServer.on('error', (error) => {
-    console.log('Error', error)
-});
-
-
-
-
-
-
-
-
-
+httpServer.on("error", (error) => {
+    console.log("Error", error)
+})
