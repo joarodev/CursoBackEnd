@@ -5,10 +5,10 @@ const express = require('express')
 const RoutersIndex = require('./routers/index.router')
 
 //Handlebars
-const handlebars = require("express-handlebars")
+const handlebars = require('express-handlebars')
 
 //Socket.io
-const { Server } = require("socket.io")
+const { Server } = require('socket.io')
 
 
 const { socketProduct } = require('./utils/socketProduct')
@@ -21,18 +21,13 @@ const cookieParser = require('cookie-parser')
 
 
 //File session
- const FileStore = require("session-file-store")
+ const FileStore = require('session-file-store')
 const session = require('express-session')
 const fileStore = FileStore(session)
 
-//Mongo storage
-const { create } = require("connect-mongo")
-
-//File Storage
-const { create } = require("connect-mongo")
 
 //Passport
-//const { initPassport, initPassportGitHub } = require('./config/passport.config')
+const { initPassport } = require('./config/passport.config')
 const passport = require('passport')
 
 
@@ -42,23 +37,23 @@ const { initPassportJWT, initPassportGitHub } = require('./passport-jwt/passport
 //DONENV
 const dotenv = require('dotenv')
 //commander
-const {commander} = require("./utils/commander")
-const {mode} = commander.opts()
+const { commander } = require('./utils/commander')
+const { mode } = commander.opts()
 
-//Configuración dotenv                                                                                                                                                                                                                                                  
+//Configuración dotenv
 dotenv.config({
-    path: mode === 'development' ? './.env.development': './.env.production' 
+    path: mode === 'development' ? './.env.development' : './.env.production',     
 })
 
 //cors peticiones de otro dominio
-const cors = require("cors")
+const cors = require('cors')
 
 //PUERTO------------------------------------------------------------------
 const app = express()
 const PORT = 8080
 const httpServer = app.listen(PORT, () => {
     console.log(`Escuchando en el puerto ${PORT}`)
-});
+})
 //PUERTO------------------------------------------------------------------
 
 //CONFIGS:
@@ -67,7 +62,7 @@ app.use(express.urlencoded({ extended: true }))
 //Static files
 const path = require('path')
 app.use(express.static(path.join(__dirname,'public')))
-app.use(cookieParser("secretCoder"))
+app.use(cookieParser('secretCoder'))
 
 //session I
 /* app.use(session({
@@ -91,14 +86,14 @@ app.use(cookieParser("secretCoder"))
 })) */
 
 //Passport------------------------------------------------------------------
-//initPassport()
+initPassport()
 initPassportGitHub()
 initPassportJWT()
 app.use(passport.initialize())
 //Passport------------------------------------------------------------------
 
 //
-app.use(session({
+/* app.use(session({
     store: create({
         mongoUrl: "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority",
         mongoOptions: {
@@ -110,7 +105,7 @@ app.use(session({
     secret: "secretCoder",
     resave: false,
     saveUninitialized: false,
-}))
+})) */
 
 //Socket__________________________________________
 const io = new Server(httpServer)
@@ -122,25 +117,16 @@ configServer.connectDB()
 //MongoDB__________________________________________
 
 //HANDLEBARS_____________________________________________
-app.engine("handlebars", handlebars.engine())
-app.set("views", __dirname+ '/views')
+app.engine('handlebars', handlebars.engine())
+app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 //HANDLEBARS_____________________________________________
 
 //ROUTES------------------------------------------------------------------
-app.use("/", RoutersIndex)
+app.use('/', RoutersIndex)
 //ROUTES------------------------------------------------------------------
 
 //ERROR:
 httpServer.on('error', (error) => {
     console.log('Error', error)
 });
-
-
-
-
-
-
-
-
-
