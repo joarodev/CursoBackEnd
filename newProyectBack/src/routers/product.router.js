@@ -1,9 +1,13 @@
-const {Router} = require("express")
+const { Router } = require("express")
 const {getProduct, getProductId, addProduct, updateProduct, deleteProduct} = require("../controllers/product.controller")
+const { passportAuth } = require("../jwt/passport-jwt")
 
 const routerProduct = Router()
 
-routerProduct.get("/", getProduct)
+routerProduct.get(
+    '/products',
+    passportAuth('jwt', { session: false }),
+    getProduct)
 
 routerProduct.get("/:pid", getProductId)
 

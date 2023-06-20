@@ -1,0 +1,35 @@
+<div>
+    <div class=" mb-3 d-flex justify-content-center">
+        <h1 class="mb-3">Bienvenido {{userName}} a la pagína oficial de Iphone</h1>
+            <div class="mb-3 d-flex justify-content-center">
+        {{#if userRole}}
+                <p class="m-3" > Rol: {{userRole}}</p>
+        {{/if}}
+        {{#if userEmail}}
+                <p class="m-3"> email: {{userEmail}}</p>
+        {{/if}}
+            </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        {{#each products}}
+            <li>
+                <strong>Nombre: </strong>{{this.title}} - 
+                <strong>Descripción: </strong>{{this.description}} -
+                <strong>Price: </strong>{{this.price}} -
+                <strong>Stock: </strong>{{this.stock}} - 
+                <strong>Categoria: </strong>{{this.category}} -
+                <a href="/api/cart"><button>Agregar al carrito</button></a>
+            </li>
+        {{/each}}
+    </div>
+
+    <div>
+        {{#if hasPrevPage}}
+            <a href="/api/product/products/?page={{prevPage}}"><button>Pag Anterior</button></a> 
+        {{/if}}
+
+        {{#if hasNextPage}}
+            <a href="/api/product/products/?page={{nextPage}}"><button>Pag Siguiente</button></a>
+        {{/if}}
+    </div>
+</div>

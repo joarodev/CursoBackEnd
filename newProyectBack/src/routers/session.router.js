@@ -1,17 +1,39 @@
-const {Router} = require("express")
-const { login, loginGitHub, failLogin, register, failRegister, resetpass, logout, current } = require("../controllers/session.controller")
 
+const { login, loginGitHub, failLogin, register, failRegister, resetpass, logout, current } = require("../controllers/session.controller")
+//Router
+const { Router } = require('express')
+//passport
+const passport = require('passport')
+//passport JWT
+const {  passportAuth } = require("../jwt/passport-jwt")
 
 const routerSession = Router()
 
 routerSession
-    .post("/login", login)
+    .post(
+        "/login",
+        passport.authenticate('login', {
+            failureRedirect: '/session/faillogin',
+            successRedirect: '/api/product/products',
+            session: false,
+        }), login)
 
-    .post("/loginGitHub", loginGitHub)
+    .get(
+        "/loginGitHub",
+        passport.authenticate('github', {
+            failureRedirect: '/err',
+            session: false,
+        }), loginGitHub)
 
     .get("/failLogin", failLogin)
 
-    .post("/register", register)
+    .post(
+        '/register',
+        passport.authenticate('register', {
+            failureRedirect: '/session/failregister',
+            successRedirect: '/login',
+            session: false,
+        }), register)
 
     .get("/failRegister", failRegister)
 
@@ -19,7 +41,9 @@ routerSession
 
     .get("/logout", logout)
 
-    .get("/current", current)
+    .get(
+        '/current',
+        passportAuth('jwt', { session: false }), current)
 
 
 module.exports = routerSession

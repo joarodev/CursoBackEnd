@@ -2,14 +2,16 @@ const productService = require("../service/index")
 const {ProductModel} = require("../dao/mongo/models/product.models")
 
 class ProductController {
-    getProduct = async (req,res)=>{
+    getProduct = async (req, res) => {
         try {
-            const {page=1} = req.query
-            const products = await ProductModel.paginate({}, {limit: 3, page: page, lean: true})
+            const { page = 1 } = req.query
+            const products = await ProductModel.paginate(
+                {},
+                { limit: 3, page: page, lean: true }
+            )
             const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
-            console.log(req.session.user)
-            const {first_name, role, email} = req.session.user
-            res.render("products",{
+            const { first_name, role, email } = req.user
+            res.render('productView', {
                 status: 'success',
                 userName: first_name,
                 userEmail: email,
@@ -18,13 +20,12 @@ class ProductController {
                 hasPrevPage,
                 hasNextPage,
                 prevPage,
-                nextPage
+                nextPage,
             })
-            
         } catch (error) {
             console.log(error)
         }
-    }
+}
 
     getProductId = async (req,res)=>{
         try {

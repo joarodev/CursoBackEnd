@@ -1,4 +1,4 @@
-const {Router} = require("express")
+const { Router } = require("express")
 const { uploader } = require("../utils/multer")
 //Routes
 const routerProduct = require("./product.router")

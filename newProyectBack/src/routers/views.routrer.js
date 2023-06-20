@@ -8,7 +8,7 @@ routerViews.get("/login", (req, res) =>{
         style: "index.css"
     })
 })
-routerViews.get("register", (req, res) =>{
+routerViews.get("/register", (req, res) =>{
     res.render("registerView", {
         style: "index.css"
     })

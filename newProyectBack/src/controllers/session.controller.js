@@ -1,93 +1,87 @@
 const { generateToken } = require("../utils/generateTokenJwt")
+//passport
+const { createHash } = require('../utils/bcryptHash')
+const { UserModel } = require('../dao/mongo/models/user.model')
 
 class SessionController {
 
     login = async (req, res) => {
-        if(!req.user) return res.status(401).send({status: "error", message: "invalid credential"})
-        //generate token
-        if(req.user.username === "adminCoder@coder.com") return role = "admin"
-        let role = "user"
-
-        req.session.user = {
-            username: req.user.username,
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            email: req.user.email,
-            age: req.user.age
-        }
-        if(req.session.user.username === "adminCoder@coder.com") {
-            req.session.user.role = "admin"
+        if (!req.user)
+            return res
+                .status(401)
+                .send({ status: 'error', message: 'invalid credential' })
+        const user = req.user
+        if (user.username === 'adminCoder@coder.com') {
+            user.role = 'admin'
         } else {
-            req.session.user.role = "user"
+            user.role = 'user'
         }
-
-        const token = generateToken(req.session.user)
-
-        res.cookie("coderCookieToken", token, {
-            maxAge: 60*60*10000,
-            httpOnly: true
-        }).send({
-            status: "success",
-            token
+        const token = generateToken(user)
+        res.cookie('coderCookieToken', token, {
+            maxAge: 1000*60*60,
+            httpOnly: true,
         })
-        console.log(token)
-        res.redirect("/api/product/")
     }
 
-    loginGitHub = async (req, res)=>{
+    loginGitHub = async (req, res) => {
         console.log(req.user)
-        req.session.user = req.user
-        if(req.session.user.username === "adminCoder@coder.com") {
-            req.session.user.role = "admin"
+        const user = req.user
+        if (user.username === 'adminCoder@coder.com') {
+            user.role = 'admin'
         } else {
-            req.session.user.role = "user"
+            user.role = 'user'
         }
-
-        const token = generateToken(req.session.user)
-
-        console.log(token)
-        res.redirect("/products/products")
-    }
-
-    failLogin = async (req, res) => {
-        console.log("falló la estrategia")
-        res.send({ status: "Error", error: "fallo"})
+        const token = generateToken(user)
+        res.cookie('coderCookieToken', token, {
+            maxAge: 10000*60*60,
+            httpOnly: true,
+        })
+        res.redirect('/api/product/products')
     }
 
     register = async (req, res) => {
-        console.log("Usuario registrado")
+        console.log('Usuario registrado')
         res.send({})
     }
+    failLogin = (req, res) => {
+        res.clearCookie('coderCookieToken')
+        console.log('user logout')
+        res.redirect('/')
+    }
+
 
     failRegister =  async (req, res) => {
         console.log("falló la estrategia")
         res.redirect("/err")
     }
 
-    resetpass = (req, res) =>{
-        req.session.destroy(error =>{
-            if(error){
-                return res.send({status: "error", error: error})
-            }
-            console.log("user logout")
-            res.redirect("/")
-        })
+    resetpass = async (req, res) => {
+        const { email, password } = req.body
+    
+        // Encontrar el usuario por correo electrónico
+        const userDB = await UserModel.findOne({ email })
+    
+        if (!userDB) {
+          // Si el usuario no existe, redireccionar a una página de error
+            return res.status(401).send({status: 'error', message: 'El usuario no existe'})
+        }    
+    
+        //Hasear Actualizar la contraseña del usuario
+        userDB.password = createHash(password)
+        await userDB.save()
+    
+        // Redireccionar al usuario a la página de login
+        res.status(200).json({status: 'success', message:'Contraseña actualizada correctamente'});
     }
 
-    logout = (req, res) =>{
-        (req, res) =>{
-            req.session.destroy(error =>{
-                if(error){
-                    return res.send({status: "error", error: error})
-                }
-                console.log("user logout")
-                res.redirect("/")
-            })
-        }
+    logout = (req, res) => {
+        res.clearCookie('coderCookieToken')
+        console.log('user logout')
+        res.redirect('/login')
     }
 
-    current = (req, res) =>{
-        res.send({user: req.user})
+    current = (req, res) => {
+        res.send({ user: req.user })
     }
 }
 
