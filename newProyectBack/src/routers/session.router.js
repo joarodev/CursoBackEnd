@@ -14,7 +14,6 @@ routerSession
         "/login",
         passport.authenticate('login', {
             failureRedirect: '/session/faillogin',
-            successRedirect: '/api/product/products',
             session: false,
         }), login)
 

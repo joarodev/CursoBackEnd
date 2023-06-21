@@ -11,16 +11,18 @@ class SessionController {
                 .status(401)
                 .send({ status: 'error', message: 'invalid credential' })
         const user = req.user
-        if (user.username === 'adminCoder@coder.com') {
+        /* if (user.username === 'adminCoder@coder.com') {
             user.role = 'admin'
         } else {
             user.role = 'user'
-        }
+        } */
         const token = generateToken(user)
         res.cookie('coderCookieToken', token, {
             maxAge: 1000*60*60,
             httpOnly: true,
         })
+        res.status(200).send({ status: "SUCCESS" })
+        res.redirect("/products")
     }
 
     loginGitHub = async (req, res) => {

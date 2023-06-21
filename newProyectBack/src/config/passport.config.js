@@ -42,11 +42,16 @@ const initPassport = () => {
             },
             async (req, username, password, done) => {
                 try {
-                    const { first_name, last_name, age } = req.body
+                    const { first_name, last_name, age, email } = req.body
                     let userDB = await UserModel.findOne({
                         email: username,
                     }).lean()
                     if (userDB) return done(null, false)
+                    if (email === 'adminCoder@coder.com') {
+                        role = 'admin'
+                    } else {
+                        role = 'user'
+                    }
                     let newUser = {
                         username,
                         first_name,
@@ -54,6 +59,7 @@ const initPassport = () => {
                         email: username,
                         age,
                         password: createHash(password),
+                        role,
                     }
                     let result = await UserModel.create(newUser)
                     console.log(result)
