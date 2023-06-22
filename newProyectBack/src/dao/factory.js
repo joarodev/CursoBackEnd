@@ -7,28 +7,20 @@ switch (config.persistence) {
     case "MONGO":
         
         config.connectDB()
-        const ProductDaoMongo = require("../dao/product.mongo")
-        const UserDaoMongo = require("../dao/user.mongo")
+        const ProductDaoMongo = require("../dao/mongo/product.mongo")
+        const UserDaoMongo = require("../dao/mongo/user.mongo")
 
         UserDao = UserDaoMongo
         ProductDao = ProductDaoMongo
         
         break;
-        
-        case "FILE":
-        const ProductDaoMongo = require("../dao/file/product.memory")
-        const UserDaoMongo = require("../dao/file/user.memory")    
-
-            UserDao = UserDaoMongo
-            ProductDao = ProductDaoMongo
-            break;
 
     case "MEMORY":
-        const ProductDaoMongo = require("../dao/memory/product.memory")
-        const UserDaoMongo = require("../dao/memory/user.memory")    
+        const ProductDaoMemory = require("../dao/memory/product.memory")
+        const UserDaoMemory = require("../dao/memory/user.memory")    
 
-            UserDao = UserDaoMongo
-            ProductDao = ProductDaoMongo
+            UserDao = UserDaoMemory
+            ProductDao = ProductDaoMemory
     break;
 
     default:

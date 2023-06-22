@@ -20,6 +20,9 @@ const dotenv = require('dotenv')
 const { commander } = require('./utils/commander')
 const { mode } = commander.opts()
 
+const cors = require("cors")
+
+
 //Configuración dotenv
 dotenv.config({
     path: mode === 'development' ? './.env.development' : './.env.production',     
@@ -36,6 +39,7 @@ const path = require('path')
 app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser('secretCoder'))
 app.use(logger("dev"))
+app.use(cors())
 
 //Passport init
 initPassport()

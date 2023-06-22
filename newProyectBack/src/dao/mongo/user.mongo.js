@@ -14,7 +14,7 @@ class UserManagerDao {
     }
     async getById(uid){
         try{
-            return await this.userModel.findOne({_id: uid})
+            return await this.userModel.find({_id: uid})
         } catch(error){
             return new Error(error)
         }

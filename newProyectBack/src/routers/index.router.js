@@ -9,12 +9,12 @@ const routerViews = require("./views.routrer")
 
 const routerIndex = Router()
 
-routerIndex.use("/api/product", routerProduct)
-routerIndex.use("/api/session", routerSession)
-routerIndex.use("/api/user", routerUser)
-routerIndex.use("/", routerViews)
-
-routerIndex.post("/upload", uploader.single("myFile"), (req, res) =>{
+routerIndex
+    .use("/api/product", routerProduct)
+    .use("/api/session", routerSession)
+    .use("/api/user", routerUser)
+    .use("/", routerViews)
+    .post("/upload", uploader.single("myFile"), (req, res) =>{
     res.send({
         status: "success",
         message: "Archivo subido correctamente"

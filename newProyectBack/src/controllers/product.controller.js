@@ -1,4 +1,4 @@
-const productService = require("../service/index")
+const {productService, userService} = require("../services/index")
 const {ProductModel} = require("../dao/mongo/models/product.models")
 
 class ProductController {

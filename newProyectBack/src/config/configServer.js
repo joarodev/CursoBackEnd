@@ -13,12 +13,14 @@ dotenv.config({
 })
 
 
-let url = "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority"
+let url = process.env.MONGO_URL_LOCAL
 
 module.exports = { 
+
+    port: process.env.PORT,
     persistence: process.env.PERSISTENCE,
     
-    privateKey: "secretCoder",
+    privateKey: process.env.JWT_SECRET_KEY,
 
     connectDB: async () => {
         try {
