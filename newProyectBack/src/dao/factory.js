@@ -3,7 +3,7 @@ const config = require("../config/configServer");
 let UserDao
 let ProductDao
 
-switch (config.persistence) {
+switch ("MONGO") {
     case "MONGO":
         
         config.connectDB()

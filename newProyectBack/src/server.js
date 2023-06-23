@@ -1,7 +1,7 @@
 const express = require('express')
 const routerIndex = require('./routers/index.router')
 //SERVER
-const { connectDB } = require('./config/configServer')
+const { connectDB, port} = require('./config/configServer')
 //CONFIG
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
@@ -15,21 +15,13 @@ const {
 //VIEWS
 const hbs = require('express-handlebars')
 //DONENV
-const dotenv = require('dotenv')
-//COMMANDER
-const { commander } = require('./utils/commander')
-const { mode } = commander.opts()
+require("dotenv").config
 
 const cors = require("cors")
 
 
-//Configuración dotenv
-dotenv.config({
-    path: mode === 'development' ? './.env.development' : './.env.production',     
-})
-
 const app = express()
-const PORT = 8080
+const PORT = port
 
 connectDB()
 //CONFIG:
