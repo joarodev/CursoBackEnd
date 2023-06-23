@@ -5,6 +5,7 @@ const { connectDB, port} = require('./config/configServer')
 //CONFIG
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
+const cors = require("cors")
 //PASSPORT
 const passport = require("passport")
 const { initPassport } = require('./config/passport.config')
@@ -15,13 +16,12 @@ const {
 //VIEWS
 const hbs = require('express-handlebars')
 //DONENV
-require("dotenv").config
 
-const cors = require("cors")
-
-
+require("dotenv").config()
+const {envConfig} = require("./config/config")
+console.log(envConfig.PORT)
 const app = express()
-const PORT = port
+const PORT = envConfig.PORT
 
 connectDB()
 //CONFIG:
