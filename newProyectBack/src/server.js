@@ -19,7 +19,7 @@ const hbs = require('express-handlebars')
 
 require("dotenv").config()
 const {envConfig} = require("./config/config")
-console.log(envConfig.PORT)
+
 const app = express()
 const PORT = envConfig.PORT
 
@@ -49,4 +49,5 @@ app.use("/",routerIndex)
 app.listen(PORT, (err)=> {
     if (err) console.log('Erro en el servidor', err)
     console.log(`Escuchando en el puerto: ${PORT}`)
+    console.log(`Server host: ${envConfig.HOST_URL}${PORT}`)
 })

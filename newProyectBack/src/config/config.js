@@ -1,13 +1,17 @@
 const {commander} = require("../utils/commander")
-const { NODE_ENV } = require('../utils/persistence')
-const { mode } = commander.opts()
+const { ENV_OPTION, program } = require('../utils/persistence')
+const { mode } = program.opts()
+
+const envPaths = {
+    [ENV_OPTION.DEVELOPMENT]: process.cwd() + "/.env.development",
+    [ENV_OPTION.PRODUCTION]: process.cwd() + "/.env.production"
+}
 
 require('dotenv').config({
-    path: `.env.${mode}`
+    path: envPaths[mode]
 })
 
-console.log("NODE ENV TRAE: " + NODE_ENV)
-console.log(mode)
+
 console.log(mode)
 
 const envConfig = {
@@ -18,6 +22,7 @@ const envConfig = {
     PERSISTENCE: mode,
 
 /* DATABASE */
+    PRIVATE_KEY: process.env.PRIVATE_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
     DATABASE_USERNAME: process.env.DATABASE_USERNAME,

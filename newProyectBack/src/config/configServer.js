@@ -1,4 +1,5 @@
 const { connect } = require("mongoose")
+const { envConfig } = require("./config")
 
 //.env
 //require("dotenv").config
@@ -13,11 +14,10 @@ dotenv.config({
 }) */
 
 
-let url = "mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority"
+let url = envConfig.DATABASE_URL
 
 module.exports = {
-    port:8080,
-    privateKey: "secretKey",
+    privateKey: envConfig.PRIVATE_KEY,
 
     connectDB: async () => {
         try {

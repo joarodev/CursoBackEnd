@@ -1,10 +1,20 @@
-/* const { envConfig } = require("../config/config");
+const { Command, Option } = require("commander")
 
-const NODE_ENV = envConfig.PERSISTENCE
+const { envConfig } = require("../config/config");
 
-module.exports = {NODE_ENV} */
+const ENV_OPTION = {
+    DEVELOPMENT: "development",
+    PRODUCTION: "production"
+};
 
+const program = new Command().addOption(
+    new Option("--mode <mode>", "Modo de trabajo").choices([
+        ENV_OPTION.DEVELOPMENT,
+        ENV_OPTION.PRODUCTION
+    ])
+).parse()
 
-/* if(envConfig.PERSISTENCE === development) {
-
-} */
+module.exports = {
+    ENV_OPTION,
+    program
+}

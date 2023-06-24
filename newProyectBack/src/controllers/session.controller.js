@@ -2,6 +2,7 @@ const { generateToken } = require("../utils/generateTokenJwt")
 //passport
 const { createHash } = require('../utils/bcryptHash')
 const { UserModel } = require('../dao/mongo/models/user.model')
+const { envConfig } = require("../config/config")
 
 class SessionController {
 
@@ -11,11 +12,6 @@ class SessionController {
                 .status(401)
                 .send({ status: 'error', message: 'invalid credential' })
         const user = req.user
-        /* if (user.username === 'adminCoder@coder.com') {
-            user.role = 'admin'
-        } else {
-            user.role = 'user'
-        } */
         const token = generateToken(user)
         res.cookie('coderCookieToken', token, {
             maxAge: 1000*60*60,
@@ -28,7 +24,7 @@ class SessionController {
     loginGitHub = async (req, res) => {
         console.log(req.user)
         const user = req.user
-        if (user.username === 'adminCoder@coder.com') {
+        if (user.username === envConfig.ADMIN_EMAIL) {
             user.role = 'admin'
         } else {
             user.role = 'user'

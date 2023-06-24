@@ -3,6 +3,7 @@ const jwt = require("passport-jwt")
 const { privateKey } = require("../config/configServer")
 const { UserModel } = require("../dao/mongo/models/user.model")
 const GithubStrategy = require("passport-github2")
+const { envConfig } = require("../config/config")
 
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
@@ -23,7 +24,7 @@ const initPassportJWT = () => {
         new JWTStrategy(
             {
                 jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-                secretOrKey: privateKey,
+                secretOrKey: envConfig.PRIVATE_KEY,
             },
             async (jwt_payload, done) => {
                 try {
@@ -46,7 +47,7 @@ const initPassportJWT = () => {
 
     passport.use("current", new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: privateKey
+        secretOrKey: envConfig.PRIVATE_KEY
         
     }, async (jwt_payload, done)=>{
         try {
@@ -79,9 +80,9 @@ const initPassportGitHub = () => {
         "github",
         new GithubStrategy(
             {
-                clientID: "Iv1.1d002cb57ec835ff ", //CLIENTE ID DE GITHUB
-                clientSecret: "2c98e525b0dd168f8b927c90042276bde9bb9bb5", //Cliente secret de Github
-                callbackURL: "http://localhost:8080/session/githubcallback", //URL de github
+                clientID: envConfig.GITHUB_CLIENT_ID, //CLIENTE ID DE GITHUB
+                clientSecret: envConfig.GITHUB_CLIENT_SECRET, //Cliente secret de Github
+                callbackURL: envConfig.GITHUB_CLIENT_SECRET, //URL de github
             },
             async (accessToken, refreshToke, profile, done) => {
                 console.log("Profile", profile)

@@ -2,6 +2,7 @@ const passport = require('passport')
 const passportLocal = require('passport-local')
 const { createHash, isValidPassword } = require('../utils/bcryptHash')
 const { UserModel } = require('../dao/mongo/models/user.model')
+const { envConfig } = require('./config')
 require('dotenv').config()
 
 
@@ -47,7 +48,7 @@ const initPassport = () => {
                         email: username,
                     }).lean()
                     if (userDB) return done(null, false)
-                    if (email === 'adminCoder@coder.com') {
+                    if (email === envConfig.ADMIN_EMAIL) {
                         role = 'admin'
                     } else {
                         role = 'user'
