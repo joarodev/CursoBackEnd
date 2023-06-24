@@ -17,8 +17,8 @@ class SessionController {
             maxAge: 1000*60*60,
             httpOnly: true,
         })
-        res.status(200).send({ status: "SUCCESS" })
-        res.redirect("/products")
+        /* res.status(200).send({ status: "SUCCESS" }) */
+        res.redirect("/api/product/products")
     }
 
     loginGitHub = async (req, res) => {

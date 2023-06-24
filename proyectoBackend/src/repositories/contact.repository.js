@@ -2,7 +2,7 @@ const { ContactDto } = require("../dto/contact.dto")
 
 class ContactRepository {
     constructor(){
-        this.dao = dao1
+        this.dao = dao
     }
 
     getContact = async ()=>{

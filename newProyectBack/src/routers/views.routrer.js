@@ -13,7 +13,7 @@ routerViews.get("/register", (req, res) =>{
         style: "index.css"
     })
 })
-routerViews.get("/products", (req, res) =>{
+routerViews.get("/api/product/products", (req, res) =>{
     res.render("productView", {
         style: "index.css"
     })
