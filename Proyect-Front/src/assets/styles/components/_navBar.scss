@@ -1,0 +1,53 @@
+.contNavBar{
+    background-color: $c-cianBG;
+}
+
+.navLink{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.navItems{
+    color: $c-cianO;
+    margin: 10px 10px;
+    align-items: center;
+}
+.navItems:hover{
+    color: $c-cianC;
+    margin: 10px 15px;
+    align-items: center;
+}
+
+.buttonLogin{
+    justify-self: center;
+    align-self: center;
+}
+
+.buttonLogout{
+    justify-self: center;
+    align-self: center;
+}
+
+.offCanvasDropdown{
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 575px) {
+    .navItems{
+        font-size: x-large;
+    }
+    .contNavBar{
+        padding: 15px 0px;
+    }
+    .buttonLogin{
+        width: 100%;
+        padding: 10px 0px;
+        font-size: medium;
+        align-items: center;
+        justify-content: center;    
+    }
+  }
+  

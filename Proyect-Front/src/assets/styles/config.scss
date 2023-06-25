@@ -1,6 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -8,7 +5,7 @@
   
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    background-color: #242424 !important;
   
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -16,14 +13,26 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
   }
+
+    /* PALET COLORS */
+$c-cianC: #93D3C2;
+$c-cian: #93D3C2;
+$c-cianO: #14523D;
+$c-black: #020504;
+$c-white: #DBECE7;
+$c-green: #6e6e6e;
+$c-blue: #0055dd;
+$c-cianBG: #677579;
+
+/* FONTS */
+$f-especial: 'Shrikhand', cursive;
+$f-cursive: 'Yellowtail', cursive;
+$f-title: 'Roboto Condensed', sans-serif;
+$f-text: 'Roboto Serif', serif;
   
   a {
-    font-weight: 500;
-    color: #646cff;
-    text-decoration: inherit;
-  }
-  a:hover {
-    color: #535bf2;
+    
+    text-decoration: none;
   }
   
   *{
@@ -35,6 +44,7 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+    background-color: $c-cianBG !important;
   }
 
   html {
@@ -81,3 +91,18 @@
     }
   }
   
+
+/* SHADOWS */
+
+/* shadow basic */
+.shadowBasic{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  }
+  /* shadows on hover */
+  .shadowHover{
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+  }
+  /* shadows windows */
+  .shadowWindows{
+    box-shadow: rgba(199, 199, 199, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(195, 195, 195, 0.2) 15px 15px, rgba(152, 152, 152, 0.1) 20px 20px, rgba(91, 91, 91, 0.05) 25px 25px;
+  }
