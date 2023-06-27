@@ -37,7 +37,21 @@ const envConfig = {
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
 
 /* PASSPORT */
-    JWT_SECRET_KEY: process.env.JWT_SECRET_KEY
+    JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+
+/* MAIL */
+    GMAIL_USER_APP: process.env.GMAIL_USER_APP,
+    GMAIL_PASS_APP: process.env.GMAIL_PASS_APP,
+
+/* TWILIO */
+TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
+TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+
+/* My number */
+MY_PHONE_NUMBER: process.env.MY_PHONE_NUMBER
+
 }
+
 
 module.exports = {envConfig}
