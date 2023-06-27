@@ -104,6 +104,12 @@ routerSession.get("/session/logout", (req, res) =>{
 
 
 //LOGIN POR GITHUB
+
+routerSession.get(
+    '/github',
+    passport.authenticate('github', { scope: ['user: email'], session: false })
+)
+
 routerSession.get(
     '/githubcallback',
     passport.authenticate('github', {
