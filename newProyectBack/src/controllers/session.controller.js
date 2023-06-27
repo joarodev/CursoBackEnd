@@ -43,7 +43,7 @@ class SessionController {
     failLogin = (req, res) => {
         res.clearCookie('coderCookieToken')
         console.log('user logout')
-        res.redirect('/')
+        res.redirect('/err')
     }
 
 
