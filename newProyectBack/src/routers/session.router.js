@@ -13,12 +13,16 @@ routerSession
     .post(
         "/login",
         passport.authenticate('login', {
-            failureRedirect: '/session/faillogin',
+            failureRedirect: '/api/session/faillogin',
             session: false,
         }), login)
-
+    
     .get(
-        "/loginGitHub",
+        '/loginGitHu',
+        passport.authenticate('github', { scope: ['user: email'], session: false })
+    )
+    .get(
+        "/githubcallback",
         passport.authenticate('github', {
             failureRedirect: '/err',
             session: false,

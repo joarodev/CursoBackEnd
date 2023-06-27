@@ -91,7 +91,7 @@ routerSession.get("/failregister", async (req, res) => {
     res.redirect("/err")
 })
 
-//LOGOUT
+/* //LOGOUT
 routerSession.get("/session/logout", (req, res) =>{
     req.session.destroy(error =>{
         if(error){
@@ -100,10 +100,16 @@ routerSession.get("/session/logout", (req, res) =>{
         console.log("user logout")
         res.redirect("/")
     })
-})
+}) */
 
 
 //LOGIN POR GITHUB
+
+routerSession.get(
+    '/github',
+    passport.authenticate('github', { scope: ['user: email'], session: false })
+)
+
 routerSession.get(
     '/githubcallback',
     passport.authenticate('github', {
@@ -113,7 +119,7 @@ routerSession.get(
     async (req, res) => {
         console.log(req.user)
         const user = req.user
-        if (user.username === 'adminCoder@coder.com') {
+        if (user.username === "adminCoder@coder.com") {
             user.role = 'admin'
         } else {
             user.role = 'user'
@@ -124,7 +130,7 @@ routerSession.get(
             httpOnly: true,
         })
         res.redirect('/products/products')
-})
+    })
 
 
 //passport jwt - CURRENT
