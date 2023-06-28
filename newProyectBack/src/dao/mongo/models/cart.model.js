@@ -4,7 +4,7 @@ const mongoosePaginate = require ("mongoose-paginate-v2")
 const collection = "carrito"
 
 const cartSchema= new Schema({
-    /* userid */
+    clientId: String,
     products: [{
         product: {
             type: Schema.Types.ObjectId,
@@ -14,11 +14,8 @@ const cartSchema= new Schema({
     }]
 })
 
-cartSchema.plugin(mongoosePaginate)
-
-
-const cartModel = model(collection, cartSchema);
+const CartModel = model(collection, cartSchema);
 
 module.exports = {
-    cartModel
+    CartModel
 }

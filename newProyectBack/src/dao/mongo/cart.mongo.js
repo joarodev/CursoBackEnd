@@ -1,38 +1,40 @@
-const { cartModel } = require("../models/cart.model")
+const { CartModel } = require("../mongo/models/cart.model")
 
-class CartManager {
+class CartDaoMongo {
 
-    async getCartById(cid){
+    async get(){
         try {
-            return await cartModel.findOne({_id: cid})
-        }catch(err){
-            return new Error(err)
-        }
-    }
-
-    async getCarts() {
-        try {
-            return await cartModel.find({})
+            return await CartModel.find({})
         } catch (error) {
             return new Error(error)
         }
     }
 
-    async createCart(uid) {
+    async getById(cid){
         try {
-            console.log(uid)
-            let cart = await cartModel.findOne({clientId: uid})
-            console.log(cart)
-            if (cart){
-                return cart
-            }
-            cart= {
+            return await CartModel.findOne({_id: cid})
+        }catch(err){
+            return new Error(err)
+        }
+    }
+
+    async getEmail(userEmail) {
+        try {
+            return await CartModel.findOne({clientId: userMail})
+        } catch (error) {
+            return new Error(error)
+        }
+    }
+
+    async create(uid) {
+        try {
+            // first verify if there is a cart for the user
+            const cart= {
                 clientId: uid,
-                products: [],
-                quantity: 0,
+                products: []
             }
-            res.send(cart)
-            return await cartModel.create(cart)
+            return await CartModel.create(cart)
+
         } catch (error) {
             return new Error(error)
         }
@@ -40,8 +42,27 @@ class CartManager {
 
     async addProduct(cid, pid, quantity) {
         try {
+            let cart = await CartModel.findOne({cid})
+            console.log(cart)
+            if (!cart) return {status: "Error", message: "Carrito no encontrado"}
+
+            if (productIndex === -1) {
+                cart.products.push({product: pid, quantity})
+            } else {
+                cart.products[productIndex].quantity += quantity
+            }
+            await cart.save()
+            return {status: "succes", message: "Producto agregado correctamente", productsQty:cart.products.length}
             
-            const respUpdate = await cartModel.findOneAndUpdate(
+        } catch (error) {
+            return new Error(error)
+        }
+    }
+
+    async update(cid, pid, quantity) {
+        try {
+            
+            const respUpdate = await CartModel.findOneAndUpdate(
             {_id: cid, "products.product": pid},
             {$inc: {"products.$.quantity": quantity}},
             {new: true}
@@ -50,7 +71,7 @@ class CartManager {
             if (respUpdate){
                 res.send("Producto añadido")
             } else {
-                await cartModel.findByIdAndUpdate(
+                await CartModel.findByIdAndUpdate(
                     {_id: cid},
                     {$push: {products: {product: pid, quantity}}},
                     {new: true, upsert: true}
@@ -62,9 +83,9 @@ class CartManager {
         }
     }
 
-    async deleteProductCart(cid, pid) {
+    async deleteProduct(cid, pid) {
         try {
-            const cart = await cartModel.findOneAndUpdate(
+            const cart = await CartModel.findOneAndUpdate(
                 {_id: cid},
                 {$pull: {products: {product: pid}}},
                 {new: true}
@@ -76,9 +97,9 @@ class CartManager {
         }
     }
 
-    async deleteManyProducts(cid) {
+    async delete(cid) {
         try {
-            const cart = await cartModel.findOneAndUpdate(
+            const cart = await CartModel.findOneAndUpdate(
                 {_id: cid},
                 {$set: {products: []}},
                 {new: true}
@@ -93,4 +114,4 @@ class CartManager {
 }
 
 
-module.exports = new CartManager
+module.exports = CartDaoMongo
