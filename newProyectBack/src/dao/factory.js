@@ -4,6 +4,7 @@ const config = require("../config/configServer");
 let CartDao
 let UserDao
 let ProductDao
+let UserDtoDao
 
 switch (envConfig.PERSISTENCE) {
     case "production":

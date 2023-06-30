@@ -20,7 +20,7 @@ class CartDaoMongo {
 
     async getEmail(userEmail) {
         try {
-            return await CartModel.findOne({clientId: userMail})
+            return await CartModel.findOne({clientId: userEmail})
         } catch (error) {
             return new Error(error)
         }

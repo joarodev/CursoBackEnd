@@ -1,8 +1,9 @@
 
+const { Router } = require("express")
 //MAIL router
 const config = require("../config/objetConfig")
-
-const nodemailer = require("nodemailer")
+const router = Router()
+/* const nodemailer = require("nodemailer")
 const transport = nodemailer.createTransport({
     service: "gmail",
     port: 587,
@@ -10,8 +11,17 @@ const transport = nodemailer.createTransport({
         user: "El correo de gmail de la cuenta", //.config.gmail_user_app
         pass: "La contraseña generada" // config.gemail_pass_app
     }
+}) */
+
+router.get("/mocks", (req, res) =>{
+
+    for(let i = 0; i < 100; i++){
+        generateUsers()
+    }
+    res.send("faker")
 })
 
+/* })
 routerIndex.get("/mail", async (req, res) => {
     let result = await transport.sendMail({
         from: "Coder test <projectodigitalgen@gmail.com>",
@@ -33,4 +43,4 @@ routerIndex.get("/mail", async (req, res) => {
 })
 routerIndex.get("/sms", async (req, res) => {
     res.send("email enviado")
-})
+}) */

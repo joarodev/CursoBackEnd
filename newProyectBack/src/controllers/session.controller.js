@@ -3,6 +3,7 @@ const { generateToken } = require("../utils/generateTokenJwt")
 const { createHash } = require('../utils/bcryptHash')
 const { UserModel } = require('../dao/mongo/models/user.model')
 const { envConfig } = require("../config/config")
+const { UserDto } = require("../dto/user.dto")
 
 class SessionController {
 
@@ -79,7 +80,11 @@ class SessionController {
     }
 
     current = (req, res) => {
-        res.send({ user: req.user })
+        const user = req.user
+        console.log(user)
+        let userCurrent = new UserDto(user)
+        //console.log(userCurrent)
+        res.send({status: "Succes", userCurrent})
     }
 }
 
