@@ -51,7 +51,6 @@ const initPassportJWT = () => {
         
     }, async (jwt_payload, done)=>{
         try {
-            //validar usuarios
             const user = await UserModel.findById(jwt_payload._doc._id)
             if(!user){
                 return done(null, false, {message: "usuario no encontrado"})

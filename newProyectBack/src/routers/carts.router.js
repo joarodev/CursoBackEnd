@@ -7,20 +7,47 @@ const {get,
     addProductArray,
     deleteProduct,
     deleteAllProducts} = require("../controllers/cart.controller");
+const passport = require("passport");
+const { isUser } = require("../middlewares/auth.middlewares");
 
 const cartRouter = Router()
 
 cartRouter
+    //obtener carritos
     .get('/', get)
+    //obtener carrito
     .get('/:cid', getById)
+    //crear carrito
     .post('/', create)
-// Add product to Cart
-    .put('/:cid/product/:pid', addProduct)
-// Add product array to Cart
-    .put('/:cid', addProductArray)
-// delete a product in the Cart
-    .delete('/:cid/product/:pid', deleteProduct)
-// delete all products in the Cart
-    .delete('/:cid', deleteAllProducts)
+    //añadir producto al carrito
+    .put(
+        '/:cid/product/:pid',
+        passport.authenticate("current", { session: false }),
+        isUser,
+        addProduct)
+    //
+    .put(
+        '/:cid', 
+        passport.authenticate("current", { session: false }),
+        isUser,
+        addProductArray)
+    // Borrar producto del carrito
+    .delete(
+        '/:cid/product/:pid', 
+        passport.authenticate("current", { session: false }),
+        isUser,
+        deleteProduct)
+    // Vaciar carrito
+    .delete(
+        '/:cid', 
+        passport.authenticate("current", { session: false }),
+        isUser,
+        deleteAllProducts)
+    .post(
+        "/:cid/pucharse",
+        passport.authenticate("current", { session: false }),
+        isUser,
+        
+        )
 
 module.exports = cartRouter

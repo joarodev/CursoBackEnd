@@ -1,6 +1,8 @@
 const {cartService} = require("../services/index")
 const { CartModel } = require("../dao/mongo/models/cart.model")
 const {productService} = require("../services/index")
+const { ProductModel } = require("../dao/mongo/models/product.models")
+const { id_ID } = require("@faker-js/faker")
 
 
 class CartController {
@@ -120,7 +122,100 @@ class CartController {
             console.log(error)
         }
     }
+    cartPurchase = async (req, res) => {
+        const { cid } = req.params;
+        try {
+            // Obtén el carrito y verifica que exista
+            const cart = await CartModel.findById(cid).populate('products.productId');
+            if (!cart) {
+                return res.status(404).json({ error: 'Carrito no encontrado' });
+            }
+                // Verifica el stock de los productos en el carrito
+            const productsToUpdate = [];
+            for (const product of cart.products) {
+                const { productId, quantity } = product;
+                // Verifica que el producto exista y tenga suficiente stock
+                const existingProduct = await ProductModel.findById(productId);
+                if (!existingProduct) {
+                    return res.status(404).json({ error: `Producto con ID ${productId} no encontrado` });
+                }
+            if (existingProduct.stock >= quantity) {
+                // Actualiza el stock del producto
+                const updatedStock = existingProduct.stock - quantity;
+                existingProduct.stock = updatedStock;
+                productsToUpdate.push(existingProduct);
+            } else {
+                // Si el producto no tiene suficiente stock, no se agrega al proceso de compra
+                return res.status(400).json({ error: `Producto con ID ${productId} no tiene suficiente stock` });
+            }
+            }
+            // Actualiza el stock de los productos en la base de datos
+            for (const product of productsToUpdate) {
+                await product.save();
+            }
+            // Realiza cualquier otra lógica necesaria para finalizar la compra
+            // ...
+            // Elimina el carrito después de la compra
+            await cartService.delete(cid);
+            res.json({ message: 'Proceso de compra finalizado con éxito' });
+        } catch (error) {
+            console.error('Error al finalizar el proceso de compra:', error);
+            res.status(500).json({ error: 'Error al finalizar el proceso de compra' });
+        }
+    };
+
+    //generar codigos para los tikets uuidv4()
+
+    /* {
+        id_ID
+        prudcutrc
+        quiantiti
+    } */
+
+    crateTicket = async (req, res) => {
+        const { cid } = req.params
+        const cart = await cartService.getCart(cid)
+        // validacion que exista cart if()
+        //if(!cart) return
+        
+        const productNoComprado = []
+
+        for (const item in cart.product){
+            const product = item.product
+            const quantity = item.quantity
+            const stock = item.product.stock
+        
+            if(quantity >= stock){
+                productNoComprado.push(product)
+            }else{
+                const response = productService.updateProduct(product, { quantity: stock-quantity})
+            }
+        }
+
+        
+        const arrayProductoComprables = cart.product.filter(product => !productNoComprado.includes(item.product._id)).reduce()
+        
+        
+        if (productNoComprado.length > 0) {
+            //quitar de mi carrito los que si se compraron
+            upate()
+            } else {
+            await cartService.delete(cid)
+        }
+    
+    //crear service tickets
+    const tiket = await tiketService.creatreTicket({
+        user: req.user.email,
+        code: "", //uuidv4 -> id mongoose, numero
+        products: cart.product,
+        amount: cart.product.filter(product => !productNoComprado.includes(item.product._id)).reduce(),
+        purchaser: req.user.mail
+        
+        
+    })
+
+
+    }
 
 }
-
 module.exports = new CartController()
