@@ -1,9 +1,7 @@
-const {cartService} = require("../services/index")
+const {cartService, productService, ticketService} = require("../services/index")
 const { CartModel } = require("../dao/mongo/models/cart.model")
-const {productService} = require("../services/index")
-const { ProductModel } = require("../dao/mongo/models/product.models")
 const { id_ID } = require("@faker-js/faker")
-
+const uuid4 = require("uuid4")
 
 class CartController {
 
@@ -123,41 +121,63 @@ class CartController {
         }
     }
     cartPurchase = async (req, res) => {
-        const { cid } = req.params;
         try {
+            const { cid } = req.params;
             // Obtén el carrito y verifica que exista
-            const cart = await CartModel.findById(cid).populate('products.productId');
+            const cart = await cartService.getById(cid);
             if (!cart) {
                 return res.status(404).json({ error: 'Carrito no encontrado' });
             }
                 // Verifica el stock de los productos en el carrito
-            const productsToUpdate = [];
-            for (const product of cart.products) {
-                const { productId, quantity } = product;
+            const productsNoStock = [];
+
+            for (const item of cart.products) {
+                const product = item.product
+                const quantity = item.quantity
+                const stock = item.product.stock
+                const pid = item.product._id
+
                 // Verifica que el producto exista y tenga suficiente stock
-                const existingProduct = await ProductModel.findById(productId);
+                const existingProduct = await productService.getById(pid);
                 if (!existingProduct) {
-                    return res.status(404).json({ error: `Producto con ID ${productId} no encontrado` });
+                    return res.status(404).json({ error: `Producto con ID ${pid} no encontrado` });
                 }
-            if (existingProduct.stock >= quantity) {
-                // Actualiza el stock del producto
-                const updatedStock = existingProduct.stock - quantity;
-                existingProduct.stock = updatedStock;
-                productsToUpdate.push(existingProduct);
-            } else {
+                if (quantity > existingProduct.stock) {
+
                 // Si el producto no tiene suficiente stock, no se agrega al proceso de compra
-                return res.status(400).json({ error: `Producto con ID ${productId} no tiene suficiente stock` });
+                    productsNoStock.push(pid)
+                    console.log(`Producto con ID ${pid} no tiene suficiente stock`)
+                    //return res.status(400).json({ error: `Producto con ID ${pid} no tiene suficiente stock` });
+
+                } else {
+                    // Actualiza el stock del producto
+                    const updatedStock = existingProduct.stock - quantity;
+                    // Actualiza el stock de los productos en la base de datos
+                    await productService.update(pid, {stock: updatedStock})
+                }
             }
-            }
-            // Actualiza el stock de los productos en la base de datos
-            for (const product of productsToUpdate) {
-                await product.save();
-            }
+
             // Realiza cualquier otra lógica necesaria para finalizar la compra
-            // ...
+
+            cart.products = cart.products.filter((product) => !productNoPucharse.includes(product._id))
+
+            if (productsNoStock.length > 0) {
+                
+                const ticketData = await ticketService.createTicket({
+                    code: uuid4(), //uuidv4
+                    amount: calculateTotal,
+                    purchaser: req.user.email,
+                    products: cart.pro
+                })
+                await ticketService.createTicket(ticketData)
+                
+            } else {
+                await cartService.delete(cid);
+            }
+            
             // Elimina el carrito después de la compra
-            await cartService.delete(cid);
             res.json({ message: 'Proceso de compra finalizado con éxito' });
+            
         } catch (error) {
             console.error('Error al finalizar el proceso de compra:', error);
             res.status(500).json({ error: 'Error al finalizar el proceso de compra' });
@@ -178,7 +198,7 @@ class CartController {
         // validacion que exista cart if()
         //if(!cart) return
         
-        const productNoComprado = []
+        const productNoPucharse = []
 
         for (const item in cart.product){
             const product = item.product
@@ -192,8 +212,8 @@ class CartController {
             }
         }
 
-        
         const arrayProductoComprables = cart.product.filter(product => !productNoComprado.includes(item.product._id)).reduce()
+        
         
         
         if (productNoComprado.length > 0) {
@@ -202,11 +222,10 @@ class CartController {
             } else {
             await cartService.delete(cid)
         }
-    
     //crear service tickets
-    const tiket = await tiketService.creatreTicket({
+    const ticket = await ticketService.creatreTicket({
         user: req.user.email,
-        code: "", //uuidv4 -> id mongoose, numero
+        code: uuid4(), //uuidv4 -> id mongoose, numero
         products: cart.product,
         amount: cart.product.filter(product => !productNoComprado.includes(item.product._id)).reduce(),
         purchaser: req.user.mail

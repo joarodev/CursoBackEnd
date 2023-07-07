@@ -1,34 +1,38 @@
 const { Router } = require("express")
-const {getProduct, getProductId, addProduct, updateProduct, deleteProduct} = require("../controllers/product.controller")
+const {ProductController} = require("../controllers/product.controller")
 const { passportAuth } = require("../jwt/passport-jwt")
 const passport = require("passport")
 const { isAdmin } = require("../middlewares/auth.middlewares")
+
+const products = new ProductController()
 
 const routerProduct = Router()
 
 routerProduct.get(
     '/products',
     passportAuth('jwt', { session: false }),
-    getProduct)
+    products.getProducts)
 
-routerProduct.get("/:pid", getProductId)
+routerProduct.get("/:pid",
+    passportAuth('jwt', { session: false }),
+    products.getProduct)
 
 routerProduct.post(
     "/",
     passport.authenticate("current", {session: false}),
     isAdmin,
-    addProduct)
+    products.addProduct)
 
 routerProduct.put(
     "/:pid", 
     passport.authenticate("current", {session: false}),
     isAdmin,
-    updateProduct)
+    products.updateProduct)
 
 routerProduct.delete(
     "/:pid",
     passport.authenticate("current", {session: false}),
     isAdmin,
-    deleteProduct)
+    products.deleteProduct)
 
 module.exports = routerProduct

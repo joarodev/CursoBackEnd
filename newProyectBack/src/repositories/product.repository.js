@@ -1,11 +1,13 @@
 class ProductRepository {
     constructor(dao){
+        console.log(dao)
         this.dao = dao
     }
     getProducts(){
         return this.dao.get()
     }
-    getProduct(pid){
+    getById(pid){
+        console.log("Repository"+pid)
         return this.dao.getById(pid)
     }
     createProduct(newProduct){

@@ -2,7 +2,7 @@ const {productService} = require("../services/index")
 const {ProductModel} = require("../dao/mongo/models/product.models")
 
 class ProductController {
-    getProduct = async (req, res) => {
+    getProducts = async (req, res) => {
         try {
             const { page = 1 } = req.query
             const products = await ProductModel.paginate(
@@ -27,10 +27,11 @@ class ProductController {
         }
 }
 
-    getProductId = async (req,res)=>{
+    getProduct = async (req,res)=>{
         try {
             const {pid} = req.params
-            let product = await productService.getById(pid)
+            console.log(pid)
+            let product = await productService.getProduct(pid)
             res.status(200).send({
                 status: 'success',
                 payload: product
@@ -99,4 +100,4 @@ class ProductController {
 }
 }
 
-module.exports = new ProductController() 
+module.exports = {ProductController}

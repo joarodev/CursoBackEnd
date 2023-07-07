@@ -6,7 +6,8 @@ const {get,
     addProduct,
     addProductArray,
     deleteProduct,
-    deleteAllProducts} = require("../controllers/cart.controller");
+    deleteAllProducts,
+    cartPurchase} = require("../controllers/cart.controller");
 const passport = require("passport");
 const { isUser } = require("../middlewares/auth.middlewares");
 
@@ -47,7 +48,7 @@ cartRouter
         "/:cid/pucharse",
         passport.authenticate("current", { session: false }),
         isUser,
-        
+        cartPurchase
         )
 
 module.exports = cartRouter

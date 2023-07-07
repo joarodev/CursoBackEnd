@@ -13,12 +13,16 @@ const { initPassport } = require('./config/passport.config')
 const { 
     initPassportJWT, 
     initPassportGitHub } = require('./jwt/passport-jwt')
-//VIEWS
-const hbs = require('express-handlebars')
-//DONENV
+    //VIEWS
+    const hbs = require('express-handlebars')
+    //DONENV
+    
+    require("dotenv").config()
+    const {envConfig} = require("./config/config")
+    
+    //middleware error
+    const { errorHandler } = require('./middlewares/error.middleware')
 
-require("dotenv").config()
-const {envConfig} = require("./config/config")
 
 const app = express()
 const PORT = envConfig.PORT
@@ -45,6 +49,9 @@ app.set('view engine', 'hbs');
 
 //Routes
 app.use("/",routerIndex)
+
+//Error middleware
+app.use(errorHandler)
 
 app.listen(PORT, (err)=> {
     if (err) console.log('Erro en el servidor', err)

@@ -6,6 +6,9 @@ const { Router } = require('express')
 const passport = require('passport')
 //passport JWT
 const {  passportAuth } = require("../jwt/passport-jwt")
+const { CustomError } = require("../utils/CustomError/CustomError")
+const { generateUserErrorInfo } = require("../utils/CustomError/info")
+const { EError } = require("../utils/CustomError/EErrors")
 
 const routerSession = Router()
 
@@ -33,6 +36,28 @@ routerSession
             successRedirect: '/login',
             session: false,
         }), register)
+    
+    .post("/register", async (req, res, next)=>{
+        try {
+            const {first_name, last_name, email} = req.body
+
+            if(!first_name || !last_name|| !email){
+                CustomError.createError({
+                    name: "User creation error",
+                    cause: generateUserErrorInfo({
+                        first_name,
+                        last_name,
+                        email
+                    }),
+                    message: `error typing to created user`,
+                    code: EError.INVALID_TYPE_ERROR
+                })
+            }
+        } catch (error) {
+            next()
+            console.log(error)
+        }
+    })
 
     .get("/failRegister", failRegister)
 

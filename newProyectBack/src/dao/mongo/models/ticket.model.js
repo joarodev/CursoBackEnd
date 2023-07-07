@@ -2,8 +2,6 @@ const {Schema, model} = require("mongoose")
 
 const TicketCollection = "Tickets"
 
-const Schema = mongoose.Schema;
-
 const ticketSchema = new Schema({
   code: { 
     type: String, 

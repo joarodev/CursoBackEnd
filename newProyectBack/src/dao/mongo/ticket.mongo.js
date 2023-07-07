@@ -1,8 +1,8 @@
-const { ProductModel } = require("./models/product.models");
+const { TicketModel } = require("../mongo/models/ticket.model");
 
-class ProductDaoMongo{
+class TicketDaoMongo{
     constructor(){
-        this.product = ProductModel
+        this.product = TicketModel
     }
 
     async get(){
@@ -12,30 +12,30 @@ class ProductDaoMongo{
             return new Error(err)
         }
     }
-    getById = async(pid) => {
+    async getById(tid){
         try{
-            return await this.product.findOne({_id: pid})
+            return await this.product.findOne({_id: tid})
         } catch(error){
             return new Error(error)
         }
     }
-    async create(newProduct){
+    async create(newTicket){
         try {
-            return await this.product.create(newProduct)
+            return await this.product.create(newTicket)
         } catch (error) {
             return new Error(error)
         }
     }
-    async update(pid, prodToRemplace){
+    async update(tid, ticketToRemplace){
         try {
-            await this.product.updateOne({_id: pid}, prodToRemplace)
+            await this.product.updateOne({_id: tid}, ticketToRemplace)
         } catch (error) {
             return new Error(error)
         }
     }
-    async delete(pid){
+    async delete(tid){
         try {
-            return await this.product.deleteOne({_id: pid})
+            return await this.product.deleteOne({_id: tid})
         } catch (error) {
             return new Error(error)
         }
@@ -48,4 +48,4 @@ class ProductDaoMongo{
     }
 } */
 
-module.exports = {ProductDaoMongo}
+module.exports = TicketDaoMongo
