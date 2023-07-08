@@ -6,8 +6,8 @@ class ProductRepository {
     getProducts(){
         return this.dao.get()
     }
-    getById(pid){
-        console.log("Repository"+pid)
+    getProduct(pid){
+        console.log(pid)
         return this.dao.getById(pid)
     }
     createProduct(newProduct){

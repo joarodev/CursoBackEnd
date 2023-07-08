@@ -12,7 +12,7 @@ switch (envConfig.PERSISTENCE) {
     case "production":
         
         config.connectDB()
-        const {ProductDaoMongo} = require("../dao/mongo/product.mongo")
+        const ProductDaoMongo = require("../dao/mongo/product.mongo")
         const UserDaoMongo = require("../dao/mongo/user.mongo")
         const CartDaoMongo = require("../dao/mongo/cart.mongo")
         const TicketDaoMongo = require("../dao/mongo/ticket.mongo")

@@ -1,5 +1,6 @@
 class UserRepository {
     constructor(dao){
+        console.log(dao)
         this.dao = dao
     }
     getUsers(){

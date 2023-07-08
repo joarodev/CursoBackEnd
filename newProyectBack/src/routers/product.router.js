@@ -14,19 +14,15 @@ routerProduct.get(
     products.getProducts)
 
 routerProduct.get("/:pid",
-    passportAuth('jwt', { session: false }),
+    passport.authenticate('jwt', { session: false }),
     products.getProduct)
 
 routerProduct.post(
     "/",
-    passport.authenticate("current", {session: false}),
-    isAdmin,
     products.addProduct)
 
 routerProduct.put(
-    "/:pid", 
-    passport.authenticate("current", {session: false}),
-    isAdmin,
+    "/:pid",
     products.updateProduct)
 
 routerProduct.delete(
