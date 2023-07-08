@@ -24,7 +24,7 @@ const initPassportJWT = () => {
         new JWTStrategy(
             {
                 jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-                secretOrKey: envConfig.PRIVATE_KEY,
+                secretOrKey: privateKey,
             },
             async (jwt_payload, done) => {
                 try {
@@ -47,7 +47,7 @@ const initPassportJWT = () => {
 
     passport.use("current", new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: envConfig.PRIVATE_KEY
+        secretOrKey: privateKey
         
     }, async (jwt_payload, done)=>{
         try {

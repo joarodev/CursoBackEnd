@@ -1,4 +1,3 @@
-const {commander} = require("../utils/commander")
 const { ENV_OPTION, program } = require('../utils/persistence')
 const { mode } = program.opts()
 
@@ -10,9 +9,6 @@ const envPaths = {
 require('dotenv').config({
     path: envPaths[mode]
 })
-
-
-console.log(mode)
 
 const envConfig = {
 

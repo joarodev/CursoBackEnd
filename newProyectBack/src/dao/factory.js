@@ -6,6 +6,8 @@ let UserDao
 let ProductDao
 let TicketDao
 
+console.log(envConfig.PERSISTENCE)
+
 switch (envConfig.PERSISTENCE) {
     case "production":
         
