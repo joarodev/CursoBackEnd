@@ -1,7 +1,7 @@
 const { Router } = require("express");
 
 const {get,
-    getById,
+    getCartById,
     create,
     addProduct,
     addProductArray,
@@ -9,7 +9,8 @@ const {get,
     deleteAllProducts,
     cartPurchase} = require("../controllers/cart.controller");
 const passport = require("passport");
-const { isUser } = require("../middlewares/auth.middlewares");
+const { isUser, isUserOrAdmin } = require("../middlewares/auth.middlewares");
+const { authorization } = require("../jwt/passport-jwt");
 
 const cartRouter = Router()
 
@@ -17,38 +18,38 @@ cartRouter
     //obtener carritos
     .get('/', get)
     //obtener carrito
-    .get('/:cid', getById)
+    .get(
+        '/:cid',
+        passport.authenticate("jwt", { session: false }),
+        getCartById)
     //crear carrito
-    .post('/', create)
+    .post('/:uid', create)
     //añadir producto al carrito
     .put(
         '/:cid/product/:pid',
-        passport.authenticate("current", { session: false }),
-        isUser,
+        passport.authenticate("jwt", { session: false }),
         addProduct)
     //
     .put(
         '/:cid', 
-        passport.authenticate("current", { session: false }),
-        isUser,
+        passport.authenticate("jwt", { session: false }),
         addProductArray)
     // Borrar producto del carrito
     .delete(
         '/:cid/product/:pid', 
-        passport.authenticate("current", { session: false }),
-        isUser,
+        passport.authenticate("jwt", { session: false }),
         deleteProduct)
     // Vaciar carrito
     .delete(
         '/:cid', 
-        passport.authenticate("current", { session: false }),
-        isUser,
+        passport.authenticate("jwt", { session: false }),
         deleteAllProducts)
+
     .post(
         "/:cid/pucharse",
-        passport.authenticate("current", { session: false }),
-        isUser,
-        cartPurchase
-        )
+        passport.authenticate("jwt", { session: false }),
+        authorization("admin"),
+        cartPurchase)
+        
 
 module.exports = cartRouter

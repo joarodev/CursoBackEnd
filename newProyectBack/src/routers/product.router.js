@@ -31,4 +31,8 @@ routerProduct.delete(
     isAdmin,
     products.deleteProduct)
 
+routerProduct.get(
+    "/mockingproducts’"
+)
+
 module.exports = routerProduct

@@ -1,6 +1,6 @@
 const {faker} = require('@faker-js/faker')
 
-const generateProduc= ()=>{
+exports.generateProducts = ()=>{
     return {
         title: faker.commerce.productName(),
         price: faker.commerce.price(),

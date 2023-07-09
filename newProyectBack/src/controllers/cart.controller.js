@@ -1,9 +1,9 @@
 const {cartService, productService, ticketService} = require("../services/index")
 const { CartModel } = require("../dao/mongo/models/cart.model")
-const { id_ID } = require("@faker-js/faker")
 const uuid4 = require("uuid4")
 
 class CartController {
+
 
     get = async (req, res)=>{
         try {
@@ -14,10 +14,10 @@ class CartController {
         }
     }
 
-    getById = async (req, res)=>{
+    getCartById = async (req, res)=>{
         const {cid} = req.params
         try {
-            const cart = await cartService.getCart(cid)
+            const cart = await cartService.getById(cid)
             if (!cart){
                 return res.status(400).send({status:'error',mensaje:"Carrito no encontrado"})
             }
@@ -47,7 +47,7 @@ class CartController {
         const product= await productService.getProduct(pid)
         if (!product) return res.status(400).send({status:'error',message:'El producto indicado no existe'})
 
-        if (!req.session.user?.userRegistered) return res.status(400).send({status:'userNotLogedIn',message:'Usuario no registrado'})
+        if (!req.user) return res.status(400).send({status:'userNotLogedIn',message:'Usuario no registrado'})
         const quantity = req.body.quantity | 1 
 
         try {
@@ -126,21 +126,25 @@ class CartController {
             // Obtén el carrito y verifica que exista
             const cart = await cartService.getById(cid);
             if (!cart) {
-                return res.status(404).json({ error: 'Carrito no encontrado' });
+                return res.status(404).send({ error: 'Carrito no encontrado' });
             }
                 // Verifica el stock de los productos en el carrito
             const productsNoStock = [];
 
             for (const item of cart.products) {
                 const product = item.product
+                const price = item.product.price
                 const quantity = item.quantity
                 const stock = item.product.stock
                 const pid = item.product._id
 
                 // Verifica que el producto exista y tenga suficiente stock
-                const existingProduct = await productService.getById(pid);
+                const existingProduct = await productService.getProduct(pid);
+                console.log("Producto stock"+existingProduct.stock)
                 if (!existingProduct) {
-                    return res.status(404).json({ error: `Producto con ID ${pid} no encontrado` });
+                    return res
+                    .status(404)
+                    .send({ error: `Producto con ID ${pid} no encontrado` });
                 }
                 if (quantity > existingProduct.stock) {
 
@@ -151,90 +155,68 @@ class CartController {
 
                 } else {
                     // Actualiza el stock del producto
+                    ("quantity"+quantity)
                     const updatedStock = existingProduct.stock - quantity;
+                    console.log("stock update::::"+ updatedStock)
                     // Actualiza el stock de los productos en la base de datos
                     await productService.update(pid, {stock: updatedStock})
                 }
             }
-
             // Realiza cualquier otra lógica necesaria para finalizar la compra
-
-            cart.products = cart.products.filter((product) => !productNoPucharse.includes(product._id))
-
-            if (productsNoStock.length > 0) {
+            const productsDisponibles = cart.products.filter((product) => !productsNoStock.includes(product.product._id));
+            console.log("Productos disponibles:", productsDisponibles);
                 
-                const ticketData = await ticketService.createTicket({
-                    code: uuid4(), //uuidv4
-                    amount: calculateTotal,
-                    purchaser: req.user.email,
-                    products: cart.pro
-                })
-                await ticketService.createTicket(ticketData)
-                
-            } else {
-                await cartService.delete(cid);
-            }
-            
-            // Elimina el carrito después de la compra
-            res.json({ message: 'Proceso de compra finalizado con éxito' });
-            
+                if (productsNoStock.length > 0) {
+
+                    const ticketData = await ticketService.createTicket({
+                        code: uuid4(), //uuidv4
+                        purchaser: req.user.email,
+                        products: productsDisponibles,
+                        amount: calculateTotal(productsDisponibles),
+                    })
+                    console.log("sin stock"+ticketData.amount)
+    
+                    res.send({
+                        success: false,
+                        message: "Algunos productos no tienen suficiente stock",
+                        ticket: ticketData,
+                        unavailableProducts: productsNoStock
+                    })
+                } else {
+                    //console.log("Productos en el carrito:", cart.products);
+                    function calculateTotal(products){
+                        let total = 0;
+                        for(const item of products){
+                            const quantity = item.quantity;
+                            const price = item.product.category;
+                            console.log("quantity producto: "+ quantity)
+                            console.log("precio producto: "+ price)
+                            total += quantity * price;
+                        }
+                        console.log("el total es: "+ total)
+                            return total;
+                    }
+
+                    const ticketData = await ticketService.createTicket({
+                        code: uuid4(), //uuidv4
+                        purchaser: req.user.email,
+                        products: cart.products.map((item) => item.product),
+                        amount: calculateTotal(cart.products),
+                    })
+                    console.log("TicketData:", ticketData);
+
+                    res.send({
+                        success: true,
+                        message: "Proceso de compra finalizado con éxito",
+                        ticket: ticketData,
+                    })
+                    //await cartService.deleteAllProducts(cid);
+                }
         } catch (error) {
             console.error('Error al finalizar el proceso de compra:', error);
             res.status(500).json({ error: 'Error al finalizar el proceso de compra' });
         }
     };
-
-    //generar codigos para los tikets uuidv4()
-
-    /* {
-        id_ID
-        prudcutrc
-        quiantiti
-    } */
-
-    crateTicket = async (req, res) => {
-        const { cid } = req.params
-        const cart = await cartService.getCart(cid)
-        // validacion que exista cart if()
-        //if(!cart) return
-        
-        const productNoPucharse = []
-
-        for (const item in cart.product){
-            const product = item.product
-            const quantity = item.quantity
-            const stock = item.product.stock
-        
-            if(quantity >= stock){
-                productNoComprado.push(product)
-            }else{
-                const response = productService.updateProduct(product, { quantity: stock-quantity})
-            }
-        }
-
-        const arrayProductoComprables = cart.product.filter(product => !productNoComprado.includes(item.product._id)).reduce()
-        
-        
-        
-        if (productNoComprado.length > 0) {
-            //quitar de mi carrito los que si se compraron
-            upate()
-            } else {
-            await cartService.delete(cid)
-        }
-    //crear service tickets
-    const ticket = await ticketService.creatreTicket({
-        user: req.user.email,
-        code: uuid4(), //uuidv4 -> id mongoose, numero
-        products: cart.product,
-        amount: cart.product.filter(product => !productNoComprado.includes(item.product._id)).reduce(),
-        purchaser: req.user.mail
-        
-        
-    })
-
-
-    }
 
 }
 module.exports = new CartController()

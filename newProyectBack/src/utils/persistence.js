@@ -1,6 +1,5 @@
 const { Command, Option } = require("commander")
 
-const { envConfig } = require("../config/config");
 
 const ENV_OPTION = {
     DEVELOPMENT: "development",

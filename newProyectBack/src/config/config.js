@@ -10,7 +10,7 @@ require('dotenv').config({
     path: envPaths[mode]
 })
 
-const envConfig = {
+exports.envConfig = {
 
     /* SERVER */
     PORT: process.env.PORT,
@@ -49,5 +49,3 @@ MY_PHONE_NUMBER: process.env.MY_PHONE_NUMBER
 
 }
 
-
-module.exports = {envConfig}

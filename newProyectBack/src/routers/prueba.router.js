@@ -1,7 +1,7 @@
 
 const { Router } = require("express")
 //MAIL router
-const config = require("../config/objetConfig")
+/* const config = require("../config/objetConfig") */
 const router = Router()
 
 const compression = require("express-compression")

@@ -7,14 +7,13 @@ class ProductRepository {
         return this.dao.get()
     }
     getProduct(pid){
-        console.log(pid)
         return this.dao.getById(pid)
     }
     createProduct(newProduct){
         return this.dao.create(newProduct)
     }
-    updateProduct(pid){
-        return this.dao.update(pid)
+    update(pid, prodToRemplace){
+        return this.dao.update(pid, prodToRemplace)
     }
     deleteProduct(pid){
         return this.dao.delete(pid)

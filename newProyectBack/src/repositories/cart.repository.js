@@ -5,7 +5,7 @@ class CartRepository {
     getCarts(){
         return this.dao.get()
     }
-    getCart(pid){
+    getById(pid){
         return this.dao.getById(pid)
     }
     getEmail(email){
@@ -20,8 +20,8 @@ class CartRepository {
     updateProduct(cid, pid, quantity){
         return this.dao.update(cid, pid, quantity)
     }
-    deleteProduct(cid, pid){
-        return this.dao.deleteProduct(cid, pid)
+    delete(cid, pid){
+        return this.dao.delete(cid, pid)
     }
     deleteAllProducts(cid){
         return this.dao.delete(cid)

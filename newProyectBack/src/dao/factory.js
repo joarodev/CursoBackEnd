@@ -10,8 +10,7 @@ console.log(envConfig.PERSISTENCE)
 
 switch (envConfig.PERSISTENCE) {
     case "production":
-        
-        config.connectDB()
+    
         const ProductDaoMongo = require("../dao/mongo/product.mongo")
         const UserDaoMongo = require("../dao/mongo/user.mongo")
         const CartDaoMongo = require("../dao/mongo/cart.mongo")
@@ -24,13 +23,11 @@ switch (envConfig.PERSISTENCE) {
     break;
 
     case "development":
-        const ProductDaoMemory = require("../dao/memory/product.memory")
         const UserDaoMemory = require("../dao/memory/user.memory")
         /* const CartDaoMemory = require("../dao/memory/cart.memory")    
         const TicketDaoMemory = require("../dao/memory/ticket.memory")  */       
 
         UserDao = UserDaoMemory
-        ProductDao = ProductDaoMemory
         /* CartDao = CartDaoMemory
         TicketDao = TicketDaoMemory */
     break;

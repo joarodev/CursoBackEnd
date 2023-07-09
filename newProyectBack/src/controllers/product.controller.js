@@ -31,7 +31,7 @@ class ProductController {
         try {
             const {pid} = req.params
             console.log(pid)
-            let product = await productService.getById(pid)
+            let product = await productService.getProduct(pid)
             res.status(200).send({
                 status: 'success',
                 payload: product

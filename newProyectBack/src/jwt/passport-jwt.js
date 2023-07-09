@@ -37,7 +37,7 @@ const initPassportJWT = () => {
                             message: "usuario no encontrado",
                         })
                     }
-                    return done(null, user) // información desencriptada
+                    return done(null, user ) // información desencriptada
                 } catch (error) {
                     return done(error)
                 }
@@ -124,11 +124,11 @@ const initPassportGitHub = () => {
 const authorization = (role) => {
     return async (req, res, next) =>{
         console.log("role", role)
-        console.log("user", req.user)
+        console.log("userrole: ", req.user.role)
         if (!req.user)
             return res.status(401).send({ status: "error", error: "error" })
-        if (req.user.role === role)
-            return res.status(403).send({ status: "", error: "Not permiso" })
+        if (req.user.role !== role)
+            return res.status(403).send({ status: "error", error: "Not permiso" })
         next()
     }
 }

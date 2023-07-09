@@ -16,5 +16,5 @@ const cartService = new CartRepository(new CartDao())
 const ticketService = new TicketRepository(new TicketDao())
 
 
-module.export = {userService, productService, cartService, ticketService}
+module.exports = {userService, productService, cartService, ticketService}
 
