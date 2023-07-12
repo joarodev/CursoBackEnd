@@ -1,6 +1,5 @@
 class ProductRepository {
     constructor(dao){
-        console.log(dao)
         this.dao = dao
     }
     getProducts(){

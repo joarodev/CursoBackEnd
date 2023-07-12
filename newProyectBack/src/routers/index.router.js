@@ -7,6 +7,7 @@ const routerUser = require("./user.router")
 const routerViews = require("./views.routrer")
 const routerMail = require("./mail.router")
 const cartRouter = require("./carts.router")
+const { routerPrueba } = require("./prueba.router")
 
 
 const routerIndex = Router()
@@ -18,6 +19,7 @@ routerIndex
     .use("/api/cart", cartRouter)
     .use("/", routerViews)
     .use("/api", routerMail)
+    .use("/", routerPrueba)
     .post("/upload", uploader.single("myFile"), (req, res) =>{
     res.send({
         status: "success",

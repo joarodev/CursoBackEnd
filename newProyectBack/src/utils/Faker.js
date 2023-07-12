@@ -1,26 +1,26 @@
-const {faker} = require('@faker-js/faker')
+const {faker} = require('@faker-js/faker');
 
-exports.generateProducts = ()=>{
-    return {
-        title: faker.commerce.productName(),
-        price: faker.commerce.price(),
-        departement: faker.commerce.department(),
-        // stock: faker.random.numeric(),
-        stock: faker.string.numeric(),
-        description: faker.commerce.productDescription(),
-        id: faker.database.mongodbObjectId(),
-        // image: faker.image.image()
-        image: faker.image.url()
-    }
-}
+exports.generateMockProducts = () => {
+  const products = [];
+  for (let i = 0; i < 50; i++) {
+    const product = {
+      name: faker.commerce.productName(),
+      price: faker.commerce.price(),
+      category: faker.commerce.department()
+    };
+    products.push(product);
+  }
+  return products;
+};
 
 
-exports.generateUser = () => {
+
+/* exports.generateUser = () => {
     // let numOfProductos = parseInt(faker.random.numeric(1, {bannedDigits: ['0']}))
     let numOfProductos = parseInt(faker.string.numeric(1, {bannedDigits: ['0']}))
     let products = []
     for (let i = 0; i < numOfProductos; i++) {
-        products.push(generateProduc())        
+        products.push(generateProducts())        
     }
     return {
         // first_name: faker.name.firstName(),
@@ -36,4 +36,4 @@ exports.generateUser = () => {
         email: faker.internet.email(),
         products
     }
-}
+} */

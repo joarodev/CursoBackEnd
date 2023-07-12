@@ -133,6 +133,17 @@ const authorization = (role) => {
     }
 }
 
+const authUserandAdmin = () => {
+    return async (req, res, next) =>{
+        if (!req.user)
+            return res.status(401).send({ status: "error", error: "error" })
+        if (req.user && (req.user.role === 'admin' || req.user.role === 'user')) {
+        } else {
+          res.status(403).json({ error: 'Acceso denegado. Inicia sesión para realizar esta acción' });
+        }
+        next()
+    }
+}
 //Validar si viene corrupto o no viene el token
 const passportAuth = (strategy, options) => {
     return async (req, res, next) => {
@@ -153,5 +164,6 @@ module.exports = {
     initPassportJWT,
     authorization,
     passportAuth,
+    authUserandAdmin,
     initPassportGitHub
 }

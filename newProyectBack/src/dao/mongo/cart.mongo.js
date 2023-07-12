@@ -13,6 +13,8 @@ class CartDaoMongo {
     async getById(cid){
         try {
             return await CartModel.findOne({_id: cid})
+            .populate("products.product")
+            .lean()
         }catch(err){
             return new Error(err)
         }

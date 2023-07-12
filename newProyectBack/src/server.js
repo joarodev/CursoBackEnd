@@ -32,6 +32,7 @@ connectDB()
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 const path = require('path')
+const { addLogger } = require('./config/logger')
 app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser(''))
 app.use(logger("dev"))
@@ -46,7 +47,7 @@ app.use(passport.initialize())
 app.engine('hbs', hbs.engine({extname: 'hbs', defaultLayout: 'main', layoutDir: __dirname + '/views/layouts'}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-
+app.use(addLogger)
 //Routes
 app.use("/",routerIndex)
 

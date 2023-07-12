@@ -20,8 +20,8 @@ class CartRepository {
     updateProduct(cid, pid, quantity){
         return this.dao.update(cid, pid, quantity)
     }
-    delete(cid, pid){
-        return this.dao.delete(cid, pid)
+    deleteProduct(cid, pid){
+        return this.dao.deleteProduct(cid, pid)
     }
     deleteAllProducts(cid){
         return this.dao.delete(cid)

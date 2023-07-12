@@ -3,6 +3,9 @@ const passportLocal = require('passport-local')
 const { createHash, isValidPassword } = require('../utils/bcryptHash')
 const { UserModel } = require('../dao/mongo/models/user.model')
 const { envConfig } = require('./config')
+const { CustomError } = require('../utils/CustomError/CustomError')
+const { generateUserErrorInfo } = require('../utils/CustomError/info')
+const { EError } = require('../utils/CustomError/EErrors')
 require('dotenv').config()
 
 
@@ -44,6 +47,21 @@ const initPassport = () => {
             async (req, username, password, done) => {
                 try {
                     const { first_name, last_name, age, email } = req.body
+
+                    if(!first_name || !last_name || !age || !email){
+                        CustomError.createError({
+                            name: "User creation error",
+                            cause: generateUserErrorInfo({
+                                first_name,
+                                last_name, 
+                                age, 
+                                email
+                            }),
+                            message: "Error trying to created user",
+                            code: EError.INVALID_TYPE_ERROR
+                        })
+                    }
+
                     let userDB = await UserModel.findOne({
                         email: username,
                     }).lean()

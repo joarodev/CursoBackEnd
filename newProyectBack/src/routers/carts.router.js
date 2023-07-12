@@ -9,46 +9,56 @@ const {get,
     deleteAllProducts,
     cartPurchase} = require("../controllers/cart.controller");
 const passport = require("passport");
-const { isUser, isUserOrAdmin } = require("../middlewares/auth.middlewares");
-const { authorization } = require("../jwt/passport-jwt");
+const { authorization, authUserandAdmin } = require("../jwt/passport-jwt");
 
 const cartRouter = Router()
 
 cartRouter
     //obtener carritos
-    .get('/', get)
+    .get(
+        '/',
+        authorization("admin"),
+        get)
     //obtener carrito
     .get(
         '/:cid',
         passport.authenticate("jwt", { session: false }),
+        authorization("admin"),
         getCartById)
     //crear carrito
-    .post('/:uid', create)
+    .post(
+        '/:uid', 
+        authUserandAdmin(),
+        create)
     //añadir producto al carrito
     .put(
         '/:cid/product/:pid',
         passport.authenticate("jwt", { session: false }),
+        authUserandAdmin(),
         addProduct)
     //
     .put(
         '/:cid', 
         passport.authenticate("jwt", { session: false }),
+        authUserandAdmin(),
         addProductArray)
     // Borrar producto del carrito
     .delete(
         '/:cid/product/:pid', 
         passport.authenticate("jwt", { session: false }),
+        authUserandAdmin(),
         deleteProduct)
     // Vaciar carrito
     .delete(
         '/:cid', 
         passport.authenticate("jwt", { session: false }),
+        authUserandAdmin(),
         deleteAllProducts)
 
     .post(
         "/:cid/pucharse",
         passport.authenticate("jwt", { session: false }),
-        authorization("admin"),
+        authUserandAdmin(),
         cartPurchase)
         
 

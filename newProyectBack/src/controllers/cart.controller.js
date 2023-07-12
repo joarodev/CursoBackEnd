@@ -1,6 +1,8 @@
 const {cartService, productService, ticketService} = require("../services/index")
 const { CartModel } = require("../dao/mongo/models/cart.model")
 const uuid4 = require("uuid4")
+const { addToCart } = require("../utils/CustomError/info")
+const { EError } = require("../utils/CustomError/EErrors")
 
 class CartController {
 
@@ -41,24 +43,31 @@ class CartController {
         }
     }
 
-    addProduct = async (req, res)=>{
+    addProduct = async (req, res, next)=>{
         const {cid, pid} = req.params
         // valid product id
         const product= await productService.getProduct(pid)
+
         if (!product) return res.status(400).send({status:'error',message:'El producto indicado no existe'})
 
         if (!req.user) return res.status(400).send({status:'userNotLogedIn',message:'Usuario no registrado'})
         const quantity = req.body.quantity | 1 
 
         try {
-            const response = await cartService.addProduct(cid, pid, quantity) 
-            if (response.status==="error"){
-                return res.status(400).send(response)
-            }else{
-                return res.status(200).send(response)
-            }       
+            const response = await cartService.addProduct(cid, pid, quantity)
+            if(response.status === "error"){
+                CustomError.createError({
+                    name: "Error add to cart",
+                    cause: addToCart({
+                        title: product.title
+                    }),
+                    message: "Error add product to cart",
+                    code: EError.ADD_PRODUCT_CART
+                })
+            }
+            res.status(200).send(response)       
         } catch (error) {
-            console.log(error)
+            next(error)
         }
     } 
 
@@ -125,6 +134,7 @@ class CartController {
             const { cid } = req.params;
             // Obtén el carrito y verifica que exista
             const cart = await cartService.getById(cid);
+            console.log(cart)
             if (!cart) {
                 return res.status(404).send({ error: 'Carrito no encontrado' });
             }
@@ -172,7 +182,7 @@ class CartController {
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
                         products: productsDisponibles,
-                        amount: calculateTotal(productsDisponibles),
+                        amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     })
                     console.log("sin stock"+ticketData.amount)
     
@@ -184,7 +194,7 @@ class CartController {
                     })
                 } else {
                     //console.log("Productos en el carrito:", cart.products);
-                    function calculateTotal(products){
+                    /* function calculateTotal(products){
                         let total = 0;
                         for(const item of products){
                             const quantity = item.quantity;
@@ -195,13 +205,16 @@ class CartController {
                         }
                         console.log("el total es: "+ total)
                             return total;
-                    }
+                    } */
+
+                    const amountt = productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0);
+                    console.log("amouunt"+ amountt)
 
                     const ticketData = await ticketService.createTicket({
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
                         products: cart.products.map((item) => item.product),
-                        amount: calculateTotal(cart.products),
+                        amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     })
                     console.log("TicketData:", ticketData);
 
@@ -210,7 +223,7 @@ class CartController {
                         message: "Proceso de compra finalizado con éxito",
                         ticket: ticketData,
                     })
-                    //await cartService.deleteAllProducts(cid);
+                    await cartService.deleteAllProducts(cid);
                 }
         } catch (error) {
             console.error('Error al finalizar el proceso de compra:', error);
