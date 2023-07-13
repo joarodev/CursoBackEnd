@@ -7,14 +7,22 @@ exports.errorHandler = (error, req, res, next) => {
             return res.send({status: "error", error: error.name})
             break;
         
-        /* case EError.INVALID_TYPE_ERROR:
+        case EError.PRODUCT_NOT_FOUND:
             return res.send({status: "error", error: error.name})
             break;
 
-        case EError.INVALID_TYPE_ERROR:
+        case EError.INVALID_PRICE:
             return res.send({status: "error", error: error.name})
-            break; */
+            break;
+
+        case EError.MISSING_FIELD:
+            return res.send({status: "error", error: error.name})
+            break;
     
+        case EError.DATABASE_ERROR:
+            return res.send({status: "error", error: error.name})
+            break;
+
         default:
             return res.send({status: "error", error: "Unhandled error"})
             break;

@@ -31,30 +31,34 @@ class SessionController {
         }
     }
 
-    loginGitHub = async (req, res) => {
-        console.log(req.user)
-
-        if(!req.user){
-            CustomError.createError({
-                name: "Login error",
-                cause: LoginUserGitHub(),
-                message: "Error login user",
-                code: EError.INVALID_TYPE_ERROR
+    loginGitHub = async (req, res, next) => {
+        try {
+            console.log(req.user)
+    
+            if(!req.user){
+                CustomError.createError({
+                    name: "Login error",
+                    cause: LoginUserGitHub(),
+                    message: "Error login user",
+                    code: EError.INVALID_TYPE_ERROR
+                })
+            }
+    
+            const user = req.user
+            if (user.username === envConfig.ADMIN_EMAIL) {
+                user.role = 'admin'
+            } else {
+                user.role = 'user'
+            }
+            const token = generateToken(user)
+            res.cookie('coderCookieToken', token, {
+                maxAge: 10000*60*60,
+                httpOnly: true,
             })
+            res.redirect('/api/product/products')
+        } catch (error) {
+            next(error)
         }
-
-        const user = req.user
-        if (user.username === envConfig.ADMIN_EMAIL) {
-            user.role = 'admin'
-        } else {
-            user.role = 'user'
-        }
-        const token = generateToken(user)
-        res.cookie('coderCookieToken', token, {
-            maxAge: 10000*60*60,
-            httpOnly: true,
-        })
-        res.redirect('/api/product/products')
     }
 
     register = async (req, res) => {

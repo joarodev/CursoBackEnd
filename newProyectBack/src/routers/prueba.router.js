@@ -41,29 +41,20 @@ routerPrueba.get("/testuser", (req, res)=>{
     })
 })
 
-//logger
+//LOGGER
 
-routerPrueba.get("/logger", (req, res) => {
+routerPrueba.get("/loggerTest", (req, res) => {
     /* req.logger.warn("alerta")
     res.send({message: "Prueba logger"}) */
 
-    //req.logger.info("info")
-    //req.logger.warning("warning")
-    //req.logger.error("error")
-    req.logger.fatal("fatal")
+    req.logger.debug(`Logger level 4, "Debug"`)
+    req.logger.info(`Logger level 3, "Info"`)
+    req.logger.warning(`Logger level 2, "Warning"`)
+    req.logger.error(`Logger level 1, "Error"`)
+    req.logger.fatal(`Logger level 0, "Fatal"`)
 
     res.send({message: "Prueba de logger"})
 })
-
-
-//FAKER
-/* router.get("/mocks", (req, res) =>{
-
-    for(let i = 0; i < 100; i++){
-        generateUsers()
-    }
-    res.send("faker")
-}) */
 
 
 //COMPRESIÓN CON GZIP

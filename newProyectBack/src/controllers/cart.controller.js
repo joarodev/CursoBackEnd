@@ -12,7 +12,8 @@ class CartController {
             let carts = await cartService.getCarts()
             res.status(200).send(carts)
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al ver los carritos', error);
+            req.logger.warn('Error al ver los carritos', error);
         }
     }
 
@@ -26,7 +27,8 @@ class CartController {
             console.log(cart)
             res.status(200).send({status:'ok', payload: cart})
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al encontrar el carrito', error);
+            req.logger.warn('Error al encontrar el carrito', error);
         }
     }
  

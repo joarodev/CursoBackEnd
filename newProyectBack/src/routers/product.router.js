@@ -20,18 +20,13 @@ routerProduct.get(
     authUserandAdmin(),
     products.getProduct)
     
-routerProduct.get(
-    "/mockingproducts",
-        passport.authenticate("jwt", { session: false }),
-    authUserandAdmin(),
-    products.mockingProducts)
     
 routerProduct.post(
     "/",
     passport.authenticate('jwt', { session: false }),
     authorization("admin"),
     products.addProduct)
-
+        
 routerProduct.put(
     "/:pid",
     passport.authenticate('jwt', { session: false }),
@@ -42,7 +37,12 @@ routerProduct.delete(
     passport.authenticate("current", {session: false}),
     authorization("admin"),
     products.deleteProduct)
-
-
-
-module.exports = routerProduct
+    
+    routerProduct.get(
+        "/mockingproducts",
+            passport.authenticate("jwt", { session: false }),
+        authUserandAdmin(),
+        products.mockingProducts)
+    
+    
+    module.exports = routerProduct

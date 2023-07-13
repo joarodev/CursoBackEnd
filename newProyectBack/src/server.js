@@ -23,8 +23,11 @@ const {
     //middleware error
     const { errorHandler } = require('./middlewares/error.middleware')
 
-
+const  {Server: ServerHTTP} = require("http")
+ 
 const app = express()
+const serverHttp = ServerHTTP(app)
+//const io = ServerIO(serverHttp)
 const PORT = envConfig.PORT
 
 connectDB()
@@ -32,7 +35,7 @@ connectDB()
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 const path = require('path')
-const { addLogger } = require('./config/logger')
+const { loggerMiddleware } = require('./middlewares/logger.middleware')
 app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser(''))
 app.use(logger("dev"))
@@ -47,7 +50,10 @@ app.use(passport.initialize())
 app.engine('hbs', hbs.engine({extname: 'hbs', defaultLayout: 'main', layoutDir: __dirname + '/views/layouts'}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-app.use(addLogger)
+
+// Logger
+app.use(loggerMiddleware)
+
 //Routes
 app.use("/",routerIndex)
 
