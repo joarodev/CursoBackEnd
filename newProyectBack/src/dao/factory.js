@@ -6,8 +6,6 @@ let UserDao
 let ProductDao
 let TicketDao
 
-console.log(envConfig.PERSISTENCE)
-
 switch (envConfig.PERSISTENCE) {
     case "production":
     
@@ -23,13 +21,16 @@ switch (envConfig.PERSISTENCE) {
     break;
 
     case "development":
-        const UserDaoMemory = require("../dao/memory/user.memory")
-        /* const CartDaoMemory = require("../dao/memory/cart.memory")    
-        const TicketDaoMemory = require("../dao/memory/ticket.memory")  */       
+        
+        const ProductDaoFile = require("../dao/mongo/product.mongo")
+        const UserDaoFile = require("../dao/mongo/user.mongo")
+        const CartDaoFile = require("../dao/mongo/cart.mongo")
+        const TicketDaoFile = require("../dao/mongo/ticket.mongo")
 
-        UserDao = UserDaoMemory
-        /* CartDao = CartDaoMemory
-        TicketDao = TicketDaoMemory */
+        UserDao = UserDaoFile
+        ProductDao = ProductDaoFile
+        CartDao = CartDaoFile
+        TicketDao = TicketDaoFile
     break;
 
     default:

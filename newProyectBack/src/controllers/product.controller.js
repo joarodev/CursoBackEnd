@@ -13,7 +13,8 @@ class ProductController {
                 console.log(products);
                 res.send({ status: 'success', payload: products });
             } catch (error) {
-                console.log(error);
+                req.logger.http('Error al encontrar los productos en la base de datos', error);
+                req.logger.error('Error al encontrar los productos en la base de datos', error);
             }
         }
     
@@ -39,7 +40,8 @@ class ProductController {
                 nextPage,
             })
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al encontrar los productos', error);
+            req.logger.error('Error al encontrar los productos', error);
         }
 }
 
@@ -53,7 +55,8 @@ class ProductController {
                 payload: product
             })
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al encontrar el producto', error);
+            req.logger.warn("Error al encontrar el producto", error);
         }
     }
 
@@ -80,53 +83,60 @@ class ProductController {
                 payload: result
             })
         } catch (error) {
+            req.logger.http('Error al agregar un producto', error);
+            req.logger.error('Error al agregar un producto', error);
             next(error)
         }
     }
 
     updateProduct = async (req, res) => {
-
-        const { pid } = req.params
-        const modification = req.body
-
-        if(!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
-            return res.status(400).send({status:"error", mensaje: "No se han ingresado todos los datos"})
-        }
-
-        if(!!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
-            CustomError.createError({
-                name: "Add product error",
-                cause: ModificationProductError({
-                    title: modification.title,
-                    description: modification.description,
-                    price: modification.price,
-                    Code: !modification.code,
-                    Stock: modification.stock,
-                    category: modification.category,
-
-
-                }),
-                message: "Error login user",
-                code: EError.INVALID_TYPE_ERROR
+        try {
+            const { pid } = req.params
+            const modification = req.body
+    
+            if(!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
+                return res.status(400).send({status:"error", mensaje: "No se han ingresado todos los datos"})
+            }
+    
+            if(!!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
+                CustomError.createError({
+                    name: "Add product error",
+                    cause: ModificationProductError({
+                        title: modification.title,
+                        description: modification.description,
+                        price: modification.price,
+                        Code: !modification.code,
+                        Stock: modification.stock,
+                        category: modification.category,
+    
+    
+                    }),
+                    message: "Error login user",
+                    code: EError.INVALID_TYPE_ERROR
+                })
+            }
+    
+            let prodToRemplace = {
+                title: modification.title,
+                description: modification.description,
+                price: modification.price,
+                thumbnail: modification.thumbnail,
+                code: modification.code,
+                stock: modification.stock,
+                category: modification.category
+            }
+    
+            let result = await productService.update(pid, prodToRemplace)
+    
+            res.send({
+                status: "success",
+                payload: result,
             })
+            
+        } catch (error) {
+            req.logger.http('Error al actualizar producto', error);
+            req.logger.error('Error al actualizar producto', error);
         }
-
-        let prodToRemplace = {
-            title: modification.title,
-            description: modification.description,
-            price: modification.price,
-            thumbnail: modification.thumbnail,
-            code: modification.code,
-            stock: modification.stock,
-            category: modification.category
-        }
-
-        let result = await productService.update(pid, prodToRemplace)
-
-        res.send({
-            status: "success",
-            payload: result,
-        })
     
 }
 
@@ -140,6 +150,8 @@ class ProductController {
             payload: result
         })
     } catch (error) {
+        req.logger.http('Error al borrar producto', error);
+        req.logger.error('Error al borrar producto', error);
         return {status: 'error', error}
     }
 }

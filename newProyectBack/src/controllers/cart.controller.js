@@ -13,7 +13,7 @@ class CartController {
             res.status(200).send(carts)
         } catch (error) {
             req.logger.http('Error al ver los carritos', error);
-            req.logger.warn('Error al ver los carritos', error);
+            req.logger.error('Error al ver los carritos', error);
         }
     }
 
@@ -28,7 +28,7 @@ class CartController {
             res.status(200).send({status:'ok', payload: cart})
         } catch (error) {
             req.logger.http('Error al encontrar el carrito', error);
-            req.logger.warn('Error al encontrar el carrito', error);
+            req.logger.error('Error al encontrar el carrito', error);
         }
     }
  
@@ -41,7 +41,8 @@ class CartController {
             }
             res.status(200).send({status:'success', payload: cart})
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al crear carrito', error);
+            req.logger.error('Error al crear carrito', error);
         }
     }
 
@@ -69,6 +70,8 @@ class CartController {
             }
             res.status(200).send(response)       
         } catch (error) {
+            req.logger.http('Error al añadir el producto', error);
+            req.logger.error('Error al añadir el producto', error);
             next(error)
         }
     } 
@@ -114,7 +117,8 @@ class CartController {
                 return res.status(200).send(response)
             }       
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al borrar el producto del carrito', error);
+            req.logger.error('Error al borrar el producto del carrito', error);
         }
     }
 
@@ -128,7 +132,8 @@ class CartController {
                 return res.status(200).send(response)
             }       
         } catch (error) {
-            console.log(error)
+            req.logger.http('Error al borrar el carrito', error);
+            req.logger.error('Error al borrar el carrito', error);
         }
     }
     cartPurchase = async (req, res) => {
@@ -195,20 +200,6 @@ class CartController {
                         unavailableProducts: productsNoStock
                     })
                 } else {
-                    //console.log("Productos en el carrito:", cart.products);
-                    /* function calculateTotal(products){
-                        let total = 0;
-                        for(const item of products){
-                            const quantity = item.quantity;
-                            const price = item.product.category;
-                            console.log("quantity producto: "+ quantity)
-                            console.log("precio producto: "+ price)
-                            total += quantity * price;
-                        }
-                        console.log("el total es: "+ total)
-                            return total;
-                    } */
-
                     const amountt = productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0);
                     console.log("amouunt"+ amountt)
 
@@ -225,11 +216,14 @@ class CartController {
                         message: "Proceso de compra finalizado con éxito",
                         ticket: ticketData,
                     })
+                    req.logger.http('Proceso de compra finalizada con exito', error);
+                    req.logger.info('Proceso de compra finalizada con exito', error);
                     await cartService.deleteAllProducts(cid);
                 }
         } catch (error) {
-            console.error('Error al finalizar el proceso de compra:', error);
-            res.status(500).json({ error: 'Error al finalizar el proceso de compra' });
+            req.logger.http('Error al finalizar la compra', error);
+            req.logger.error('Error al finalizar la compra', error);
+            res.status(500).send({ error: 'Error al finalizar el proceso de compra' });
         }
     };
 
