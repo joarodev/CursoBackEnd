@@ -23,8 +23,7 @@ routerProduct.get(
     
 routerProduct.post(
     "/",
-    passport.authenticate('jwt', { session: false }),
-    authorization("admin"),
+    
     products.addProduct)
         
 routerProduct.put(

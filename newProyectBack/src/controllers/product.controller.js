@@ -4,6 +4,7 @@ const { format } = require("morgan")
 const mockingService = require("../utils/Faker")
 const { CustomError } = require("../utils/CustomError/CustomError")
 const { ModificationProductError } = require("../utils/CustomError/info")
+const { sendMail } = require("../utils/sendmail")
 
 class ProductController {
 
@@ -75,8 +76,11 @@ class ProductController {
                 })
             }
     
-            let result = await productService.create(newProduct)
-    
+            let result = await productService.createProduct(newProduct)
+            let subjet = "Nuevo Productos Creados"
+            let html = `<h1> Producto ${newProduct.title} creado con exito</h1>`
+            sendMail("rod.joaquin20@gmail.com", subjet, html)
+            console.log(result)
     
             res.status(200).send({
                 status: 'success',

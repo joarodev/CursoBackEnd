@@ -6,7 +6,7 @@ const twilio_auth_token = envConfig.TWILIO_AUTH_TOKEN
 const twilio_phone_number = envConfig.TWILIO_PHONE_NUMBER
 
 console.log(twilio_sid, twilio_auth_token, twilio_phone_number)
-const cliente = twilio(twilio_sid, twilio_auth_token)
+//const cliente = twilio(twilio_sid, twilio_auth_token)
 
 exports.sendSms = (nombre, apellido) => cliente.messages
     .create({
