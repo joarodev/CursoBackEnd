@@ -7,7 +7,7 @@ const routerUser = require("./user.router")
 const routerViews = require("./views.routrer")
 const routerMail = require("./mail.router")
 const cartRouter = require("./carts.router")
-const { routerPrueba } = require("./prueba.router")
+const {routerPrueba} = require("./prueba.router")
 
 
 const routerIndex = Router()

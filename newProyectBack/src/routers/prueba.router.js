@@ -3,7 +3,6 @@ const { Router } = require("express")
 //MAIL router
 /* const config = require("../config/objetConfig") */
 const routerPrueba = Router()
-
 const compression = require("express-compression")
 const {faker} = require("@faker-js/faker")
 
@@ -43,13 +42,13 @@ routerPrueba.get("/testuser", (req, res)=>{
 
 //LOGGER
 
-routerPrueba.get("/loggerTest", (req, res) => {
+routerPrueba.get("/logger-test", (req, res) => {
     /* req.logger.warn("alerta")
     res.send({message: "Prueba logger"}) */
 
     req.logger.debug(`Logger level 4, "Debug"`)
     req.logger.info(`Logger level 3, "Info"`)
-    req.logger.warning(`Logger level 2, "Warning"`)
+    req.logger.warn(`Logger level 2, "Warning"`)
     req.logger.error(`Logger level 1, "Error"`)
     req.logger.fatal(`Logger level 0, "Fatal"`)
 
@@ -59,10 +58,10 @@ routerPrueba.get("/loggerTest", (req, res) => {
 
 //COMPRESIÓN CON GZIP
 //renderizar aplicación
-console.log(compression())
+//console.log(compression())
 
 //brotli
-routerPrueba.use(compression({
+/* routerPrueba.use(compression({
     brotli:{enabled: true, zblit: {}}
 }))
 routerPrueba.get("/stringmuylargo", (req,res)=>{
@@ -71,6 +70,6 @@ routerPrueba.get("/stringmuylargo", (req,res)=>{
         string += `Hola Coders, soy un string ridiculamente largo`
     }
     res.send("stringmuylargo")
-})
+}) */
 
 module.exports = { routerPrueba }

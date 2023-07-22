@@ -1,3 +1,4 @@
 warning: Logger level 2, "Warning"
 error: Logger level 1, "Error"
 fatal: Logger level 0, "Fatal"
+{"level":"error","message":"Logger level 1, \"Error\""}
