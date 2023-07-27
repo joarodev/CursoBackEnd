@@ -4,7 +4,7 @@ const { format } = require("morgan")
 const mockingService = require("../utils/Faker")
 const { CustomError } = require("../utils/CustomError/CustomError")
 const { ModificationProductError } = require("../utils/CustomError/info")
-const { sendMail } = require("../utils/sendmail")
+const { sendMail, sendEmail } = require("../utils/sendmail")
 
 class ProductController {
 
@@ -75,11 +75,11 @@ class ProductController {
                     code: EError.INVALID_TYPE_ERROR
                 })
             }
-    
+            console.log(newProduct.title)
             let result = await productService.createProduct(newProduct)
             let subjet = "Nuevo Productos Creados"
             let html = `<h1> Producto ${newProduct.title} creado con exito</h1>`
-            sendMail("rod.joaquin20@gmail.com", subjet, html)
+            sendEmail("joaquinrodriguez0012@gmail.com", subjet, html)
             console.log(result)
     
             res.status(200).send({
@@ -97,11 +97,20 @@ class ProductController {
         try {
             const { pid } = req.params
             const modification = req.body
-    
-            if(!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
-                return res.status(400).send({status:"error", mensaje: "No se han ingresado todos los datos"})
+
+            const product = productService.getProduct(pid)
+            console.log("Product update: ", product)
+
+            if(!product){
+                req.logger.error("No se ah encontrado el producto")
+                req.logger.http("No se ah encontrado el producto")
             }
-    
+
+            if(!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
+                req.logger.error("No se ah ingresado todos los datos, no se creó el producto")
+                req.logger.http("No se ah ingresado todos los datos, no se creó el producto")
+            }
+
             if(!!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
                 CustomError.createError({
                     name: "Add product error",
@@ -112,14 +121,12 @@ class ProductController {
                         Code: !modification.code,
                         Stock: modification.stock,
                         category: modification.category,
-    
-    
                     }),
                     message: "Error login user",
                     code: EError.INVALID_TYPE_ERROR
                 })
             }
-    
+
             let prodToRemplace = {
                 title: modification.title,
                 description: modification.description,
@@ -129,11 +136,20 @@ class ProductController {
                 stock: modification.stock,
                 category: modification.category
             }
-    
+
+            const user = req.user;
+
+            if(user.role === "premium" && product.owner !== user.email){
+                req.logger.error("No tienes los permisos necesarios para realizar esta acción")
+                res.logger.htpp("No tienes los permisos necesarios para realizar esta acción")
+            }
+
             let result = await productService.update(pid, prodToRemplace)
-    
+
+            req.logger.info("Se modifico el producto")
             res.send({
                 status: "success",
+                message: "Se modifico el producto",
                 payload: result,
             })
             
@@ -147,10 +163,26 @@ class ProductController {
     deleteProduct = async (req, res) => {
     try {
         let { pid } = req.params;
-        
+        const product = await productService.getProduct(pid)
+        console.log(product)
+
+        if(!product){
+            req.logger.error("El producto no existe")
+            res.logger.htpp("El producto no existe")
+        }
+
+        const user = req.user;
+
+        if(user.role === "premium" && product.owner !== user.email){
+            req.logger.error("No tienes los permisos necesarios para realizar esta acción")
+            res.logger.htpp("No tienes los permisos necesarios para realizar esta acción")
+        }
+
         let result = await productService.delete(pid)
+        req.logger.info("Producto eliminado correctamente")
         res.send({
             status: "success",
+            message: "Producto eliminado correctamente",
             payload: result
         })
     } catch (error) {

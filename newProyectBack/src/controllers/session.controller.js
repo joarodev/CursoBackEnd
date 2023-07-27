@@ -1,10 +1,12 @@
 const { generateToken } = require("../utils/generateTokenJwt")
 //passport
-const { createHash } = require('../utils/bcryptHash')
-const { UserModel } = require('../dao/mongo/models/user.model')
+const jwt = require("jsonwebtoken")
 const { envConfig } = require("../config/config")
 const { UserDto } = require("../dto/user.dto")
 const { LoginUserErrorInfo, LoginUserGitHub } = require("../utils/CustomError/info")
+const { userService } = require("../services")
+const { sendEmailResetPassword } = require("../utils/sendmail")
+const { createHash, comparePasswords, isValidPassword } = require("../utils/bcryptHash")
 
 class SessionController {
 
@@ -77,23 +79,85 @@ class SessionController {
         res.redirect("/err")
     }
 
-    resetpass = async (req, res) => {
-        const { email, password } = req.body
-    
-        // Encontrar el usuario por correo electrónico
-        const userDB = await UserModel.findOne({ email })
-    
-        if (!userDB) {
-          // Si el usuario no existe, redireccionar a una página de error
-            return res.status(401).send({status: 'error', message: 'El usuario no existe'})
-        }    
-    
-        //Hasear Actualizar la contraseña del usuario
-        userDB.password = createHash(password)
-        await userDB.save()
-    
-        // Redireccionar al usuario a la página de login
-        res.status(200).json({status: 'success', message:'Contraseña actualizada correctamente'});
+    resetpass = async (req, res, next) => {
+        try {
+            const {email} = req.body
+            console.log(email)
+            const emailUser = await userService.getEmail(email)
+            console.log("email user: "+emailUser)
+            if( !emailUser ){
+                req.logger.http("No se encontro un email relacionado");
+                req.logger.error("No se encontro un email en nuestra base de datos")
+            } else {
+                const token = jwt.sign({ email: email }, envConfig.JWT_SECRET_KEY, { expiresIn: "1h" });
+                sendEmailResetPassword(email, token)
+                req.logger.info(`Se envio un correo de recuperación a ${email}`)
+                req.logger.http(`Se envio un correo de recuperación a ${email}`);
+                res.send({status: "success", message: "Se envio el correo de recuperacion a: "+email})
+            }
+        } catch (error) {
+            req.logger.http('Se produjo un error', error);
+            req.logger.error('Se produjo un error', error);
+            next()
+            
+        }
+    }
+
+    resetpassToken = async (req, res, next) => {
+        try {
+            const token = req.params.token;
+            const email = req.email
+
+            res.render("resetPassword",{
+                token,
+                email
+            })
+        } catch (error) {
+            req.logger.http('Se produjo un error', error);
+            req.logger.error('Se produjo un error', error);
+        }
+    }
+
+    resetPassForm = async (req, res, next) => {
+        try {
+            const {email, password, confirmPassword } = req.body;
+            //const email = req.email;
+            console.log("el email es: "+ email)
+
+            const user = await userService.getEmail(email);
+            console.log("user: ", user)
+            console.log("user email: ", user[0].email);
+            console.log("user pass: ", user[0].password);
+            console.log("pass: ", password);
+
+            if (!user) {
+                req.logger.error(`Error al encontrar el email en la base de datos`)
+                res.logger.http(`Error al encontrar el email en la base de datos`);
+            }
+            //validar password
+            if(password != confirmPassword){
+                req.logger.error(`Las contraseñas ingresadas son distintas`)
+                res.logger.http(`Las contraseñas ingresadas son distintas`);
+            }
+
+            console.log("pass: "+user[0].password)
+            const isSamePassword = await comparePasswords(password, user[0].password);
+            if (isSamePassword) {
+                return res.logger.http(`No puedes ingresar la misma contraseña que ya tenías`);
+            }
+
+            // Actualiza la contraseña del usuario en la base de datos
+            const hashedPassword = await createHash(password);
+            const userId = user[0]._id
+            const userPassUpdate = await userService.updateUserPassword(userId, hashedPassword)
+            
+            req.logger.info(`Contraseña actualizada correctamente`, userPassUpdate)
+            req.logger.http("Contraseña actualizada correctamente")
+            res.send({status: "success", message: "contraseña actualizada correctamente"})
+        } catch (error) {
+            req.logger.http('Se produjo un error', error);
+            req.logger.error('Se produjo un error', error);
+        }
     }
 
     logout = (req, res) => {

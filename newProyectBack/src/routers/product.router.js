@@ -23,7 +23,6 @@ routerProduct.get(
     
 routerProduct.post(
     "/",
-    
     products.addProduct)
         
 routerProduct.put(

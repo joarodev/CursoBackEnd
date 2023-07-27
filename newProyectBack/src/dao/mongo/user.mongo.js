@@ -19,6 +19,14 @@ class UserManagerDao {
             return new Error(error)
         }
     }
+    async getByEmail(email){
+        try {
+            const user = await this.userModel.find({email: email})
+            return user
+        } catch (error) {
+            return new Error(error)
+        }
+    }
     async create(newUser){
         try {
             return await this.userModel.create(newUser)
@@ -31,6 +39,20 @@ class UserManagerDao {
             await this.userModel.findOneAndupdate({_id: uid}, userToRemplace)
         } catch (error) {
             return new Error(error)
+        }
+    }
+    updateUserPassword = async (userId, newPassword) => {
+        try {
+            const user = await this.userModel.findById({_id: userId});
+            if (!user) {
+            throw new Error('Usuario no encontrado');
+            }
+            user.password = newPassword;
+            await user.save();
+            return user;
+        } catch (error) {
+            console.error('Error al actualizar la contraseña del usuario:', error);
+            throw error;
         }
     }
     async delete(uid){

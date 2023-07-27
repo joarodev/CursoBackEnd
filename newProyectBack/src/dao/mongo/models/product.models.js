@@ -20,7 +20,8 @@ const productSchema = new Schema({
         type: String,
         unique: true,
         required: true,
-    }
+    },
+    owner: { type: String, default: 'admin' },
 })
 
 productSchema.plugin(mongoosePaginate)

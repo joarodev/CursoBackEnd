@@ -36,7 +36,7 @@ exports.envConfig = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
 
 /* MAIL */
-    GMAIL_USER_APP: process.env.GMAIL_USER_APP,
+    GMAIL_EMAIL_APP: process.env.GMAIL_EMAIL_APP,
     GMAIL_PASS_APP: process.env.GMAIL_PASS_APP,
 
 /* TWILIO */

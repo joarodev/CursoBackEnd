@@ -23,5 +23,12 @@ routerViews.get("/error", (req, res) =>{
         style: "index.css"
     })
 })
+routerViews.get("/reset-password", (req, res) => {
+    res.render("reqEmail")
+})
+
+/* routerViews.get("/reset-password:token", (req, res) => {
+    res.render("resetPassword")
+}) */
 
 module.exports = routerViews

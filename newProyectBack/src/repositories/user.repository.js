@@ -8,8 +8,14 @@ class UserRepository {
     getUser(pid){
         return this.dao.getById(pid)
     }
+    getEmail(email){
+        return this.dao.getByEmail(email)
+    }
     createUser(newUser){
         return this.dao.create(newUser)
+    }
+    updateUserPassword(uid,newPassword){
+        return this.dao.updateUserPassword(uid, newPassword)
     }
     updateUser(pid){
         return this.dao.update(pid)

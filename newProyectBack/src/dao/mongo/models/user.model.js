@@ -16,15 +16,15 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        lowercase: true, 
-        unique: true, 
+        lowercase: true,
+        unique: true,
         required: [true, "can't be blank"],
-        match: [/\S+@\S+\.\S+/, 'is invalid'], 
+        match: [/\S+@\S+\.\S+/, 'is invalid'],
         index: true},
     age: { type: Number, required: true },
     password: { type: String, required: true },
     cart: { type: Schema.Types.ObjectId, ref: 'carritos' },
-    role: { type: String, default: 'user' },
+    role: { type: String, enum: ['user', 'admin', 'premium'], default: 'user' },
 })
 
 userSchema.plugin(mongoosePaginate)
