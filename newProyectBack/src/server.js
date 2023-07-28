@@ -13,18 +13,22 @@ const { initPassport } = require('./config/passport.config')
 const { 
     initPassportJWT, 
     initPassportGitHub } = require('./jwt/passport-jwt')
-    //VIEWS
-    const hbs = require('express-handlebars')
-    //DONENV
+//VIEWS
+const hbs = require('express-handlebars')
+//DONENV
     
-    require("dotenv").config()
-    const {envConfig} = require("./config/config")
+require("dotenv").config()
+const {envConfig} = require("./config/config")
     
     //middleware error
-    const { errorHandler } = require('./middlewares/error.middleware')
+const { errorHandler } = require('./middlewares/error.middleware')
 
 const  {Server: ServerHTTP} = require("http")
- 
+
+//swagger
+const swaggerUiExpress = require("swagger-ui-express")
+const swaggerjsDoc = require("swagger-jsdoc")
+
 const app = express()
 const serverHttp = ServerHTTP(app)
 //const io = ServerIO(serverHttp)
@@ -50,6 +54,23 @@ app.use(passport.initialize())
 app.engine('hbs', hbs.engine({extname: 'hbs', defaultLayout: 'main', layoutDir: __dirname + '/views/layouts'}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+
+//swagger
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.1",
+        info:{
+            title: "Documentación de AppleShop",
+            description: "Esta es la documentacion de AppleShops"
+        }
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+const specs = swaggerjsDoc(swaggerOptions)
+app.use("/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+
+
 
 // Logger
 app.use(loggerMiddleware)
