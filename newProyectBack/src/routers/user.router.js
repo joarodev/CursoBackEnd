@@ -1,5 +1,5 @@
 const {Router} = require("express")
-const {getUser, createUsers, deleteUser, getUserById, updateUsers, getUsers} = require("../controllers/user.controller")
+const {getUser, createUsers, deleteUser, updateUsers, getUsers, roleUser} = require("../controllers/user.controller")
 const { authorization } = require("../jwt/passport-jwt")
 const passport = require("passport")
 
@@ -27,6 +27,11 @@ routerUser
         passport.authenticate('jwt', { session: false }),
         authorization("admin"),
         updateUsers)
+    .put(
+        "/premium/:uid",
+        passport.authenticate('jwt', { session: false }),
+        roleUser
+    )
     .delete(
         "/:uid", 
         passport.authenticate('jwt', { session: false }),

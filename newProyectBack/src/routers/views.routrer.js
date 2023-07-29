@@ -26,6 +26,9 @@ routerViews.get("/error", (req, res) =>{
 routerViews.get("/reset-password", (req, res) => {
     res.render("reqEmail")
 })
+routerViews.get("/create-product", (req, res) => {
+    res.render("createProd")
+})
 
 /* routerViews.get("/reset-password:token", (req, res) => {
     res.render("resetPassword")

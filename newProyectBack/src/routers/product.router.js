@@ -23,6 +23,7 @@ routerProduct.get(
     
 routerProduct.post(
     "/",
+    passport.authenticate('jwt', { session: false }),
     products.addProduct)
         
 routerProduct.put(
@@ -38,7 +39,7 @@ routerProduct.delete(
     
     routerProduct.get(
         "/mockingproducts",
-            passport.authenticate("jwt", { session: false }),
+        passport.authenticate("jwt", { session: false }),
         authUserandAdmin(),
         products.mockingProducts)
     

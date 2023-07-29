@@ -20,6 +20,9 @@ class UserRepository {
     updateUser(pid){
         return this.dao.update(pid)
     }
+    updateRole(uid, newRole){
+        return this.dao.updateRole(uid, newRole)
+    }
     deleteUser(pid){
         return this.dao.delete(pid)
     }

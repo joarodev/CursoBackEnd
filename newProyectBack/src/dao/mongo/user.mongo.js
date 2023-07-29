@@ -41,6 +41,19 @@ class UserManagerDao {
             return new Error(error)
         }
     }
+    async updateRole(uid, newRole){
+        try {
+            const user = await this.userModel.findById({_id: uid})
+            if(!user){
+                throw new Error("Usuario no encontrado")
+            }
+            user.role = newRole;
+            await user.save();
+            return user
+        } catch (error) {
+            return new Error(error)
+        }
+    }
     updateUserPassword = async (userId, newPassword) => {
         try {
             const user = await this.userModel.findById({_id: userId});

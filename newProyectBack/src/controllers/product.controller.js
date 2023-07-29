@@ -63,29 +63,51 @@ class ProductController {
 
     addProduct = async (req, res, next)=>{
         try {
-            const newProduct = req.body
+            const {title, description, thumbnail, price, stock, code} = req.body
+            console.log(req.user)
+            const userRole = req.user.role
 
-            if(!newProduct){
+            if(userRole === "user"){
+                req.logger.error("No tiene el rol necesario para crear un producto")
+            }
+
+            
+            if(!title || !description || !thumbnail || !price || !stock || !code){
                 CustomError.createError({
                     name: "Add product error",
                     cause: LoginUserGitHub({
-                        title: newProduct.title
+                        title: title
                     }),
                     message: "Product not added to cart",
                     code: EError.INVALID_TYPE_ERROR
                 })
             }
-            console.log(newProduct.title)
+            
+            let owner = "admin"
+            if(userRole === "premium"){
+                owner = req.user._id
+            }
+            const newProduct = {
+                title: title,
+                description: description,
+                thumbnail: thumbnail,
+                price: price,
+                stock: stock,
+                code: code,
+                owner: owner
+            }
+            console.log("New Producto es---------------------:", newProduct)
+
+            console.log(`El nuevo producto es ${newProduct.title} y fue creado por ${owner}`)
             let result = await productService.createProduct(newProduct)
-            let subjet = "Nuevo Productos Creados"
-            let html = `<h1> Producto ${newProduct.title} creado con exito</h1>`
+            let subjet = "Nuevo Producto Creado"
+            let html = `<h1> Producto ${newProduct.title} creado con exito</h1><br>
+                        <h3>Create by: ${owner}</h3>`
             sendEmail("joaquinrodriguez0012@gmail.com", subjet, html)
-            console.log(result)
+            console.log("Producto final-----------",result)
     
-            res.status(200).send({
-                status: 'success',
-                payload: result
-            })
+            req.logger.info("Producto creado correctamente")
+            res.send({ message: "success", payload: result })
         } catch (error) {
             req.logger.http('Error al agregar un producto', error);
             req.logger.error('Error al agregar un producto', error);

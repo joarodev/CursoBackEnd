@@ -21,7 +21,11 @@ const productSchema = new Schema({
         unique: true,
         required: true,
     },
-    owner: { type: String, default: 'admin' },
+    owner: { 
+        type: String,
+        ref: "usuarios",
+        default: "admin"
+    },
 })
 
 productSchema.plugin(mongoosePaginate)
