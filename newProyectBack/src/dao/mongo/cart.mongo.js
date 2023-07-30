@@ -80,10 +80,27 @@ class CartDaoMongo {
                     {$push: {products: {product: pid, quantity}}},
                     {new: true, upsert: true}
                 )
-                res.send("producto añadido")
+                req.logger.info("")
             }
         } catch (error) {
             
+        }
+    }
+
+    async updateProductsCart(cid, productsNoStock){
+        try {
+            let cart = await CartModel.findById({_id: cid})
+            console.log(cart)
+            console.log("PNS DESDE MONGO: ",productsNoStock)
+            if (!cart){
+                console.log("Problema al encontrar el carrito")
+            }
+            cart.products = productsNoStock;
+            await cart.save();
+            console.log("carrito actualizado correctamente")
+            return cart
+        } catch (error) {
+            console.log(error)
         }
     }
 

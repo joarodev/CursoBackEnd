@@ -20,6 +20,10 @@ class CartRepository {
     updateProduct(cid, pid, quantity){
         return this.dao.update(cid, pid, quantity)
     }
+    updateProductsCart(cid, prodNoStock){
+        return this.dao.updateProductsCart(cid, prodNoStock)
+    }
+    
     deleteProduct(cid, pid){
         return this.dao.deleteProduct(cid, pid)
     }

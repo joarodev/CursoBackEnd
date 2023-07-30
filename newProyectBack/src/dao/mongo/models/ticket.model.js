@@ -17,6 +17,10 @@ const ticketSchema = new Schema({
     type: Number, 
     required: true 
   },
+  products: {
+    type: String,
+    required: true
+  },
   purchaser: { 
     type: String, 
     required: true 

@@ -17,24 +17,20 @@ cartRouter
     //obtener carritos
     .get(
         '/',
-        authorization("admin"),
         get)
     //obtener carrito
     .get(
         '/:cid',
         passport.authenticate("jwt", { session: false }),
-        authorization("admin"),
         getCartById)
     //crear carrito
     .post(
-        '/:uid', 
-        authUserandAdmin(),
+        '/:uid',
         create)
     //añadir producto al carrito
     .put(
         '/:cid/product/:pid',
         passport.authenticate("jwt", { session: false }),
-        authUserandAdmin(),
         addProduct)
     //
     .put(
@@ -58,7 +54,6 @@ cartRouter
     .post(
         "/:cid/pucharse",
         passport.authenticate("jwt", { session: false }),
-        authUserandAdmin(),
         cartPurchase)
         
 

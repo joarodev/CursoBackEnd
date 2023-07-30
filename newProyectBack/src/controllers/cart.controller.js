@@ -51,9 +51,19 @@ class CartController {
         // valid product id
         const product= await productService.getProduct(pid)
 
-        if (!product) return res.status(400).send({status:'error',message:'El producto indicado no existe'})
+        const user = req.user;
 
-        if (!req.user) return res.status(400).send({status:'userNotLogedIn',message:'Usuario no registrado'})
+        if (!product){
+            req.logger.warn("el producto no existe, prueba con otro id")
+            req.logger.http("el producto no existe, prueba con otro id")
+        }
+
+        if (!user) return res.status(400).send({status:'userNotLogedIn',message:'Usuario no registrado'})
+
+        if (user.role === 'premium' && product.owner === user.email) {
+            req.logger.info("No puedes agregar tu propio producto al carrito")
+          }
+
         const quantity = req.body.quantity | 1 
 
         try {
@@ -154,10 +164,10 @@ class CartController {
                 const quantity = item.quantity
                 const stock = item.product.stock
                 const pid = item.product._id
-
+                console.log("ITEM QUANTITY: ", quantity)
                 // Verifica que el producto exista y tenga suficiente stock
                 const existingProduct = await productService.getProduct(pid);
-                console.log("Producto stock"+existingProduct.stock)
+                console.log("Producto stock  "+existingProduct.stock)
                 if (!existingProduct) {
                     return res
                     .status(404)
@@ -172,19 +182,18 @@ class CartController {
 
                 } else {
                     // Actualiza el stock del producto
-                    ("quantity"+quantity)
                     const updatedStock = existingProduct.stock - quantity;
-                    console.log("stock update::::"+ updatedStock)
+                    console.log("stock update:  "+ updatedStock)
                     // Actualiza el stock de los productos en la base de datos
                     await productService.update(pid, {stock: updatedStock})
                 }
             }
-            // Realiza cualquier otra lógica necesaria para finalizar la compra
+
             const productsDisponibles = cart.products.filter((product) => !productsNoStock.includes(product.product._id));
             console.log("Productos disponibles:", productsDisponibles);
-                
-                if (productsNoStock.length > 0) {
 
+                if (productsNoStock.length > 0) {
+                    console.log("Productos sin stock:  --------", productsNoStock)
                     const ticketData = await ticketService.createTicket({
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
@@ -192,17 +201,22 @@ class CartController {
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     })
                     console.log("sin stock"+ticketData.amount)
-    
+
+                    await cartService.updateProductsCart(cid, productsNoStock)
+
+                    console.log("PRODUCTS NOT STOCK-------------", productsNoStock)
+                    req.logger.http('Proceso de compra finalizada con exito, los productos que están a falta de stock son: ', productsNoStock);
+                    req.logger.info('Proceso de compra finalizada con exito, los productos que están a falta de stock son: ', productsNoStock);
                     res.send({
-                        success: false,
+                        success: "ok",
                         message: "Algunos productos no tienen suficiente stock",
                         ticket: ticketData,
                         unavailableProducts: productsNoStock
                     })
+
                 } else {
                     const amountt = productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0);
                     console.log("amouunt"+ amountt)
-
                     const ticketData = await ticketService.createTicket({
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
@@ -211,21 +225,21 @@ class CartController {
                     })
                     console.log("TicketData:", ticketData);
 
+                    req.logger.http('Proceso de compra finalizada con exito', ticketData);
+                    req.logger.info('Proceso de compra finalizada con exito', ticketData);
+                    await cartService.deleteAllProducts(cid);
                     res.send({
-                        success: true,
-                        message: "Proceso de compra finalizado con éxito",
+                        success: "ok",
+                        message: "Compra realizada con exito",
                         ticket: ticketData,
                     })
-                    req.logger.http('Proceso de compra finalizada con exito', error);
-                    req.logger.info('Proceso de compra finalizada con exito', error);
-                    await cartService.deleteAllProducts(cid);
-                }
+            }
         } catch (error) {
             req.logger.http('Error al finalizar la compra', error);
             req.logger.error('Error al finalizar la compra', error);
             res.status(500).send({ error: 'Error al finalizar el proceso de compra' });
         }
-    };
-
+    }
 }
+
 module.exports = new CartController()

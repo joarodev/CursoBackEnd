@@ -135,11 +135,11 @@ const authorization = (role) => {
 
 const authUserandAdmin = () => {
     return async (req, res, next) =>{
+        console.log(req.user)
         if (!req.user)
-            return res.status(401).send({ status: "error", error: "error" })
-        if (req.user && (req.user.role === 'admin' || req.user.role === 'user')) {
-        } else {
-          res.status(403).json({ error: 'Acceso denegado. Inicia sesión para realizar esta acción' });
+            req.logger.error("Inicia sessión para realizar esta acción")
+        if (!req.user.role === 'admin' || !req.user.role === 'user' || !req.user.role === "premium") {
+            req.logger.error("No cuentas con el rol necesario para realizar esta acción")
         }
         next()
     }
