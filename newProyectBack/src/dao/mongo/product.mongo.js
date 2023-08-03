@@ -42,10 +42,4 @@ class ProductManagerDao{
     }
 }
 
-/* class Product {
-    constructor(first, last){
-        
-    }
-} */
-
 module.exports = ProductManagerDao

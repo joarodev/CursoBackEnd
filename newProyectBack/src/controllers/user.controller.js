@@ -70,6 +70,7 @@ class UserController {
     deleteUser = async (req, res) => {
         try{
             let{uid} = req.params
+            
             res.send("deleteUser")
         } catch(error){
             console.log(error)

@@ -200,8 +200,6 @@ class CartController {
                         products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     })
-                    console.log("sin stock"+ticketData.amount)
-
                     await cartService.updateProductsCart(cid, productsNoStock)
 
                     console.log("PRODUCTS NOT STOCK-------------", productsNoStock)
@@ -220,7 +218,7 @@ class CartController {
                     const ticketData = await ticketService.createTicket({
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
-                        products: cart.products.map((item) => item.product),
+                        products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     })
                     console.log("TicketData:", ticketData);

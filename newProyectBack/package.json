@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js --mode production",
-    "start": "node src/server.js --mode development"
+    "start": "node src/server.js --mode development",
+    "test": "mocha test/Cart.test.js"
   },
   "author": "",
   "license": "ISC",
@@ -42,6 +42,8 @@
     "winston": "^3.10.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.0.2"
+    "@faker-js/faker": "^8.0.2",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   }
 }

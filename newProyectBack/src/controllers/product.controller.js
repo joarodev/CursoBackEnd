@@ -85,7 +85,7 @@ class ProductController {
             
             let owner = "admin"
             if(userRole === "premium"){
-                owner = req.user._id
+                owner = req.user.username
             }
             const newProduct = {
                 title: title,
