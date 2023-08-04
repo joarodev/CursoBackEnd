@@ -17,6 +17,7 @@ cartRouter
     //obtener carritos
     .get(
         '/',
+        passport.authenticate("jwt", { session: false }),
         get)
     //obtener carrito
     .get(
@@ -26,6 +27,7 @@ cartRouter
     //crear carrito
     .post(
         '/:uid',
+        passport.authenticate("jwt", { session: false }),
         create)
     //añadir producto al carrito
     .put(

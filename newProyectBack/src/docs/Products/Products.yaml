@@ -4,6 +4,8 @@ paths:
       summary: obtiene todos los productos
       tags:
         - Product
+      security:
+        - cookieAuth: []
       responses:
         "200":
           description: Los productos fueron obtenidos correctamente
@@ -15,6 +17,7 @@ paths:
                   $ref: "#components/schemas/Product"
         "500":
           description: Error interno del server, usualmente generado por una query defectuosa
+
   /api/product/{pid}:
     get:
       summary: obtiene un producto por su ID
@@ -27,6 +30,8 @@ paths:
           description: El id del producto a solicitar
           schema:
             type: string
+      security:
+        - cookieAuth: []
       responses:
         "200":
           description: El producto fue obtenido correctamente
@@ -47,6 +52,8 @@ paths:
           description: El id del producto a actualizar
           schema:
             type: string
+      security:
+        - cookieAuth: []
       requestBody:
         required: true
         content:
@@ -69,6 +76,8 @@ paths:
           description: El id del producto a eliminar
           schema:
             type: string
+      security:
+        - cookieAuth: []
       responses:
         "201":
           description: Producto eliminado correctamente
@@ -79,6 +88,8 @@ paths:
       summary: Crea un nuevo producto.
       tags:
         - Product
+      security:
+        - cookieAuth: []
       requestBody:
         required: true
         content:
