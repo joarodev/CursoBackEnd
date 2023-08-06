@@ -54,7 +54,7 @@ cartRouter
         deleteAllProducts)
 
     .post(
-        "/:cid/pucharse",
+        "/:cid/puchrarse",
         passport.authenticate("jwt", { session: false }),
         cartPurchase)
         

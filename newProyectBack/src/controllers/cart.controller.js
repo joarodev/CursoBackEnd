@@ -193,38 +193,41 @@ class CartController {
             console.log("Productos disponibles:", productsDisponibles);
 
                 if (productsNoStock.length > 0) {
+
                     console.log("Productos sin stock:  --------", productsNoStock)
-                    const ticketData = await ticketService.createTicket({
+                    await cartService.updateProductsCart(cid, productsNoStock)
+                    console.log("PRODUCTS NOT STOCK-------------", productsNoStock)
+
+                    const ticketData = {
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
                         products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
-                    })
-                    await cartService.updateProductsCart(cid, productsNoStock)
-
-                    console.log("PRODUCTS NOT STOCK-------------", productsNoStock)
+                    }
+                    const newTicket = await ticketService.createTicket(ticketData)
                     req.logger.http('Proceso de compra finalizada con exito, los productos que están a falta de stock son: ', productsNoStock);
                     req.logger.info('Proceso de compra finalizada con exito, los productos que están a falta de stock son: ', productsNoStock);
                     res.send({
                         success: "ok",
                         message: "Algunos productos no tienen suficiente stock",
-                        ticket: ticketData,
+                        ticket: newTicket,
                         unavailableProducts: productsNoStock
                     })
 
                 } else {
                     const amountt = productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0);
                     console.log("amouunt"+ amountt)
-                    const ticketData = await ticketService.createTicket({
+                    const ticketData = {
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
                         products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
-                    })
+                    }
                     console.log("TicketData:", ticketData);
 
                     req.logger.http('Proceso de compra finalizada con exito', ticketData);
                     req.logger.info('Proceso de compra finalizada con exito', ticketData);
+                    const newTicket = await ticketService.createTicket(ticketData)
                     await cartService.deleteAllProducts(cid);
                     res.send({
                         success: "ok",

@@ -2,40 +2,40 @@ const { TicketModel } = require("../mongo/models/ticket.model");
 
 class TicketDaoMongo{
     constructor(){
-        this.product = TicketModel
+        this.ticket = TicketModel
     }
 
     async get(){
         try{
-            return await this.product.find({})
+            return await this.ticket.find({})
         }catch(err){
             return new Error(err)
         }
     }
     async getById(tid){
         try{
-            return await this.product.findOne({_id: tid})
+            return await this.ticket.findOne({_id: tid})
         } catch(error){
             return new Error(error)
         }
     }
     async create(newTicket){
         try {
-            return await this.product.create(newTicket)
+            return await this.ticket.create(newTicket)
         } catch (error) {
             return new Error(error)
         }
     }
     async update(tid, ticketToRemplace){
         try {
-            await this.product.updateOne({_id: tid}, ticketToRemplace)
+            await this.ticket.updateOne({_id: tid}, ticketToRemplace)
         } catch (error) {
             return new Error(error)
         }
     }
     async delete(tid){
         try {
-            return await this.product.deleteOne({_id: tid})
+            return await this.ticket.deleteOne({_id: tid})
         } catch (error) {
             return new Error(error)
         }

@@ -64,8 +64,9 @@ class SessionController {
     }
 
     register = async (req, res) => {
+        const { username } = req.body
         console.log('Usuario registrado')
-        res.send({})
+        res.send({status: "success", payload: username})
     }
     failLogin = (req, res) => {
         res.clearCookie('coderCookieToken')
@@ -163,7 +164,7 @@ class SessionController {
     logout = (req, res) => {
         res.clearCookie('coderCookieToken')
         console.log('user logout')
-        res.redirect('/login')
+        res.send("user logout")
     }
 
     current = (req, res) => {
@@ -171,7 +172,7 @@ class SessionController {
         console.log(user)
         let userCurrent = new UserDto(user)
         //console.log(userCurrent)
-        res.send({status: "Succes", userCurrent})
+        res.send({status: "success", payload: userCurrent})
     }
 }
 

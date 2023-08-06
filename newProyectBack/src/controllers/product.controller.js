@@ -12,14 +12,24 @@ class ProductController {
             try {
                 const products = mockingService.generateMockProducts();
                 console.log(products);
-                res.send({ status: 'success', payload: products });
+                res.status(200).send({ status: 'success', payload: products });
             } catch (error) {
                 req.logger.http('Error al encontrar los productos en la base de datos', error);
                 req.logger.error('Error al encontrar los productos en la base de datos', error);
             }
         }
-    
-    
+    getProductsJson = async (req,res) => {
+        try {
+            let products = await productService.getProducts()
+            res.status(200).send({
+                status: 'success',
+                payload: products
+            })
+        } catch (error) {
+            req.logger.http('Error al encontrar los productos', error);
+            req.logger.warn("Error al encontrar los productos", error);
+        }
+    }
     getProducts = async (req, res) => {
         try {
             const { page = 1 } = req.query
@@ -107,7 +117,7 @@ class ProductController {
             console.log("Producto final-----------",result)
     
             req.logger.info("Producto creado correctamente")
-            res.send({ message: "success", payload: result })
+            res.status(200).send({ message: "success", payload: result })
         } catch (error) {
             req.logger.http('Error al agregar un producto', error);
             req.logger.error('Error al agregar un producto', error);
@@ -133,22 +143,6 @@ class ProductController {
                 req.logger.http("No se ah ingresado todos los datos, no se creó el producto")
             }
 
-            if(!!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
-                CustomError.createError({
-                    name: "Add product error",
-                    cause: ModificationProductError({
-                        title: modification.title,
-                        description: modification.description,
-                        price: modification.price,
-                        Code: !modification.code,
-                        Stock: modification.stock,
-                        category: modification.category,
-                    }),
-                    message: "Error login user",
-                    code: EError.INVALID_TYPE_ERROR
-                })
-            }
-
             let prodToRemplace = {
                 title: modification.title,
                 description: modification.description,
@@ -161,20 +155,24 @@ class ProductController {
 
             const user = req.user;
 
-            if(user.role === "premium" && product.owner !== user.email){
+            if(user.role !== "premium" && product.owner !== user.email){
                 req.logger.error("No tienes los permisos necesarios para realizar esta acción")
-                res.logger.htpp("No tienes los permisos necesarios para realizar esta acción")
+                req.logger.http("No tienes los permisos necesarios para realizar esta acción")
             }
 
-            let result = await productService.update(pid, prodToRemplace)
+            if(user.role === "admin" || user.role === "premium" && product.owner === user.email){
 
-            req.logger.info("Se modifico el producto")
-            res.send({
-                status: "success",
-                message: "Se modifico el producto",
-                payload: result,
-            })
-            
+                let result = await productService.update(pid, prodToRemplace)
+
+                req.logger.info("Se modifico el producto")
+                res.status(200).send({
+                    status: "success",
+                    payload: result,
+                })
+            } else {
+                req.logger.error("No tienes los permisos necesarios para realizar esta acción")
+                req.logger.http("No tienes los permisos necesarios para realizar esta acción")
+            }
         } catch (error) {
             req.logger.http('Error al actualizar producto', error);
             req.logger.error('Error al actualizar producto', error);
@@ -197,15 +195,15 @@ class ProductController {
 
         if(user.role === "premium" && product.owner !== user.email){
             req.logger.error("No tienes los permisos necesarios para realizar esta acción")
-            res.logger.htpp("No tienes los permisos necesarios para realizar esta acción")
+            req.logger.htpp("No tienes los permisos necesarios para realizar esta acción")
         }
 
-        let result = await productService.delete(pid)
+        let result = await productService.deleteProduct(pid)
         req.logger.info("Producto eliminado correctamente")
         res.send({
             status: "success",
             message: "Producto eliminado correctamente",
-            payload: result
+            payload: product, result
         })
     } catch (error) {
         req.logger.http('Error al borrar producto', error);

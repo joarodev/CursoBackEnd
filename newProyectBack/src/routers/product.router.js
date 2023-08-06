@@ -9,6 +9,12 @@ const products = new ProductController()
 const routerProduct = Router()
 
 routerProduct.get(
+    '/',
+    passportAuth('jwt', { session: false }),
+    authUserandAdmin(),
+    products.getProductsJson)
+
+routerProduct.get(
     '/products',
     passportAuth('jwt', { session: false }),
     authUserandAdmin(),
@@ -19,13 +25,12 @@ routerProduct.get(
     passport.authenticate('jwt', { session: false }),
     authUserandAdmin(),
     products.getProduct)
-    
-    
+
 routerProduct.post(
     "/",
     passport.authenticate('jwt', { session: false }),
     products.addProduct)
-        
+
 routerProduct.put(
     "/:pid",
     passport.authenticate('jwt', { session: false }),
@@ -33,7 +38,7 @@ routerProduct.put(
 
 routerProduct.delete(
     "/:pid",
-    passport.authenticate("current", {session: false}),
+    passport.authenticate("jwt", {session: false}),
     authorization("admin"),
     products.deleteProduct)
     

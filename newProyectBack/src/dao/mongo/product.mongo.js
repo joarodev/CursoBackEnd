@@ -29,6 +29,8 @@ class ProductManagerDao{
     async update(pid, prodToRemplace){
         try {
             await this.productModel.updateOne({_id: pid}, prodToRemplace)
+            const productUpdate = this.productModel.findOne({_id: pid})
+            return productUpdate
         } catch (error) {
             return new Error(error)
         }

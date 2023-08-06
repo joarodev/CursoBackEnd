@@ -38,7 +38,7 @@ routerSession
             session: false,
         }), register)
     
-    .post("/register", async (req, res, next)=>{
+    /* .post("/register", async (req, res, next)=>{
         try {
             const {first_name, last_name, email} = req.body
 
@@ -58,7 +58,7 @@ routerSession
             next()
             console.log(error)
         }
-    })
+    }) */
 
     .get("/failRegister", failRegister)
 
