@@ -218,7 +218,7 @@ class CartController {
                     const amountt = productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0);
                     console.log("amouunt"+ amountt)
                     const ticketData = {
-                        code: uuid4(), //uuidv4
+                        code: uuid4(),
                         purchaser: req.user.email,
                         products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),

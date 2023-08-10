@@ -41,11 +41,4 @@ class TicketDaoMongo{
         }
     }
 }
-
-/* class Product {
-    constructor(first, last){
-        
-    }
-} */
-
 module.exports = TicketDaoMongo

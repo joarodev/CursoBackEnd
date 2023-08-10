@@ -7,22 +7,21 @@ const requester = supertest('http://localhost:8080')
 
 describe("Testing de session", ()=>{
     let cookie
-    it('El servicio debe registrar un usuario correctamente en la plataforma', async ()=>{
+    it('El servicio debe registrar un usuario correctamente en la plataforma', async () => {
         let userMock = {
-            username: "JOATEST4",
-            first_name: 'Joa Test4',
-            last_name: 'Rod test4',
-            email: 'joaTest4@gmail.com',
+            username: "JOATEST3",
+            first_name: 'Joa Test3',
+            last_name: 'Rod test3',
+            email: 'joaTest3@gmail.com',
             age: 22,
             password: '12345678'
-        }
-        const {_body} = await requester.post('/api/session/register').send(userMock)
-        console.log(_body)
-        expect(_body.payload).to.be.ok
-        //res.status(200).send({ status: "SUCCESS" }) -> en el register
-        //consol log de res y buscar el body
-    })
-    /* it('El servicio debe loguear un usuario correctamente y devolver la cookie', async ()=>{
+        };
+    
+        const response = await requester.post('/api/session/register').send(userMock);
+        console.log(response.body);
+        expect(response.body).to.be.ok;
+    });
+    it('El servicio debe loguear un usuario correctamente y devolver la cookie', async ()=>{
         let userMock = {
             email: 'joaTest3@gmail.com',
             password: '12345678'
@@ -44,20 +43,24 @@ describe("Testing de session", ()=>{
         const {_body} = await requester.get("/api/session/current").set("Cookie", [`${cookie.name}=${cookie.value}`])
         console.log("El body del current devuelve: ---",_body)
         expect(_body.payload.username).to.be.equal('joaTest3@gmail.com')
-    })
+    }) 
     it('Test logout user', async () => {
 
         const response = await requester.get('/api/session/logout').set('Cookie', [`${cookie.name}=${cookie.value}`]);
         expect(response.status).to.equal(200);
         expect(response.text).to.include('user logout');
-        //Verificamos
-        // Intentamos acceder a la ruta de current para verificar si realmente estamos deslogueados
+
         const currentResponse = await requester.get('/api/session/current')
-
-        // Verificamos que se haya borrado la cookie y no estemos logueados
-        expect(currentResponse.status).to.equal(401); // 401 Unauthorized
-
-        // También puedes verificar que la cookie se haya eliminado del encabezado de la respuesta
+        
+        expect(currentResponse.status).to.equal(401); 
         expect(currentResponse.headers['set-cookie']).to.be.undefined;
-    }); */
+    }); 
+    it("Test enviar email para restaurar la contraseña", async () => {
+        let email = "joaTest3@gmail.com";
+        
+        const response = await requester.post("/api/session/reset-password").send({ email });
+        console.log("El body del current devuelve: ---", response.body);
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal(`Se envio el correo de recuperacion a: ${email}`);
+    });
 })
