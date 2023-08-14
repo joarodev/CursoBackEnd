@@ -1,5 +1,4 @@
 const {cartService, productService, ticketService} = require("../services/index")
-const { CartModel } = require("../dao/mongo/models/cart.model")
 const uuid4 = require("uuid4")
 const { addToCart } = require("../utils/CustomError/info")
 const { EError } = require("../utils/CustomError/EErrors")

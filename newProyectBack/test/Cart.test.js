@@ -1,62 +1,79 @@
-const mongoose = require("mongoose")
-const cartDao = require("../src/dao/mongo/cart.mongo")
-const Assert = require("assert")
+const chai = require('chai')
+const supertest = require('supertest')
+
+const expect = chai.expect
+const requester = supertest('http://localhost:8080')
 
 
-mongoose.connect("mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority")
-const assert = Assert.strict
+describe("Testing de Carts", ()=>{
+    let cookie;
+    before(async () => {
+        // Realiza una solicitud de inicio de sesión para obtener la cookie
+        const loginResponse = await requester.post('/api/session/login')
+            .send({ email: 'adminCoder@coder.com', password: 'adminCod3r123' });
 
-describe("Testing de Carritos", ()=>{
-    before(function(){
-        this.cartDao = new cartDao()
-    })
-    beforeEach(function(){
-        // mongoose.connection.collections.users.drop()
-        this.timeout(15000)
-    })
-    //obtener todos los carritos
-    it("el dao debe poder obtener todos los carritos", async function(){
-        const result = await this.cartDao.get()
-        console.log("Test obtener todos los carritos", result)
-        assert.strictEqual(typeof result, "object")
-    })
-    //obtener un carrito
-    it("el dao debe poder obtener uno de los carritos", async function(){
-        const _id = "64c9c4b606d703c41d81f764"
-        const result = await this.cartDao.getById({_id})
-        console.log("Test obtener un carrito",result)
-        assert.strictEqual(typeof result, "object")
-    })
-    //crear un carrito
-    /* it("el dao debe poder crear un carrito", async function(){
-        const uid = "64c46d99c237a26207169c75"
-        const result = await this.cartDao.create(uid)
-        console.log("Test crear carrito", result)
-        assert.strictEqual(typeof result, "object")
-    })
-    //añadir un producto al carrito
-    it("el dao debe añadir dos cantidades de un producto al carrito creado", async function(){
-        const cid = "64c9c2833b8a0a8fcb9b160c"
-        const pid = "6462baf96761df59fba0c7c8"
-        const quantity = 2
+        // Obtiene la cookie de la respuesta
+        const cookieResult = loginResponse.headers['set-cookie'][0];
 
-        const result = await this.cartDao.addProduct(cid, pid, quantity)
-        console.log("Test de añadir prodyucto al carrito", result)
-        assert.strictEqual(typeof result, "object")
-    })
-    it("El dao debe poder borrar el producto del carrito", async function(){
-        const cid = "64c9c2833b8a0a8fcb9b160c"
-        const pid = "6462baf96761df59fba0c7c8"
+        expect(cookieResult).to.be.ok
 
-        const result = await this.cartDao.deleteProduct(cid, pid)
-        console.log("Test de borrar producto del carrito", result)
-        assert.strictEqual(typeof result, "object")
-    })
-    it("El dao debe poder borrar el carrito", async function(){
-        const cid = "64c9c2833b8a0a8fcb9b160c"
+        cookie = {
+            name: cookieResult.split("=")[0],
+            value: cookieResult.split("=")[1]
+        }
 
-        const result = await this.cartDao.delete(cid)
-        console.log("Test de borrar el carrito", result)
-        assert.strictEqual(typeof result, "object")
-    }) */
-})
+        expect(cookie.name).to.be.ok.and.eql('coderCookieToken')
+        expect(cookie.value).to.be.ok
+    });
+    it('El endpoint GET /api/cart debe devolver todos los carritos', async function () {
+        const {statusCode, _body, ok} = await requester.get("/api/product").set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+        console.log(_body)
+        expect(_body).to.have.property('payload').that.is.an('array');
+    });
+    it('El endpoint GET /api/cart/:cid debe devolver un carrito por su id', async function () {
+        const cid = "64d99e0f907f8a91b619ecdf"
+        const {statusCode, _body, ok} = await requester.get(`/api/cart/${cid}`).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+        console.log(_body)
+        expect(_body).to.be.an('object');
+    });
+    it('El endpoint POST /api/cart/:uid debe crear un carrito para el usuario', async () => {
+        const uid = "649a4ea5f978a70f8ed5dbd6"
+
+        const {statusCode, ok} = await requester.post(`/api/cart/${uid}`).set("Cookie", [`${cookie.name}=${cookie.value}`]); // Agrega la autorización necesaria
+
+        expect(statusCode).to.be.equal(200);;
+        expect(ok).to.be.equal(true);
+    })
+    it('El endpoint PUT /api/cart/:cid/product/:pid debe agregar un producto al carrito', async function () {
+        const pid = "6462bac96761df59fba0c7c4"
+        const cid = "64d99e0f907f8a91b619ecdf"
+        const {statusCode, ok} = await requester.put(`/api/cart/${cid}/product/${pid}`).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+    });
+    it('El endpoint DELETE /api/cart/:cid/product/:pid debe eliminar un producto del carrito', async function () {
+        const pid = "6462bac96761df59fba0c7c4"
+        const cid = "64d99e0f907f8a91b619ecdf"
+        const {statusCode, _body, ok} = await requester.delete(`/api/cart/${cid}/product/${pid}`).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+        console.log(_body)
+        expect(_body).to.be.an('object');;
+      });
+      it('El endpoint DELETE /api/cart/:cid debe eliminar un carrito', async function () {
+        const cid = "64c9c4b606d703c41d81f764"
+        const {statusCode, ok} = await requester.delete(`/api/cart/${cid}`).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+      });
+      it('El endpoint POST /api/cart/:cid/pucharse debe crear un ticket', async function () {
+        const cid = "64c9c4b606d703c41d81f764"
+        const {statusCode, ok} = await requester.post(`/api/cart/${cid}`).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+      });
+});

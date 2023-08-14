@@ -3,8 +3,9 @@ const {ProductModel} = require("../dao/mongo/models/product.models")
 const { format } = require("morgan")
 const mockingService = require("../utils/Faker")
 const { CustomError } = require("../utils/CustomError/CustomError")
-const { ModificationProductError } = require("../utils/CustomError/info")
+const { ModificationProductError, AddProductError } = require("../utils/CustomError/info")
 const { sendMail, sendEmail } = require("../utils/sendmail")
+const { EError } = require("../utils/CustomError/EErrors")
 
 class ProductController {
 
@@ -83,14 +84,15 @@ class ProductController {
 
             
             if(!title || !description || !thumbnail || !price || !stock || !code){
-                CustomError.createError({
+                /* CustomError.createError({
                     name: "Add product error",
-                    cause: LoginUserGitHub({
+                    cause: AddProductError({
                         title: title
                     }),
                     message: "Product not added to cart",
                     code: EError.INVALID_TYPE_ERROR
-                })
+                }) */
+                req.logger.error("Debes ingresar todos los datos del producto a crear")
             }
             
             let owner = "admin"
@@ -128,37 +130,30 @@ class ProductController {
     updateProduct = async (req, res) => {
         try {
             const { pid } = req.params
-            const modification = req.body
+            const {title, description, thumbnail, price, stock, code, category} = req.body
 
-            const product = productService.getProduct(pid)
+            const product = await productService.getProduct(pid)
             console.log("Product update: ", product)
 
             if(!product){
                 req.logger.error("No se ah encontrado el producto")
-                req.logger.http("No se ah encontrado el producto")
             }
 
-            if(!modification.title || !modification.description || !modification.price || !modification.thumbnail || !modification.code || !modification.stock || !modification.category ){
-                req.logger.error("No se ah ingresado todos los datos, no se creó el producto")
-                req.logger.http("No se ah ingresado todos los datos, no se creó el producto")
+            if(!title || !description || !price || !thumbnail || !code || !stock || !category ){
+                req.logger.error("No se ah ingresado todos los datos, no se actualizó el producto")
             }
 
             let prodToRemplace = {
-                title: modification.title,
-                description: modification.description,
-                price: modification.price,
-                thumbnail: modification.thumbnail,
-                code: modification.code,
-                stock: modification.stock,
-                category: modification.category
+                title: title,
+                description: description,
+                price: price,
+                thumbnail: thumbnail,
+                code: code,
+                stock: stock,
+                category: category
             }
 
             const user = req.user;
-
-            if(user.role !== "premium" && product.owner !== user.email){
-                req.logger.error("No tienes los permisos necesarios para realizar esta acción")
-                req.logger.http("No tienes los permisos necesarios para realizar esta acción")
-            }
 
             if(user.role === "admin" || user.role === "premium" && product.owner === user.email){
 

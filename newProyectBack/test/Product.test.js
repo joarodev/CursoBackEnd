@@ -1,65 +1,77 @@
-const mongoose = require("mongoose")
-const ProductDao = require("../src/dao/mongo/product.mongo")
-const Assert = require("assert")
+const chai = require('chai')
+const supertest = require('supertest')
 
+const expect = chai.expect
+const requester = supertest('http://localhost:8080')
 
-mongoose.connect("mongodb+srv://joarodDB:JoaRodDB3333@cluster0.rmh4eh5.mongodb.net/productsApp?retryWrites=true&w=majority")
-const assert = Assert.strict
 
 describe("Testing de products", ()=>{
-    before(function(){
-        this.productDao = new ProductDao()
-    })
-    beforeEach(function(){
-        // mongoose.connection.collections.users.drop()
-        this.timeout(15000)
-    })
-    //Traer los productos
-    it("El dao debe traer los productos de la base de datos", async function(){
-        const result = await this.productDao.get()
-        console.log("Test get:", result)
-        assert.strictEqual(Array.isArray(result), true)
-    })
-    //traer un producto
-    it('El dao debe traer un producto de la base de datos', async function(){
-        const _id = "6462bac96761df59fba0c7c4"
-        const result = await this.productDao.getById(_id)
-        console.log("Test getById",result)
-        assert.strictEqual(typeof result, "object")
-    })
-    //Crear un producto
-    it('El dao debe crear un producto en base de datos', async function(){
-        let productMock = {
-            title: 'iphone test',
-            description: 'iphone creado con el test mocha',
-            thumbnail: '',
-            price: 1,
-            stock: 10,
-            category: "Phone",
-            code: "a17328471s",
-            owner: "admin"
+    let cookie;
+    before(async () => {
+        // Realiza una solicitud de inicio de sesión para obtener la cookie
+        const loginResponse = await requester.post('/api/session/login')
+            .send({ email: 'adminCoder@coder.com', password: 'adminCod3r123' });
+
+        // Obtiene la cookie de la respuesta
+        const cookieResult = loginResponse.headers['set-cookie'][0];
+
+        expect(cookieResult).to.be.ok
+
+        cookie = {
+            name: cookieResult.split("=")[0],
+            value: cookieResult.split("=")[1]
         }
 
-        const result = await this.productDao.create(productMock)
+        expect(cookie.name).to.be.ok.and.eql('coderCookieToken')
+        expect(cookie.value).to.be.ok
+    });
+    it('El endpoint GET /api/product debe devolver todos los productos', async function () {
+        const {statusCode, _body, ok} = await requester.get("/api/product").set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+        console.log(_body)
+        expect(_body).to.have.property('payload').that.is.an('array');
+    });
+    it('El endpoint GET /api/product/:pid debe devolver un producto por su id', async function () {
+        const prodID = "64cff4fb1ded62791868e5aa"
+        const {statusCode, _body, ok} = await requester.get(`/api/product/${prodID}`).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+        console.log(_body)
+        expect(_body).to.be.an('object');
+    });
+    it('El endpoint POST /api/product/ debe crear un producto', async () => {
+        const newProd = {
+            title: "Iphone 11",
+            description: "Description iphone 11",
+            thumbnail: "",
+            price: 50,
+            stock: 14,
+            category: "phone",
+            code: "I$11"
+        }
+        const {statusCode, _body, ok} = await requester.post('/api/product').send(newProd).set("Cookie", [`${cookie.name}=${cookie.value}`]); // Agrega la autorización necesaria
 
-        const product = await this.productDao.getById({code: result.code})
-        console.log("Test create product test", product)
-        assert.strictEqual(typeof product, 'object')
+        expect(statusCode).to.be.equal(200);;
+        expect(ok).to.be.equal(true);
+        console.log(_body)
+        expect(_body).to.be.an('object');
     })
-    // modificar producto
-    it('El dao debe modificar un producto correctamente de la DB', async function(){
-            const _id = '6462bac96761df59fba0c7c4'
-            let productUpdate = {
-                title: 'iphone 7 plus'
-            }
-            const result = await this.productDao.update(_id, productUpdate)
-            const product = await this.productDao.getById(_id)
-            console.log("test modificar un producto de la base de datos", product)
-            assert.strictEqual(product.title, productUpdate.title)
-        })
-        it('El dao debe eliminar un usuario correctamente de la DB', async function(){
-                const _id = '6462bade6761df59fba0c7c6'
-                const result = await this.productDao.delete(_id)
-                assert.strictEqual(typeof result, 'object')
-            })
-})
+    it('El endpoint PUT /api/product/:pid debe actualizar un producto', async function () {
+        const pid = "64d6dc1dcdb4656e49df3271"
+        const updateProd = {
+            title: "Iphone 12",
+            description: "12 descripción",
+            thumbnail: "Http://rutadeimg.com",
+            price: 50,
+            stock: 14,
+            category: "phone",
+            code: "I$22134"
+        }
+        const {statusCode, _body, ok} = await requester.put(`/api/product/${pid}`).send(updateProd).set("Cookie", [`${cookie.name}=${cookie.value}`])
+        expect(statusCode).to.be.equal(200);
+        expect(ok).to.be.equal(true)
+        console.log(_body)
+        expect(_body).to.be.an('object');;
+      });
+});
