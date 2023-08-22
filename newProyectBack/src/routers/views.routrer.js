@@ -1,4 +1,5 @@
 const {Router} = require("express")
+const passport = require("passport")
 //const { loginView, registerView, productView, errorView } = require("../controllers/views.controller")
 
 const routerViews = Router()
@@ -28,6 +29,11 @@ routerViews.get("/reset-password", (req, res) => {
 })
 routerViews.get("/create-product", (req, res) => {
     res.render("createProd")
+})
+routerViews.get("/api/users/profil", passport.authenticate('jwt', { session: false }), (req, res) =>{
+    res.render("myProfile", {
+        style: "index.css"
+    })
 })
 
 /* routerViews.get("/reset-password:token", (req, res) => {

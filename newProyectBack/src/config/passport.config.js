@@ -26,8 +26,8 @@ const initPassport = () => {
                 }).lean()
                 try {
                     if (!userDB) return done(null, false)
-                    if (!isValidPassword(password, userDB))
-                        return done(null, false)
+                    if (!isValidPassword(password, userDB)) return done(null, false)
+                        await UserModel.findByIdAndUpdate(userDB._id, { last_connection: new Date() })
                     return done(null, userDB)
                 } catch (error) {
                     return done(error)

@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="api/product/products">Productos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/api/session/logout">Logout</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/api/users/profile">Perfil</a>
+            </li>
+      </ul>
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+<div>
+    <h1 class="text-center">Mi perfil</h1>
+        <div class="d-flex flex-direction-columns justify-content-center mb-3">
+            <h3>Nombre: {{ name }}</h3>
+            <h3>Email: {{ email }}</h3>
+            <h3>Rol: {{ role }}</h3>
+            <button><a href="/api/users/premium/{{ id }}">Cambiar a premium</a></button>
+        </div>
+        <div  class="d-flex flex-direction-columns justify-content-center mb-3">
+            <h4>Ingrese Identificación, Comprobante de domicilio, Comprobante de estado de cuenta</h4>
+        </div>
+        <form class="d-flex justify-content-center mb-3" id="cookieFormDocs" action="/api/users/{{ id }}/documents" method="POST" enctype="multipart/form-data">
+            <input class="m-3" name="document" type="file" placeholder="ingrese documentos" multiple></input>
+            <button class="btn btn-primary m-2" type="submit">Enviar</button>
+        </form>
+        <br>
+        <h2 class="text-center">Cargar imagen de perfil</h2>
+        <form class="d-flex justify-content-center mb-3" id="cookieFormDocs" action="/api/users/{{ id }}/profile" method="POST" enctype="multipart/form-data">
+            <input class="m-3" name="profileImage" type="file" placeholder="ingrese imagen de perfil"></input>
+            <button class="btn btn-primary m-2" type="submit">Enviar</button>
+        </form>
+</div>

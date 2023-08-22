@@ -70,7 +70,10 @@ routerSession
 
     .post("/reset-password-form", resetPassForm)
 
-    .get("/logout", logout)
+    .get(
+        "/logout",
+        passport.authenticate('jwt', { session: false }),
+        logout)
 
     .get(
         '/current',

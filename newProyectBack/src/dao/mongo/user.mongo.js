@@ -68,6 +68,67 @@ class UserManagerDao {
             throw error;
         }
     }
+    lastConnection = async (userId, Date) => {
+        try {
+            const user = await this.userModel.findById({_id: userId});
+            if (!user) {
+            throw new Error('Usuario no encontrado');
+            }
+            user.last_connection = Date;
+            await user.save();
+            return user;
+        } catch (error) {
+            console.error('Error al actualizar la contraseña del usuario:', error);
+            throw error;
+        }
+    }
+    uploadFile = async(userID, profileImage, productImage, documents) => {
+        const user = await this.userModel.findById({_id: userID});
+
+        if (!user) {
+            return null;
+        }
+
+        // Actualizar el estado del usuario con los documentos cargados
+        if (profileImage) {
+            user.profileImage = profileImage[0].path;
+        }
+        if (productImage) {
+            user.productImage = productImage[0].path;
+        }
+        if (documents) {
+            for (const doc of documents) {
+                user.documents.push({
+                    name: doc.originalname,
+                    reference: doc.path,
+                });
+            }
+        }
+        await user.save();
+        return user.documents;
+    }
+
+    checkDocs = async(userID) => {
+        const user = await this.userModel.findById(userID);
+
+        if (!user) {
+            return false;
+        }
+
+        // Verificar la presencia de documentos requeridos
+        const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+        const uploadedDocumentNames = user.documents.map(doc => doc.name);
+        const allRequiredDocumentsUploaded = requiredDocuments.every(doc => uploadedDocumentNames.includes(doc));
+
+        return allRequiredDocumentsUploaded;
+
+
+        //editar
+
+
+
+    }
+
     async delete(uid){
         try {
             return await this.userModel.findOneAndDelete({_id: uid})

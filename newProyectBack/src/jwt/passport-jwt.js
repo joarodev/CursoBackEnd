@@ -124,7 +124,7 @@ const initPassportGitHub = () => {
 const authorization = (role) => {
     return async (req, res, next) =>{
         console.log("role", role)
-        console.log("userrole: ", req.user.role)
+        console.log("userrole: ", req.user)
         if (!req.user)
             return res.status(401).send({ status: "error", error: "error" })
         if (req.user.role !== role)

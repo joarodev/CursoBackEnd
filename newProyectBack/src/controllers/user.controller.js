@@ -15,7 +15,7 @@ class UserController {
     getUser = async (req, res) => {
         try{
             let{uid} = req.params
-            let user = await productService.getUser(uid)
+            let user = await userService.getUser(uid)
             res.send({
                 success: "success", 
                 payload: user
@@ -46,27 +46,97 @@ class UserController {
     }
     roleUser = async (req, res, next) => {
         try {
-            const {uid} = req.params;
-            const newRole = req.body.role;
+            const { uid } = req.params;
 
-            if (newRole !== 'user' && newRole !== 'premium') {
-                req.logger.error("El rol debe ser `premium` o `User`")
+    // Verificar si los documentos necesarios están cargados antes de actualizar a premium
+        const documentsUploaded = await userService.checkDocs(uid);
+            
+        if (documentsUploaded) {
+            // Actualizar al usuario a premium
+            const updatedUser = await userService.updateRole(uid);
+        
+            if (!updatedUser) {
+                return res.status(404).send({ status: 'error', message: 'No se encontró el usuario' });
             }
-
-            const user = await userService.getUser(uid);
-
-            if (!user) {
-                req.logger.error("Error al encontrar el usuario en la base de datos")
-            }
-
-            const newUserRole = await userService.updateRole(uid, newRole)
-            console.log(newUserRole)
-
-            req.logger.info('Rol del usuario actualizado correctamente.', newUserRole);
+        
+            req.logger.info('Usuario actualizado a premium');
+            return res.status(200).send({ status: 'success', message: 'Usuario actualizado a premium' });
+        } else {
+            return res.status(400).send({ status: 'error', message: 'Cargue los documentos requeridos antes de actualizar a premium' });
+        }
         } catch (error) {
             req.logger.error('Error al cambiar el rol del usuario:', error);
         }
     };
+
+    profileUser = async (req, res) => {
+        try {
+            const {first_name, _id, role, email} = req.user
+            console.log(user)
+
+            res.render('myProfile', { 
+                id: _id,
+                name: first_name,
+                role: role,
+                email: email
+            });
+        } catch (error) {
+            console.log(error)
+            req.logger.error('Error al cargar el perfil', error);
+        }
+    }
+
+    uploadDocuments = async (req, res) =>{
+        const { uid } = req.params
+        const { document } = req.files;
+        console.log("uploadedFiles desde controller: ----", document)
+        console.log(document)
+        
+        const user = userService.getUser(uid)
+        if(!user){
+            req.logger.error("No se encontró el usuario")
+        }
+        console.log(user)
+
+        if(!document){
+            req.logger.error("No se subio el documento")
+        }
+
+        const userDocFiles = userService.uploadFileDocument(user._id, document)
+
+        //validación para doc
+        if(!userDocFiles)(
+            req.logger.error("error al subir el archivo"),
+            res.status(404).send({status: "error", message: "No se cargaron los archivos"})
+        )
+        
+        req.logger.info("Documentos subidos exitosamente")
+        return res.status(200).send({status: "success", message: "Documentos subidos exitosamente"})
+    }
+
+    uploadProdImage = async(req, res) => {
+        try {
+            res.status(200).send({
+                status: "success",
+                message: "Imagen de producto subido correctamente"
+            })
+        } catch (error) {
+            console.log(error)
+            req.logger.error("Error al subir la imagen del producto")
+        }
+    }
+    uploadProfileImage = async(req, res) => {
+        try {
+            res.status(200).send({
+                status: "success",
+                message: "Imagen de perfil subida correctamente"
+            })
+        } catch (error) {
+            console.log(error)
+            req.logger.error("Error al subir la imagen de perfil")
+        }
+    }
+
     deleteUser = async (req, res) => {
         try{
             let{uid} = req.params

@@ -17,11 +17,17 @@ class UserRepository {
     updateUserPassword(uid,newPassword){
         return this.dao.updateUserPassword(uid, newPassword)
     }
+    lastConnection(uid, date){
+        return this.dao.lastConnection(uid, date)
+    }
     updateUser(pid){
         return this.dao.update(pid)
     }
     updateRole(uid, newRole){
         return this.dao.updateRole(uid, newRole)
+    }
+    uploadFile(uid,documents){
+        return this.dao.uploadFile(uid, documents)
     }
     deleteUser(pid){
         return this.dao.delete(pid)

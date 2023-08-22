@@ -25,6 +25,13 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     cart: { type: Schema.Types.ObjectId, ref: 'carritos' },
     role: { type: String, enum: ['user', 'admin', 'premium'], default: 'user' },
+    documents: [
+        {
+            name: String,
+            reference: String
+        }
+    ],
+    last_connection: Date
 })
 
 userSchema.plugin(mongoosePaginate)

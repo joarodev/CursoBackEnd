@@ -27,7 +27,7 @@ class SessionController {
                 httpOnly: true,
             })
             /* res.status(200).send({ status: "SUCCESS" }) */
-            res.redirect("/api/product/products")
+            res.redirect("/api/users/profile")
         } catch (error) {
             next(error)
         }
@@ -161,7 +161,9 @@ class SessionController {
         }
     }
 
-    logout = (req, res) => {
+    logout = async (req, res) => {
+        const userId = req.user._id
+        await userService.lastConnection(userId, new Date())
         res.clearCookie('coderCookieToken')
         console.log('user logout')
         res.send("user logout")

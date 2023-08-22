@@ -22,6 +22,8 @@ const {envConfig} = require("./config/config")
     
     //middleware error
 const { errorHandler } = require('./middlewares/error.middleware')
+const path = require('path')
+const { loggerMiddleware } = require('./middlewares/logger.middleware')
 
 const  {Server: ServerHTTP} = require("http")
 
@@ -38,8 +40,6 @@ connectDB()
 //CONFIG:
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-const path = require('path')
-const { loggerMiddleware } = require('./middlewares/logger.middleware')
 app.use(express.static(path.join(__dirname,'public')))
 app.use(cookieParser(''))
 app.use(logger("dev"))
