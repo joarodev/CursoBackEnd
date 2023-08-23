@@ -79,7 +79,7 @@ app.use(loggerMiddleware)
 app.use("/",routerIndex)
 
 //Error middleware
-app.use(errorHandler)
+//app.use(errorHandler)
 
 app.listen(PORT, (err)=> {
     if (err) console.log('Erro en el servidor', err)

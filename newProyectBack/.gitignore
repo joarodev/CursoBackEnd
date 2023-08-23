@@ -2,4 +2,6 @@ node_modules/
 .env
 .env.development
 .env.production
-uploads/**
+src/public/uploads/documents/**
+src/public/uploads/products/**
+src/public/uploads/profile/**

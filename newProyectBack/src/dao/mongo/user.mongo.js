@@ -72,30 +72,33 @@ class UserManagerDao {
         try {
             const user = await this.userModel.findById({_id: userId});
             if (!user) {
-            throw new Error('Usuario no encontrado');
+                throw new Error('Usuario no encontrado');
             }
+
             user.last_connection = Date;
+
             await user.save();
             return user;
+            
         } catch (error) {
             console.error('Error al actualizar la contraseña del usuario:', error);
             throw error;
         }
     }
-    uploadFile = async(userID, profileImage, productImage, documents) => {
+    uploadFileDocument = async(userID, documents) => {
         const user = await this.userModel.findById({_id: userID});
 
         if (!user) {
-            return null;
+            throw new Error('Usuario no encontrado');
         }
 
         // Actualizar el estado del usuario con los documentos cargados
-        if (profileImage) {
+       /*  if (profileImage) {
             user.profileImage = profileImage[0].path;
         }
         if (productImage) {
             user.productImage = productImage[0].path;
-        }
+        } */
         if (documents) {
             for (const doc of documents) {
                 user.documents.push({

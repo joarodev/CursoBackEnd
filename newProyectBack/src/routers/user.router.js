@@ -3,19 +3,14 @@ const {getUser, createUsers, deleteUser, updateUsers, getUsers, roleUser, upload
 const { authUserandAdmin } = require("../jwt/passport-jwt")
 const passport = require("passport")
 const { uploader } = require("../utils/multer")
+const routerUploads = require("./uploads.router")
 
 const routerUser = Router()
 
 routerUser
-    .get(
-        "/users", 
-        passport.authenticate('jwt', { session: false }),
-        getUsers)
-    .get(
-        "/:uid", 
-        passport.authenticate('jwt', { session: false }),
-        getUser)
-    .post(
+    .get("/users", passport.authenticate('jwt', { session: false }), getUsers)
+    //.get("/:uid", passport.authenticate('jwt', { session: false }), getUser)
+    /* .post(
         "/", 
         passport.authenticate('jwt', { session: false }),
         createUsers)
@@ -26,26 +21,8 @@ routerUser
     .put(
         "/premium/:uid",
         passport.authenticate('jwt', { session: false }),
-        roleUser)
-    .get(
-        "/profile",
-        passport.authenticate('jwt', { session: false }),
-        profileUser)
-    .post(
-        "/:uid/documents",
-        passport.authenticate('jwt', { session: false }),
-        uploader.array('document', 5),
-        uploadDocuments)
-    .post(
-        "/:uid/products",
-        passport.authenticate('jwt', { session: false }),
-        uploader.array('productImage', 5),
-        uploadProdImage)
-    .post(
-        "/:uid/profile",
-        passport.authenticate('jwt', { session: false }),
-        uploader.single('profileImage', 5),
-        uploadProfileImage)
+        roleUser) */
+    .use("/profile", routerUploads)
     .delete(
         "/:uid", 
         passport.authenticate('jwt', { session: false }),

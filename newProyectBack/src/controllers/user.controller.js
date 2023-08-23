@@ -1,4 +1,5 @@
 const { userService } = require("../services")
+const { uploader } = require("../utils/multer")
 class UserController {
 
     getUsers = async (req, res) => {
@@ -10,14 +11,15 @@ class UserController {
             })
         } catch (error) {
             req.logger.error("no se encontraron usuarios")
+            console.log(error)
         }
     }
     getUser = async (req, res) => {
         try{
-            let{uid} = req.params
+            let { uid } = req.params
             let user = await userService.getUser(uid)
             res.send({
-                success: "success", 
+                success: "success",
                 payload: user
             })
         } catch(error){
@@ -50,15 +52,14 @@ class UserController {
 
     // Verificar si los documentos necesarios están cargados antes de actualizar a premium
         const documentsUploaded = await userService.checkDocs(uid);
-            
         if (documentsUploaded) {
             // Actualizar al usuario a premium
             const updatedUser = await userService.updateRole(uid);
-        
+
             if (!updatedUser) {
                 return res.status(404).send({ status: 'error', message: 'No se encontró el usuario' });
             }
-        
+
             req.logger.info('Usuario actualizado a premium');
             return res.status(200).send({ status: 'success', message: 'Usuario actualizado a premium' });
         } else {
@@ -72,7 +73,6 @@ class UserController {
     profileUser = async (req, res) => {
         try {
             const {first_name, _id, role, email} = req.user
-            console.log(user)
 
             res.render('myProfile', { 
                 id: _id,
@@ -120,19 +120,28 @@ class UserController {
                 status: "success",
                 message: "Imagen de producto subido correctamente"
             })
-        } catch (error) {
-            console.log(error)
+        } catch(error) {
+            console.log("Error al subir imagen del producto",error)
             req.logger.error("Error al subir la imagen del producto")
         }
     }
     uploadProfileImage = async(req, res) => {
         try {
+
+            const fileImage = req.file
+            console.log("Archivo por controlador", fileImage)
+
+            if(!fileImage){
+                req.logger.error("Error al enviar el archivo")
+                console.log("Error al enviar el archivo")
+            }
+
             res.status(200).send({
                 status: "success",
-                message: "Imagen de perfil subida correctamente"
+                message: "Imagen de perfil subida correctamente", fileImage
             })
         } catch (error) {
-            console.log(error)
+            console.log("Error al subir la imagen de perfil",error)
             req.logger.error("Error al subir la imagen de perfil")
         }
     }
