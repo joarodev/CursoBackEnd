@@ -34,21 +34,31 @@
         <div  class="d-flex flex-direction-columns justify-content-center mb-3">
             <h4>Ingrese Identificación, Comprobante de domicilio, Comprobante de estado de cuenta</h4>
         </div>
-        <form class="d-flex justify-content-center  mb-3" id="cookieFormDocs" action="/api/users/{{ id }}/documents" method="POST" enctype="multipart/form-data">
+        <form class="d-flex justify-content-center  mb-3" id="cookieFormDocs" action="/api/users/profile/{{ id }}/identification" method="POST" enctype="multipart/form-data">
             <h2 class="text-center">Identification</h2>
             <input class="m-3" name="identification" type="file" placeholder="Identification"></input>
-            <br>
+            <button class="btn btn-primary m-2" type="submit">Enviar</button>
+        </form>
+        <form class="d-flex justify-content-center  mb-3" id="cookieFormDocs" action="/api/users/profile/{{ id }}/ProofOfAddress" method="POST" enctype="multipart/form-data">
             <h2 class="text-center">Proof of address</h2>
             <input class="m-3" name="ProofOfAddress" type="file" placeholder="Proof of address"></input>
-            <br>
+            <button class="btn btn-primary m-2" type="submit">Enviar</button>
+        </form>
+        <form class="d-flex justify-content-center  mb-3" id="cookieFormDocs" action="/api/users/profile/{{ id }}/ProofOfStatus" method="POST" enctype="multipart/form-data">
             <h2 class="text-center">Proof Of Status</h2>
             <input class="m-3" name="ProofOfStatus" type="file" placeholder="Proof Of Status"></input>
             <button class="btn btn-primary m-2" type="submit">Enviar</button>
         </form>
         <br>
         <h2 class="text-center">Cargar imagen de perfil</h2>
-        <form class="d-flex justify-content-center mb-3" id="cookieProfileImage" action="/api/users/profile/image-profile" method="POST" enctype="multipart/form-data">
+        <form class="d-flex justify-content-center mb-3" id="cookieProfileImage" action="/api/users/profile/{{ id }}/image-profile" method="POST" enctype="multipart/form-data">
             <input class="m-3" name="profileImage" type="file" placeholder="ingrese imagen de perfil"></input>
+            <button class="btn btn-primary m-2" type="submit">Enviar</button>
+        </form>
+        <br>
+        <h2 class="text-center">Cargar imagen de producto</h2>
+        <form class="d-flex justify-content-center mb-3" id="cookieProfileImage" action="/api/users/profile/{{ id }}/image-product" method="POST" enctype="multipart/form-data">
+            <input class="m-3" name="productImage" type="file" placeholder="ingrese imagen de perfil"></input>
             <button class="btn btn-primary m-2" type="submit">Enviar</button>
         </form>
 </div>

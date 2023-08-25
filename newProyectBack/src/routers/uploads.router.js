@@ -11,17 +11,27 @@ routerUploads
         passport.authenticate('jwt', { session: false }),
         profileUser)
     .post(
-        "/documents",
+        "/:uid/identification",
         passport.authenticate('jwt', { session: false }),
-        uploader.array('document'),
+        uploader.single("identification"),
         uploadDocuments)
     .post(
-        "/image-product",
+        "/:uid/ProofOfAddress",
+        passport.authenticate('jwt', { session: false }),
+        uploader.single("ProofOfAddress"),
+        uploadDocuments)
+    .post(
+        "/:uid/ProofOfStatus",
+        passport.authenticate('jwt', { session: false }),
+        uploader.single("ProofOfStatus"),
+        uploadDocuments)
+    .post(
+        "/:uid/image-product",
         passport.authenticate('jwt', { session: false }),
         uploader.single('productImage'),
         uploadProdImage)
     .post(
-        "/image-profile",
+        "/:uid/image-profile",
         passport.authenticate('jwt', { session: false }),
         uploader.single('profileImage'),
         uploadProfileImage)

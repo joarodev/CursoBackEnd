@@ -85,7 +85,7 @@ class UserManagerDao {
             throw error;
         }
     }
-    uploadFileDocument = async(userID, documents) => {
+    uploadFilesDocument = async(userID, documents) => {
         const user = await this.userModel.findById({_id: userID});
 
         if (!user) {
@@ -93,20 +93,13 @@ class UserManagerDao {
         }
 
         // Actualizar el estado del usuario con los documentos cargados
-       /*  if (profileImage) {
-            user.profileImage = profileImage[0].path;
+        if (!documents) {
+            throw new Error('Documento no encontrado');
         }
-        if (productImage) {
-            user.productImage = productImage[0].path;
-        } */
-        if (documents) {
-            for (const doc of documents) {
-                user.documents.push({
-                    name: doc.originalname,
-                    reference: doc.path,
-                });
-            }
-        }
+        user.documents.push({
+            name: documents.fieldname,
+            reference: documents.path,
+        });
         await user.save();
         return user.documents;
     }
@@ -119,7 +112,7 @@ class UserManagerDao {
         }
 
         // Verificar la presencia de documentos requeridos
-        const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+        const requiredDocuments = ['identificación', 'ProofOfAddress', 'ProofOfStatus'];
         const uploadedDocumentNames = user.documents.map(doc => doc.name);
         const allRequiredDocumentsUploaded = requiredDocuments.every(doc => uploadedDocumentNames.includes(doc));
 
@@ -127,8 +120,6 @@ class UserManagerDao {
 
 
         //editar
-
-
 
     }
 

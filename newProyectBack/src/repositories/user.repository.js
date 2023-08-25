@@ -26,8 +26,8 @@ class UserRepository {
     updateRole(uid, newRole){
         return this.dao.updateRole(uid, newRole)
     }
-    uploadFile(uid,documents){
-        return this.dao.uploadFile(uid, documents)
+    uploadFilesDocument(uid,documents){
+        return this.dao.uploadFilesDocument(uid, documents)
     }
     deleteUser(pid){
         return this.dao.delete(pid)

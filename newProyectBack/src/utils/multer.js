@@ -1,30 +1,53 @@
 const multer = require('multer')
 const path = require("path")
+const fs = require('fs');
+
+//path configs
+const profileImagePath = path.join(__dirname, "../public/uploads/profile/");
+const productImagePath = path.join(__dirname, "../public/uploads/products/");
+const documentsPath = path.join(__dirname, "../public/uploads/documents/");
+
+
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb)=>{
-        const folderID = req.user._id
-        console.log("User ID MULTER", folderID)
+    destination: async (req, file, cb)=>{
+        const { uid } = req.params
+        const userId = uid
+
+        console.log("folderID:-----", userId)
         console.log("nombre del archivo", file.fieldname)
 
         if (file.fieldname === 'profileImage') {
-            cb(null, path.join(__dirname, `../public/uploads/profile/${folderID}/`));
+            userPath = path.join(profileImagePath, "user_" + userId);
         } else if (file.fieldname === 'productImage') {
-            cb(null, path.join(__dirname, `../public/uploads/products/${folderID}/`));
+            userPath = path.join(productImagePath, "product_" + userId);
         } else if (file.fieldname === 'identification') {
-            cb(null, path.join(__dirname, `../public/uploads/documents/${folderID}/`));
+            userPath = path.join(documentsPath, "identification_" + userId);
         } else if (file.fieldname === 'ProofOfAddress') {
-            cb(null, path.join(__dirname, `../public/uploads/documents/${folderID}/`));
+            userPath = path.join(documentsPath, "address_" + userId);
         } else if (file.fieldname === 'ProofOfStatus') {
-            cb(null, path.join(__dirname, `../public/uploads/documents/${folderID}/`));
+            userPath = path.join(documentsPath, "status_" + userId);
         } else {
             cb(new Error('Tipo de archivo no válido'));
+        }        
+        try {
+            console.log(userPath)
+            fs.mkdir(userPath, (error) => {
+                if (error) {
+                    return req.logger.error("Error al crear la carpeta en la dirección:", userPath, error);
+                }
+                req.logger.info("Carpeta creada correctamente en la ruta: ", userPath)
+            });
+            cb(null, userPath);
+        } catch (error) {
+            cb(error, null)
         }
     },
 
     filename: (req, file, callback)=>{
-        console.log("file", file)
-        callback(null, `${file.originalname}`)
+        const nameAndExtension = `${Date.now()}-${file.fieldname}${path.extname(file.originalname)}`
+        console.log("file", nameAndExtension)
+        callback(null, nameAndExtension)
     }
 })
 

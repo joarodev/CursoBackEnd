@@ -88,9 +88,8 @@ class UserController {
 
     uploadDocuments = async (req, res) =>{
         const { uid } = req.params
-        const { document } = req.files;
-        console.log("uploadedFiles desde controller: ----", document)
-        console.log(document)
+        const documents = req.file;
+        console.log("uploadedFiles desde controller: ----", documents)
         
         const user = userService.getUser(uid)
         if(!user){
@@ -98,11 +97,11 @@ class UserController {
         }
         console.log(user)
 
-        if(!document){
+        if(!documents){
             req.logger.error("No se subio el documento")
         }
 
-        const userDocFiles = userService.uploadFileDocument(user._id, document)
+        const userDocFiles = await userService.uploadFilesDocument(uid, documents)
 
         //validación para doc
         if(!userDocFiles)(
@@ -111,18 +110,26 @@ class UserController {
         )
         
         req.logger.info("Documentos subidos exitosamente")
-        return res.status(200).send({status: "success", message: "Documentos subidos exitosamente"})
+        return res.status(200).send({status: "success", message: "Documentos subidos exitosamente", userDocFiles})
     }
 
     uploadProdImage = async(req, res) => {
         try {
+            const fileImage = req.file
+            console.log("Archivo por controlador", fileImage)
+
+            if(!fileImage){
+                req.logger.error("Error al enviar el archivo")
+                console.log("Error al enviar el archivo")
+            }
+
             res.status(200).send({
                 status: "success",
-                message: "Imagen de producto subido correctamente"
+                message: "Imagen de producto subida correctamente", fileImage
             })
-        } catch(error) {
-            console.log("Error al subir imagen del producto",error)
-            req.logger.error("Error al subir la imagen del producto")
+        } catch (error) {
+            console.log("Error al subir la imagen de producto",error)
+            req.logger.error("Error al subir la imagen de producto")
         }
     }
     uploadProfileImage = async(req, res) => {
