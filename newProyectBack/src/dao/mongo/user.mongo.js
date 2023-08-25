@@ -49,7 +49,7 @@ class UserManagerDao {
             }
             user.role = newRole;
             await user.save();
-            return user
+            return user.role
         } catch (error) {
             return new Error(error)
         }
@@ -105,22 +105,18 @@ class UserManagerDao {
     }
 
     checkDocs = async(userID) => {
-        const user = await this.userModel.findById(userID);
+        const user = await this.userModel.findById({_id: userID});
 
         if (!user) {
-            return false;
+            throw new Error('Usuario no encontrado');
         }
 
         // Verificar la presencia de documentos requeridos
-        const requiredDocuments = ['identificación', 'ProofOfAddress', 'ProofOfStatus'];
-        const uploadedDocumentNames = user.documents.map(doc => doc.name);
-        const allRequiredDocumentsUploaded = requiredDocuments.every(doc => uploadedDocumentNames.includes(doc));
+        const documentsReq = ['identification', 'ProofOfAddress', 'ProofOfStatus'];
+        const userdDocumentNames = user.documents.map(doc => doc.name);
 
-        return allRequiredDocumentsUploaded;
-
-
-        //editar
-
+        const validateDocumentsUser = documentsReq.every(doc => userdDocumentNames.includes(doc));
+        return validateDocumentsUser;
     }
 
     async delete(uid){

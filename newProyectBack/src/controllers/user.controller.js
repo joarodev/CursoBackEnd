@@ -49,18 +49,27 @@ class UserController {
     roleUser = async (req, res, next) => {
         try {
             const { uid } = req.params;
+            
+            const user = await userService.getUser(uid)
+            //console.log("USER ROLE USER, DOCUMENTS",user[0].documents)
+
+            if(!user){
+                req.logger.error("No se encontró el usuario")
+            }
 
     // Verificar si los documentos necesarios están cargados antes de actualizar a premium
         const documentsUploaded = await userService.checkDocs(uid);
+
         if (documentsUploaded) {
             // Actualizar al usuario a premium
-            const updatedUser = await userService.updateRole(uid);
+            const updatedUser = await userService.updateRole(uid, "premium");
 
-            if (!updatedUser) {
-                return res.status(404).send({ status: 'error', message: 'No se encontró el usuario' });
+            if (!updatedUser === "premium") {
+                return res.status(404).send({ status: 'error', message: 'Error al cambiar el rol del usuario' });
             }
 
             req.logger.info('Usuario actualizado a premium');
+            
             return res.status(200).send({ status: 'success', message: 'Usuario actualizado a premium' });
         } else {
             return res.status(400).send({ status: 'error', message: 'Cargue los documentos requeridos antes de actualizar a premium' });

@@ -23,6 +23,9 @@ class UserRepository {
     updateUser(pid){
         return this.dao.update(pid)
     }
+    checkDocs(uid){
+        return this.dao.checkDocs(uid)
+    }
     updateRole(uid, newRole){
         return this.dao.updateRole(uid, newRole)
     }

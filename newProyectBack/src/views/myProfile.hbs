@@ -29,8 +29,13 @@
             <h3>Nombre: {{ name }}</h3>
             <h3>Email: {{ email }}</h3>
             <h3>Rol: {{ role }}</h3>
-            <button><a href="/api/users/premium/{{ id }}">Cambiar a premium</a></button>
         </div>
+        <form class="d-flex justify-content-center  mb-3" id="cookieFormDocs" action="/api/users/premium/{{ id }}" method="POST" enctype="multipart/form-data">
+            <h2 class="text-center">Si subiste todos los documentos cambia a premium:</h2>
+            <input type="hidden" name="_METHOD" value="PUT"/>
+            <button class="btn btn-primary m-2" type="submit">Cambiar a premium</button>
+        </form>
+        <button><a href="/api/users/premium/{{ id }}">Cambiar a premium</a></button>
         <div  class="d-flex flex-direction-columns justify-content-center mb-3">
             <h4>Ingrese Identificación, Comprobante de domicilio, Comprobante de estado de cuenta</h4>
         </div>

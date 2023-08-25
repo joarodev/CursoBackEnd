@@ -18,10 +18,11 @@ routerUser
         "/:uid", 
         passport.authenticate('jwt', { session: false }),
         updateUsers)
-    .put(
+        */
+    .get(
         "/premium/:uid",
         passport.authenticate('jwt', { session: false }),
-        roleUser) */
+        roleUser)
     .use("/profile", routerUploads)
     .delete(
         "/:uid", 
