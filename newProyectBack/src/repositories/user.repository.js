@@ -32,8 +32,8 @@ class UserRepository {
     uploadFilesDocument(uid,documents){
         return this.dao.uploadFilesDocument(uid, documents)
     }
-    deleteUser(pid){
-        return this.dao.delete(pid)
+    deleteUser(uid){
+        return this.dao.delete(uid)
     }
 }
 
