@@ -1,9 +1,10 @@
 const { UserDto } = require("../dto/user.dto")
 const { userService } = require("../services")
-const { uploader } = require("../utils/multer")
+const { sendEmailExpirateAccount } = require("../utils/sendmail")
 class UserController {
     getUsers = async (req, res) => {
         try {
+            let usersDTO = []
             let users = await userService.getUsers()
             if(!users){
                 req.logger.error("Error al obtener usuarios")
@@ -13,10 +14,16 @@ class UserController {
                 });
                 return
             }
+            for (const user of users) {
+                console.log("user: ",user)
+                let userFilter = new UserDto(user)
+                usersDTO.push(userFilter)
+            };
+            console.log(usersDTO)
             req.logger.info("Usuarios obtenidos correctamente")
             return res.status(200).send({
                 success: "success", 
-                payload: users
+                payload: usersDTO
             })
         } catch (error) {
             req.logger.error("Error al obtener los usuarios usuarios", error)
@@ -137,7 +144,7 @@ class UserController {
                 });
                 return
             }
-            res.render('myProfile', { 
+            res.render('myProfile', {
                 id: _id,
                 name: first_name,
                 role: role,
@@ -182,7 +189,7 @@ class UserController {
         return res.status(200).send({status: "success", message: "Documento subido correctamente"})
     }
 
-    uploadProdImage = async(req, res) => {
+    uploadProdImage = async (req, res) => {
         try {
             const { uid } = req.params
             const fileImage = req.file
@@ -212,7 +219,7 @@ class UserController {
             req.logger.error("Error al subir la imagen de producto", error)
         }
     }
-    uploadProfileImage = async(req, res) => {
+    uploadProfileImage = async (req, res) => {
         try {
             const { uid } = req.params
             const fileImage = req.file
@@ -242,10 +249,9 @@ class UserController {
             req.logger.error("Error al subir la imagen de perfil", error)
         }
     }
-
     deleteUser = async (req, res) => {
         try{
-            let{ uid } = req.params
+            let { uid } = req.params
             const user = userService.deleteUser(uid)
             if(!user){
                 req.logger.error("No se encontró el usuario")
@@ -259,7 +265,34 @@ class UserController {
             req.logger.error("No se eliminó el usuario", error)
         }
     }
-}
 
+    expiratedAccount = async (req, res) => {
+        try {
+            const expirationDate = new Date(Date.now() - 5 * 60 * 1000);
+            console.log("fecha de expiración", expirationDate)
+            const inactiveUsers = await userService.lastLogin(expirationDate);
+            console.log("Usuarios inactivos", inactiveUsers)
+
+            if(!inactiveUsers){
+                req.logger.info("No se encontraron usuarios inactivos")
+                res.status(200).send({
+                    status: "success",
+                    message: "No se encontraron usuarios inactivos"
+                })
+                return
+            }
+            for (const user of inactiveUsers) {
+                console.log("user: ",user)
+                // Envía correo indicando que la cuenta ha sido eliminada por inactividad
+                await sendEmailExpirateAccount("joaquinrodriguez0012@gmail.com", 'Cuenta eliminada por inactividad', user.first_name, user.last_connection);
+                // Elimina al usuario
+                await userService.deleteUser(user._id);
+            };
+
+        } catch (error) {
+            req.logger.error("No se eliminaron los usuarios", error)
+        }
+    }
+}
 module.exports = new UserController()
 

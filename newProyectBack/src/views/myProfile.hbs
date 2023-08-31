@@ -61,4 +61,8 @@
             <input class="m-3" name="productImage" type="file" placeholder="ingrese imagen de perfil"></input>
             <button class="btn btn-primary m-2" type="submit">Enviar</button>
         </form>
+        <form class="d-flex justify-content-center mb-3" id="cookieProfileImage" action="/api/users/expired-users" method="POST">
+            <input type="hidden" name="_method" value="DELETE">
+            <button class="btn btn-primary m-2" type="submit">Eliminar usuarios expirados</button>
+        </form>
 </div>

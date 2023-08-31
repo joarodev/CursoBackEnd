@@ -21,7 +21,7 @@ exports.sendEmail = async (email, subject, html) => {
     })
 }
 
-exports.sendEmailResetPassword = async(email, token) => {
+exports.sendEmailResetPassword = async (email, token) => {
     return await transport.sendMail({
         from,
         to: email,
@@ -31,6 +31,19 @@ exports.sendEmailResetPassword = async(email, token) => {
         <h4>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</h4>
         <a href="http://localhost:8080/api/session/reset-password/${token}">Restablecer contraseña</a>
         <p>Si no solicitaste restablecer tu contraseña, ignora este correo.</p>
+      `,
+    })
+}
+
+exports.sendEmailExpirateAccount = async (email, subject, name, date) => {
+    return await transport.sendMail({
+        from,
+        to: email,
+        subject,
+        html: `
+        <h2>Hola ${name}.</h2>
+        <h4>Su ultima conección a la plataforma fue "${date}", 
+        pese a su inactividad en la plataforma hemos decidido eliminar su cuenta.</h4>
       `,
     })
 }

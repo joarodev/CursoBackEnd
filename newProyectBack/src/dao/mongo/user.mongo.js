@@ -74,15 +74,13 @@ class UserManagerDao {
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }
-
             user.last_connection = Date;
 
             await user.save();
             return user;
             
         } catch (error) {
-            console.error('Error al actualizar la contraseña del usuario:', error);
-            throw error;
+            console.error('Error al actualizar la cocección del usuario', error);
         }
     }
     uploadFilesDocument = async(userID, documents) => {
@@ -122,6 +120,17 @@ class UserManagerDao {
     async delete(uid){
         try {
             return await this.userModel.findOneAndDelete({_id: uid})
+        } catch (error) {
+            return new Error(error)
+        }
+    }
+    async lastLogin(expirationDate){
+        try {
+            const userLastConnection = this.userModel.find({last_connection: { $lt: expirationDate } })
+            if(!userLastConnection){
+                throw new Error("Ultima conección no encontrada")
+            }
+            return userLastConnection
         } catch (error) {
             return new Error(error)
         }

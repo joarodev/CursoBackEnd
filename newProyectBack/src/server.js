@@ -38,6 +38,7 @@ const PORT = envConfig.PORT
 
 connectDB()
 //CONFIG:
+app.use
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static(path.join(__dirname,'public')))
@@ -69,8 +70,6 @@ const swaggerOptions = {
 }
 const specs = swaggerjsDoc(swaggerOptions)
 app.use("/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
-
-
 
 // Logger
 app.use(loggerMiddleware)

@@ -35,6 +35,9 @@ class UserRepository {
     deleteUser(uid){
         return this.dao.delete(uid)
     }
+    lastLogin(expirationDate){
+        return this.dao.lastLogin(expirationDate)
+    }
 }
 
 module.exports = UserRepository
