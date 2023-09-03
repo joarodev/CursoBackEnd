@@ -127,10 +127,10 @@ class UserManagerDao {
     async lastLogin(expirationDate){
         try {
             const userLastConnection = this.userModel.find({last_connection: { $lt: expirationDate } })
-            if(!userLastConnection){
-                throw new Error("Ultima conección no encontrada")
+            if(userLastConnection){
+                return userLastConnection
             }
-            return userLastConnection
+            return
         } catch (error) {
             return new Error(error)
         }

@@ -1,20 +1,25 @@
 const {Router} = require("express")
-const {getUser, createUsers, deleteUser, updateUsers, getUsers, roleUser, uploadDocuments, profileUser, uploadProdImage, uploadProfileImage, expiratedAccount} = require("../controllers/user.controller")
+const {getUser, createUsers, deleteUser, updateUsers, getUsers, roleUser, adminUsers , expiratedAccount} = require("../controllers/user.controller")
 const { authUserandAdmin } = require("../jwt/passport-jwt")
 const passport = require("passport")
-const { uploader } = require("../utils/multer")
 const routerUploads = require("./uploads.router")
 const { isAdmin } = require("../middlewares/auth.middlewares")
+const routerAdmin = require("./admin.router")
 
 const routerUser = Router()
 
 routerUser
+    .use("/profile", routerUploads)
+    .use("/admin", routerAdmin)
     .get(
         "/users",
         passport.authenticate('jwt', { session: false }),
         isAdmin,
         getUsers)
-    .get("/:uid", passport.authenticate('jwt', { session: false }), getUser)
+    .get(
+        "/premium/:uid",
+        passport.authenticate('jwt', { session: false }),
+        roleUser)
     .post(
         "/", 
         passport.authenticate('jwt', { session: false }),
@@ -23,14 +28,6 @@ routerUser
         "/:uid", 
         passport.authenticate('jwt', { session: false }),
         updateUsers)
-       
-    .get(
-        "/premium/:uid",
-        passport.authenticate('jwt', { session: false }),
-        roleUser)
-
-    .use("/profile", routerUploads)
-    
     .delete(
         "/expired-users",
         passport.authenticate('jwt', { session: false }),
@@ -40,6 +37,8 @@ routerUser
         passport.authenticate('jwt', { session: false }),
         isAdmin,
         deleteUser)
-
-
+    .get(
+        "/:uid",
+        passport.authenticate('jwt', { session: false }),
+        getUser)
 module.exports = routerUser

@@ -1,3 +1,4 @@
+const { UserModel } = require("../dao/mongo/models/user.model")
 const { UserDto } = require("../dto/user.dto")
 const { userService } = require("../services")
 const { sendEmailExpirateAccount } = require("../utils/sendmail")
@@ -19,7 +20,7 @@ class UserController {
                 let userFilter = new UserDto(user)
                 usersDTO.push(userFilter)
             };
-            console.log(usersDTO)
+
             req.logger.info("Usuarios obtenidos correctamente")
             return res.status(200).send({
                 success: "success", 
@@ -41,11 +42,12 @@ class UserController {
                 });
                 return
             }
-            req.logger.info("Usuario obtenido correctamente")
+            let userFilter = new UserDto(user)
+            req.logger.info("Usuario obtenido correctamente", userFilter)
             return res.status(200).send({
                 success: "success",
-                payload: user
-            })
+                payload: userFilter
+            });
         } catch(error){
             req.logger.error("Error al obtener el usuario", error)
         }
@@ -94,7 +96,7 @@ class UserController {
             res.logger.error("No se ah podido actualizar el usuario ", error)
         }
     }
-    roleUser = async (req, res, next) => {
+    roleUser = async (req, res) => {
         try {
             const { uid } = req.params;
             const user = await userService.getUser(uid)
@@ -144,12 +146,25 @@ class UserController {
                 });
                 return
             }
+            let admin = false
+            if(req.user.role === "admin"){
+                admin = true
+            }
+            
+            let notPremiumOrAdmin = true
+            if(req.user.role === "premium" || req.user.role === "admin"){
+                notPremiumOrAdmin = false
+            }
+
             res.render('myProfile', {
                 id: _id,
                 name: first_name,
                 role: role,
-                email: email
+                email: email,
+                updateUser: notPremiumOrAdmin,
+                isAdmin: admin
             });
+
         } catch (error) {
             console.log(error)
             req.logger.error('Error al cargar el perfil', error);
@@ -291,6 +306,36 @@ class UserController {
 
         } catch (error) {
             req.logger.error("No se eliminaron los usuarios", error)
+        }
+    }
+    adminUsers = async (req, res) => {
+        try {
+            const {page = 1} = req.query
+            const products = await UserModel.paginate(
+                {},
+                {limit: 3, page: page, lean: true}
+            );
+            const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
+            const {username} = req.user
+            if(!req.user){
+                req.logger.error("No se encontró el usuario")
+                res.status(400).send({
+                    status: "error",
+                    message: "Error al encontrar el usuario"
+                })
+                return
+            }
+            res.status(200).render("adminUsers", {
+                status: "success",
+                email: username,
+                users: docs,
+                hasPrevPage,
+                hasNextPage,
+                prevPage,
+                nextPage
+            })
+        } catch (error) {
+            req.logger.error("Error al acceder al endpoint", error)
         }
     }
 }

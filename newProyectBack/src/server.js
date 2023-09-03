@@ -1,4 +1,5 @@
 const express = require('express')
+const hbs  = require('express-handlebars');
 const routerIndex = require('./routers/index.router')
 //SERVER
 const { connectDB, port} = require('./config/configServer')
@@ -14,7 +15,6 @@ const {
     initPassportJWT, 
     initPassportGitHub } = require('./jwt/passport-jwt')
 //VIEWS
-const hbs = require('express-handlebars')
 //DONENV
     
 require("dotenv").config()
@@ -52,7 +52,38 @@ initPassportJWT()
 initPassportGitHub()
 app.use(passport.initialize())
 
-app.engine('hbs', hbs.engine({extname: 'hbs', defaultLayout: 'main', layoutDir: __dirname + '/views/layouts'}));
+app.engine('hbs',
+    hbs.engine({
+        extname: 'hbs',
+        defaultLayout: 'main',
+        layoutDir: __dirname + '/views/layouts',
+        helpers: {
+            // Aquí definirás tus helpers personalizados
+            ifCond: function (v1, operator, v2, options) {
+                switch (operator) {
+                case '==':
+                    return v1 == v2 ? options.fn(this) : options.inverse(this);
+                case '===':
+                    return v1 === v2 ? options.fn(this) : options.inverse(this);
+                case '!=':
+                    return v1 != v2 ? options.fn(this) : options.inverse(this);
+                case '!==':
+                    return v1 !== v2 ? options.fn(this) : options.inverse(this);
+                case '<':
+                    return v1 < v2 ? options.fn(this) : options.inverse(this);
+                case '<=':
+                    return v1 <= v2 ? options.fn(this) : options.inverse(this);
+                case '>':
+                    return v1 > v2 ? options.fn(this) : options.inverse(this);
+                case '>=':
+                    return v1 >= v2 ? options.fn(this) : options.inverse(this);
+                default:
+                    return options.inverse(this);
+                }
+            }
+        }
+    }),
+);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
