@@ -7,6 +7,7 @@ const {get,
     addProductArray,
     deleteProduct,
     deleteAllProducts,
+    userCart,
     cartPurchase} = require("../controllers/cart.controller");
 const passport = require("passport");
 const { authorization, authUserandAdmin } = require("../jwt/passport-jwt");
@@ -14,6 +15,10 @@ const { authorization, authUserandAdmin } = require("../jwt/passport-jwt");
 const cartRouter = Router()
 
 cartRouter
+    .get(
+        "/user",
+        passport.authenticate("jwt", { session: false }),
+        userCart)
     //obtener carritos
     .get(
         '/',
@@ -30,7 +35,7 @@ cartRouter
         passport.authenticate("jwt", { session: false }),
         create)
     //añadir producto al carrito
-    .put(
+    .post(
         '/:cid/product/:pid',
         passport.authenticate("jwt", { session: false }),
         addProduct)
@@ -54,7 +59,7 @@ cartRouter
         deleteAllProducts)
 
     .post(
-        "/:cid/puchrarse",
+        "/:cid/purcharse",
         passport.authenticate("jwt", { session: false }),
         cartPurchase)
         

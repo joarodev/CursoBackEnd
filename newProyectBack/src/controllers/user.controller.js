@@ -1,4 +1,3 @@
-const { UserModel } = require("../dao/mongo/models/user.model")
 const { UserDto } = require("../dto/user.dto")
 const { userService } = require("../services")
 const { sendEmailExpirateAccount } = require("../utils/sendmail")
@@ -287,7 +286,6 @@ class UserController {
             console.log("fecha de expiración", expirationDate)
             const inactiveUsers = await userService.lastLogin(expirationDate);
             console.log("Usuarios inactivos", inactiveUsers)
-
             if(!inactiveUsers){
                 req.logger.info("No se encontraron usuarios inactivos")
                 res.status(200).send({
@@ -299,43 +297,13 @@ class UserController {
             for (const user of inactiveUsers) {
                 console.log("user: ",user)
                 // Envía correo indicando que la cuenta ha sido eliminada por inactividad
-                await sendEmailExpirateAccount("joaquinrodriguez0012@gmail.com", 'Cuenta eliminada por inactividad', user.first_name, user.last_connection);
+                await sendEmailExpirateAccount(user.username, 'Cuenta eliminada por inactividad', user.first_name, user.last_connection);
                 // Elimina al usuario
                 await userService.deleteUser(user._id);
             };
 
         } catch (error) {
             req.logger.error("No se eliminaron los usuarios", error)
-        }
-    }
-    adminUsers = async (req, res) => {
-        try {
-            const {page = 1} = req.query
-            const products = await UserModel.paginate(
-                {},
-                {limit: 3, page: page, lean: true}
-            );
-            const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
-            const {username} = req.user
-            if(!req.user){
-                req.logger.error("No se encontró el usuario")
-                res.status(400).send({
-                    status: "error",
-                    message: "Error al encontrar el usuario"
-                })
-                return
-            }
-            res.status(200).render("adminUsers", {
-                status: "success",
-                email: username,
-                users: docs,
-                hasPrevPage,
-                hasNextPage,
-                prevPage,
-                nextPage
-            })
-        } catch (error) {
-            req.logger.error("Error al acceder al endpoint", error)
         }
     }
 }

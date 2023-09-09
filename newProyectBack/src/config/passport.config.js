@@ -6,6 +6,7 @@ const { envConfig } = require('./config')
 const { CustomError } = require('../utils/CustomError/CustomError')
 const { generateUserErrorInfo } = require('../utils/CustomError/info')
 const { EError } = require('../utils/CustomError/EErrors')
+const { CartModel } = require('../dao/mongo/models/cart.model')
 require('dotenv').config()
 
 
@@ -71,22 +72,34 @@ const initPassport = () => {
                     } else {
                         role = 'user'
                     }
-                    let newUser = {
-                        username,
-                        first_name,
-                        last_name,
-                        email: username,
-                        age,
-                        password: createHash(password),
-                        role,
-                    }
-                    let result = await UserModel.create(newUser)
-                    console.log(result)
-                    return done(null, result)
+                     // Crear el carrito primero
+                const newCart = new CartModel({ clientId: null });
+
+                // Luego, crea el nuevo usuario con el carrito
+                let newUser = new UserModel({
+                    username,
+                    first_name,
+                    last_name,
+                    email: username,
+                    age,
+                    cart: newCart._id,
+                    password: createHash(password),
+                    role,
+                });
+
+                // Guarda el carrito en la base de datos
+                await newCart.save();
+
+                // Ahora crea el usuario
+                let user = await UserModel.create(newUser);
+
+                // Asigna el ID del usuario al carrito
+                newCart.clientId = user._id;
+                await newCart.save();
+                    return done(null, user)
                 } catch (error) {
                     console.log(error)
                 }
-
     }))
 
     //Guardar id de usuario en la session

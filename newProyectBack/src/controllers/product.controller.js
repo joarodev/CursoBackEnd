@@ -4,7 +4,7 @@ const { format } = require("morgan")
 const mockingService = require("../utils/Faker")
 const { CustomError } = require("../utils/CustomError/CustomError")
 const { ModificationProductError, AddProductError } = require("../utils/CustomError/info")
-const { sendMail, sendEmail } = require("../utils/sendmail")
+const { sendMail, sendEmail, sendEmailDeleteProduct } = require("../utils/sendmail")
 const { EError } = require("../utils/CustomError/EErrors")
 
 class ProductController {
@@ -33,18 +33,28 @@ class ProductController {
     }
     getProducts = async (req, res) => {
         try {
+            const { first_name, role, username, _id, cart} = req.user
+            console.log("USER ROLE", role)
+            let isAdmin = false
+            if(role === "admin"){
+                isAdmin = true
+            }
             const { page = 1 } = req.query
             const products = await ProductModel.paginate(
                 {},
                 { limit: 3, page: page, lean: true }
             )
             const { docs, hasPrevPage, hasNextPage, prevPage, nextPage } = products
-            const { first_name, role, email } = req.user
+
+            console.log("USER IDDDD:::", _id)
             res.render('productView', {
                 status: 'success',
+                userId: _id,
                 userName: first_name,
-                userEmail: email,
+                userEmail: username,
                 userRole: role,
+                cartId: cart,
+                isAdmin,
                 products: docs,
                 hasPrevPage,
                 hasNextPage,
@@ -52,7 +62,6 @@ class ProductController {
                 nextPage,
             })
         } catch (error) {
-            req.logger.http('Error al encontrar los productos', error);
             req.logger.error('Error al encontrar los productos', error);
         }
 }
@@ -67,37 +76,39 @@ class ProductController {
                 payload: product
             })
         } catch (error) {
-            req.logger.http('Error al encontrar el producto', error);
-            req.logger.warn("Error al encontrar el producto", error);
+            req.logger.error("Error al encontrar el producto", error);
         }
     }
 
     addProduct = async (req, res, next)=>{
         try {
             const {title, description, thumbnail, price, stock, code} = req.body
-            console.log(req.user)
             const userRole = req.user.role
-
             if(userRole === "user"){
                 req.logger.error("No tiene el rol necesario para crear un producto")
-            }
-
-            
+                res.status(400).send({
+                    status: "error",
+                    message: "Debes ser usuario premium para crear un producto"
+                });
+                return
+            };
             if(!title || !description || !thumbnail || !price || !stock || !code){
-                /* CustomError.createError({
-                    name: "Add product error",
-                    cause: AddProductError({
-                        title: title
-                    }),
-                    message: "Product not added to cart",
-                    code: EError.INVALID_TYPE_ERROR
-                }) */
-                req.logger.error("Debes ingresar todos los datos del producto a crear")
-            }
-            
-            let owner = "admin"
-            if(userRole === "premium"){
-                owner = req.user.username
+                req.logger.error("No se ingresaron todos los datos del producto")
+                res.status(400).send({
+                    status: "error",
+                    message: "Debes ingresar todos los datos del producto a crear"
+                });
+                return
+            };
+
+            let {_id, username, first_name, email, role, age} = req.user
+            let owner = {
+                _id,
+                username,
+                first_name,
+                email,
+                age,
+                role
             }
             const newProduct = {
                 title: title,
@@ -108,18 +119,13 @@ class ProductController {
                 code: code,
                 owner: owner
             }
-            console.log("New Producto es---------------------:", newProduct)
-
-            console.log(`El nuevo producto es ${newProduct.title} y fue creado por ${owner}`)
             let result = await productService.createProduct(newProduct)
             let subjet = "Nuevo Producto Creado"
             let html = `<h1> Producto ${newProduct.title} creado con exito</h1><br>
-                        <h3>Create by: ${owner}</h3>`
-            sendEmail("joaquinrodriguez0012@gmail.com", subjet, html)
-            console.log("Producto final-----------",result)
-    
+                        <h3>Create by: ${owner.username}</h3>`
+            sendEmail(req.user.username, subjet, html)
             req.logger.info("Producto creado correctamente")
-            res.status(200).send({ message: "success", payload: result })
+            res.status(200).send({ status: "success", message: "Producto creado correctamente", payload: result })
         } catch (error) {
             req.logger.http('Error al agregar un producto', error);
             req.logger.error('Error al agregar un producto', error);
@@ -175,35 +181,89 @@ class ProductController {
     
 }
 
-    deleteProduct = async (req, res) => {
+deleteProduct = async (req, res) => {
     try {
+        const user = req.user;
         let { pid } = req.params;
         const product = await productService.getProduct(pid)
-        console.log(product)
-
-        if(!product){
-            req.logger.error("El producto no existe")
-            res.logger.htpp("El producto no existe")
+        console.log("Producto a eliminar: ", product, ", Creado por: ",product.owner.username)
+        
+        if(product.owner.username === user.username || user.role === "admin"){
+            if(user.role !== "premium" || user.role !== "admin"){
+                req.logger.error("No tienes los permisos necesarios para realizar esta acción")
+                res.status(400).send({
+                    status: "Error",
+                    message: "No tienes la autorización para realizar esta acción"
+                });
+                return
+            };
+            if(!product){
+                req.logger.error("El producto no existe")
+                res.status(404).send({
+                    status: "error",
+                    message: "El producto que quieres eliminar no existe"
+                });
+                return
+            };
+            sendEmailDeleteProduct(product.owner.username, "Producto Eliminado", product.owner.first_name, product.title, user.username)
+            let result = await productService.deleteProduct(pid)
+            req.logger.info("Producto eliminado correctamente")
+            res.send({
+                status: "success",
+                message: "Producto eliminado correctamente",
+                payload: result
+            });
+        } else{
+            req.logger.error("El producto no le pertenece a el usuario")
+            res.status(400).send({
+                status: "Error",
+                message: "Solo puedes eliminar productos propios"
+            });
+            return
         }
-
-        const user = req.user;
-
-        if(user.role === "premium" && product.owner !== user.email){
-            req.logger.error("No tienes los permisos necesarios para realizar esta acción")
-            req.logger.htpp("No tienes los permisos necesarios para realizar esta acción")
-        }
-
-        let result = await productService.deleteProduct(pid)
-        req.logger.info("Producto eliminado correctamente")
-        res.send({
-            status: "success",
-            message: "Producto eliminado correctamente",
-            payload: product, result
-        })
     } catch (error) {
-        req.logger.http('Error al borrar producto', error);
         req.logger.error('Error al borrar producto', error);
-        return {status: 'error', error}
+    }
+}
+deleteProductHandlebars = async (req, res) => {
+    try {
+        const user = req.user;
+        let { pid } = req.params;
+        const product = await productService.getProduct(pid)
+        console.log("Producto a eliminar: ", product, ", Creado por: ",product.owner.username, " o ", product.owner)
+        
+        if(product.owner.username === user.username || product.owner === "admin" || user.role === "admin"){
+            console.log("EL ROL ES::::", user.role)
+            /* if(user.role !== "premium" || user.role !== "admin"){
+                req.logger.error("No tienes los permisos necesarios para realizar esta acción")
+                res.status(400).send({
+                    status: "Error",
+                    message: "No tienes la autorización para realizar esta acción"
+                });
+                return
+            }; */
+            if(!product){
+                req.logger.error("El producto no existe")
+                res.status(404).send({
+                    status: "error",
+                    message: "El producto que quieres eliminar no existe"
+                });
+                return
+            };
+            /* sendEmailDeleteProduct(product.owner.username, "Producto Eliminado", product.owner.first_name, product.title, user.username) */
+            await productService.deleteProduct(pid)
+            req.logger.info("Producto eliminado correctamente")
+            res.status(200).redirect("/api/product/products");
+        } else{
+            req.logger.error("El producto no le pertenece a el usuario")
+            res.status(400).send({
+                status: "Error",
+                message: "Solo puedes eliminar productos propios"
+            });
+            return
+        }
+    } catch (error) {
+        req.logger.error('Error al borrar producto', error);
     }
 }
 }

@@ -10,13 +10,12 @@ class CartDaoMongo {
         }
     }
 
-    async getById(cid){
+    async getById(cid) {
         try {
-            return await CartModel.findOne({_id: cid})
-            .populate("products.product")
-            .lean()
-        }catch(err){
-            return new Error(err)
+            const cart = await CartModel.findOne({ _id: cid }).populate("products.product").lean();
+            return cart;
+        } catch (err) {
+            return new Error(err);
         }
     }
 

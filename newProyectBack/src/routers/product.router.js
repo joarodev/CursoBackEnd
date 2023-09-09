@@ -42,11 +42,16 @@ routerProduct.delete(
     authorization("admin"),
     products.deleteProduct)
     
-    routerProduct.get(
-        "/mockingproducts",
-        passport.authenticate("jwt", { session: false }),
-        authUserandAdmin(),
-        products.mockingProducts)
-    
-    
+routerProduct.get(
+    "/mockingproducts",
+    passport.authenticate("jwt", { session: false }),
+    authUserandAdmin(),
+    products.mockingProducts)
+
+routerProduct.get(
+    "/delete/:pid",
+    passport.authenticate("jwt", { session: false }),
+    products.deleteProductHandlebars)
+
+
     module.exports = routerProduct

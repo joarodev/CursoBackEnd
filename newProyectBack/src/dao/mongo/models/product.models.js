@@ -22,7 +22,7 @@ const productSchema = new Schema({
         required: true,
     },
     owner: { 
-        type: String,
+        type: Object,
         ref: "usuarios",
         default: "admin"
     },

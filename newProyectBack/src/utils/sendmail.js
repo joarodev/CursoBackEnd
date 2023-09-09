@@ -42,8 +42,20 @@ exports.sendEmailExpirateAccount = async (email, subject, name, date) => {
         subject,
         html: `
         <h2>Hola ${name}.</h2>
-        <h4>Su ultima conección a la plataforma fue "${date}", 
-        pese a su inactividad en la plataforma hemos decidido eliminar su cuenta.</h4>
+        <h4>Su ultima conección a la plataforma fue "${date}"</h4><br>
+        <p>pese a su inactividad en la plataforma hemos decidido eliminar su cuenta.</p>
+      `,
+    })
+}
+
+exports.sendEmailDeleteProduct = async (email, subject, name, productName, userName) => {
+    return await transport.sendMail({
+        from,
+        to: email,
+        subject,
+        html: `
+        <h2>Estimado ${name}.</h2>
+        <h4>Su producto: "${productName}" fue eliminado de la plataforma por el siguiente usuario o administrador: ${userName}.</h4>
       `,
     })
 }

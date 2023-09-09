@@ -5,14 +5,14 @@ class CartRepository {
     getCarts(){
         return this.dao.get()
     }
-    getById(pid){
-        return this.dao.getById(pid)
+    getById(cid){
+        return this.dao.getById(cid)
     }
     getEmail(email){
         return this.dao.getEmail(email)
     }
-    createCart(newProduct){
-        return this.dao.create(newProduct)
+    createCart(uid){
+        return this.dao.create(uid)
     }
     addProduct(cid, pid, quantity){
         return this.dao.addProduct(cid, pid, quantity)
