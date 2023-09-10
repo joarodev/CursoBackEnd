@@ -14,6 +14,10 @@ const productSchema = new Schema({
     description: String,
     thumbnail: String,
     price: Number,
+    download: {
+        type: String,
+        required: true
+    },
     stock: Number,
     category: String,
     code: {

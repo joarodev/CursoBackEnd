@@ -45,16 +45,13 @@
             <div class="card-body">
                 <h3 class="card-title">{{this.title}}</h3>
                 <li>
-                    <strong>Descripción: </strong>{{this.description}} -
+                    <strong>Categoria: </strong>{{this.category}}
+                </li>
+                <li>
+                    <strong>Stock: </strong>{{this.stock}}
                 </li>
                 <li>
                     <strong>Price: </strong>${{this.price}} -
-                </li>
-                <li>
-                    <strong>Stock: </strong>{{this.stock}} - 
-                </li>
-                <li>
-                    <strong>Categoria: </strong>{{this.category}} -
                 </li>
                 <div class="d-flex flex-column">
                     {{#ifCond this.stock '!==' 0}}

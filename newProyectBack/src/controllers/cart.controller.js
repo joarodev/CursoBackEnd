@@ -2,6 +2,7 @@ const {cartService, productService, ticketService, userService} = require("../se
 const uuid4 = require("uuid4")
 const { addToCart } = require("../utils/CustomError/info")
 const { EError } = require("../utils/CustomError/EErrors")
+const { sendEmailTicket, sendEmailOwner } = require("../utils/sendmail")
 
 class CartController {
     userCart = async (req, res) => {
@@ -216,9 +217,16 @@ class CartController {
     cartPurchase = async (req, res) => {
         try {
             const { cid } = req.params;
+            const user = req.user
+            if(!user){
+                req.logger.error("Debes estar logueado para realizar esta acción")
+                res.status(400).send({
+                    status: "Error",
+                    message: "Debes estar logueado para realizar esta acción"
+                })
+            }
             // Obtén el carrito y verifica que exista
             const cart = await cartService.getById(cid);
-            console.log(cart)
             if (!cart) {
                 req.logger.error("Error al obtener el carrito")
                 res.status(404).send({
@@ -235,10 +243,8 @@ class CartController {
                 const quantity = item.quantity
                 const stock = item.product.stock
                 const pid = item.product._id
-                console.log("ITEM QUANTITY: ", quantity)
                 // Verifica que el producto exista y tenga suficiente stock
                 const existingProduct = await productService.getProduct(pid);
-                console.log("Producto stock  "+existingProduct.stock)
                 if (!existingProduct) {
                     req.logger.error("Producto no encontrado")
                     res.status(404).send({
@@ -248,37 +254,27 @@ class CartController {
                     return
                 }
                 if (quantity > existingProduct.stock) {
-
                 // Si el producto no tiene suficiente stock, no se agrega al proceso de compra
                     productsNoStock.push(pid)
-                    console.log(`Producto con ID ${pid} no tiene suficiente stock`)
-                    //return res.status(400).json({ error: `Producto con ID ${pid} no tiene suficiente stock` });
-
                 } else {
                     // Actualiza el stock del producto
                     const updatedStock = existingProduct.stock - quantity;
-                    console.log("stock update:  "+ updatedStock)
                     // Actualiza el stock de los productos en la base de datos
                     await productService.update(pid, {stock: updatedStock})
                 }
             }
 
             const productsDisponibles = cart.products.filter((product) => !productsNoStock.includes(product.product._id));
-            console.log("Productos disponibles:", productsDisponibles);
-
                 if (productsNoStock.length > 0) {
-                    console.log("Productos sin stock:  --------", productsNoStock)
                     await cartService.updateProductsCart(cid, productsNoStock)
-                    console.log("PRODUCTS NOT STOCK-------------", productsNoStock)
-
                     const ticketData = {
                         code: uuid4(), //uuidv4
                         purchaser: req.user.email,
                         products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     }
+
                     const newTicket = await ticketService.createTicket(ticketData)
-                    console.log()
                     if(!newTicket){
                         req.logger.error("No se generó el ticket de compra")
                         res.status(400).send({
@@ -288,23 +284,29 @@ class CartController {
                         return
                     };
 
+                    for (const product of newTicket.products) {
+                        const productName = product.product.title;
+                        const productOwnerEmail = product.product.owner.email;
+                        const productOwnerName = product.product.owner.username;
+                        console.log("COMPRADOR: ",newTicket.pucharser)
+                        sendEmailOwner(productOwnerEmail, productOwnerName, productName, newTicket.purchaser);
+                    };
+                    sendEmailTicket(user.username, newTicket._id, productsDisponibles)
+
                     req.logger.info('Proceso de compra finalizada con exito, los productos que están a falta de stock son: ', productsNoStock);
                     res.status(200).send({
-                        success: "ok",
+                        success: "Success",
                         message: "Algunos productos no tienen suficiente stock",
-                        ticket: newTicket,
                         unavailableProducts: productsNoStock
                     })
                 } else {
                     const amountt = productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0);
-                    console.log("amouunt"+ amountt)
                     const ticketData = {
                         code: uuid4(),
                         purchaser: req.user.email,
                         products: productsDisponibles,
                         amount: productsDisponibles.reduce((total, item) => total + (item.quantity * item.product.price), 0),
                     }
-                    console.log("TicketData:", ticketData);
                     req.logger.info('Proceso de compra finalizada con exito', ticketData);
                     const newTicket = await ticketService.createTicket(ticketData)
                     if(!newTicket){
@@ -315,13 +317,20 @@ class CartController {
                         });
                         return
                     }
+                    for (const product of newTicket.products) {
+                        const productName = product.product.title;
+                        const productOwnerEmail = product.product.owner.email;
+                        const productOwnerName = product.product.owner.username;
+                        console.log("COMPRADOR: ",newTicket.pucharser)
+                        sendEmailOwner(productOwnerEmail, productOwnerName, productName, newTicket.purchaser);
+                    };
+                    sendEmailTicket(user.username, newTicket._id, productsDisponibles)
                     await cartService.deleteAllProducts(cid);
                     req.logger.info("Se generó el ticket correctamente")
                     res.status(200).send({
-                        success: "ok",
+                        success: "Success",
                         message: "Compra realizada con exito",
-                        ticket: newTicket,
-                    })
+                    });
             }
         } catch (error) {
             req.logger.error('Error al finalizar la compra', error);
